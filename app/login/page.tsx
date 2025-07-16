@@ -11,6 +11,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Briefcase, Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import SignIn from "@/components/sign-in"
+import SignUpPage from "../signup/page"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -117,6 +119,9 @@ export default function LoginPage() {
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
+              <Button type="submit" className="w-full mt-4 bg-red-900" disabled={isLoading}>
+                {isLoading ? "Loading..." : <SignIn/>}
+              </Button>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">
