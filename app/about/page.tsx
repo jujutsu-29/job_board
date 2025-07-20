@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Briefcase, Users, Target, Heart, Award, Zap, Globe, Moon, Sun } from "lucide-react"
 import Link from "next/link"
 import { useTheme } from "next-themes"
+import Header from "@/components/Header"
 
 const teamMembers = [
   {
@@ -79,36 +80,7 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-2">
-              <Briefcase className="h-8 w-8 text-primary" />
-              <h1 className="text-2xl font-bold">JobBoard</h1>
-            </Link>
-            <nav className="hidden md:flex items-center space-x-6">
-              <Link href="/jobs" className="text-muted-foreground hover:text-foreground transition-colors">
-                Jobs
-              </Link>
-              <Link href="/about" className="text-foreground font-medium">
-                About
-              </Link>
-            </nav>
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-                {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              </Button>
-              <Link href="/login">
-                <Button variant="ghost">Login</Button>
-              </Link>
-              <Link href="/signup">
-                <Button>Sign Up</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header/>
 
       <main>
         {/* Hero Section */}

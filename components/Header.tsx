@@ -1,16 +1,18 @@
-"use client"
+"use client";
 
 import { Briefcase, Moon, Sun } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
 import { useSession, signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 const Header = () => {
   const { theme, setTheme } = useTheme();
   const { data: session, status } = useSession();
 
   const isLoggedIn = status === "authenticated";
+  const pathname = usePathname();
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -22,14 +24,36 @@ const Header = () => {
           </div>
 
           <nav className="hidden md:flex items-center space-x-6">
-            <Link href="/jobs" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="/jobs"
+              className={`transition-colors ${
+                pathname === "/jobs"
+                  ? "text-foreground font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
               Jobs
             </Link>
-            <Link href="/about" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="/about"
+              className={`transition-colors ${
+                pathname === "/about"
+                  ? "text-foreground font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
               About
             </Link>
-            <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-              {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              {theme === "dark" ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
             </Button>
           </nav>
 
@@ -44,7 +68,10 @@ const Header = () => {
                 <span className="text-sm text-muted-foreground hidden md:inline">
                   {session?.user?.email}
                 </span>
-                <Button variant="ghost" onClick={() => signOut({ callbackUrl: "/" })}>
+                <Button
+                  variant="ghost"
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                >
                   Logout
                 </Button>
               </>

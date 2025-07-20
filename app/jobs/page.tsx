@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Bell, BellRing, Briefcase, Clock, DollarSign, MapPin, Moon, Search, Sun, Users } from "lucide-react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
+import Header from "@/components/Header"
 
 // Mock job data
 const mockJobs = [
@@ -165,7 +166,7 @@ export default function JobsPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+      {/* <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-2">
@@ -196,8 +197,9 @@ export default function JobsPage() {
             </div>
           </div>
         </div>
-      </header>
+      </header> */}
 
+      <Header/>
       <main className="container mx-auto px-4 py-8">
         {/* Search and Filters */}
         <div className="mb-8 space-y-4">
