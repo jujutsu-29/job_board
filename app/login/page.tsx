@@ -1,52 +1,72 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Briefcase, Eye, EyeOff } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import SignIn from "@/components/sign-in"
-import { signInWithCredentials } from "@/lib/actions/signin"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Briefcase, Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import SignIn from "@/components/sign-in";
+import { signInWithCredentials } from "@/lib/actions/signin";
+import { signIn } from "next-auth/react"; // ✅ Correct
+
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [rememberMe, setRememberMe] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [rememberMe, setRememberMe] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true)
+    setIsLoading(true);
 
-    try {      
+    try {
       if (!email || !password) {
-        alert("Please enter both email and password")
-        setIsLoading(false)
-        return
+        alert("Please enter both email and password");
+        setIsLoading(false);
+        return;
       }
 
       // Call the signInWithCredentials function
-      await signInWithCredentials(email, password)
-      
+      // await signInWithCredentials(email, password)
+      const result = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+      });
+
+      if (result?.error) {
+        console.error("Login failed:", result.error);
+        alert("Login failed. Please check your credentials and try again.");
+        setIsLoading(false);
+        return;
+      }
       // Redirect to jobs page on successful login
-      router.push("/jobs")
+      router.refresh();
+      router.push("/jobs");
     } catch (error) {
-      console.error("Login failed:", error)
-      alert("Login failed. Please check your credentials and try again.")
-      setIsLoading(false)
-      return      
+      console.error("Login failed:", error);
+      alert("Login failed. Please check your credentials and try again.");
+      setIsLoading(false);
+      return;
     }
 
-    setIsLoading(false)
-  }
+    setIsLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -58,13 +78,17 @@ export default function LoginPage() {
             <span className="text-2xl font-bold">JobBoard</span>
           </Link>
           <h1 className="text-2xl font-bold">Welcome back</h1>
-          <p className="text-muted-foreground">Sign in to your account to continue</p>
+          <p className="text-muted-foreground">
+            Sign in to your account to continue
+          </p>
         </div>
 
         <Card>
           <CardHeader>
             <CardTitle>Sign In</CardTitle>
-            <CardDescription>Enter your email and password to access your account</CardDescription>
+            <CardDescription>
+              Enter your email and password to access your account
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -112,7 +136,9 @@ export default function LoginPage() {
                   <Checkbox
                     id="remember"
                     checked={rememberMe}
-                    onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                    onCheckedChange={(checked) =>
+                      setRememberMe(checked as boolean)
+                    }
                   />
                   <Label htmlFor="remember" className="text-sm">
                     Remember me
@@ -127,9 +153,13 @@ export default function LoginPage() {
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
-              <Button type="submit" className="w-full mt-4 bg-red-900" disabled={isLoading}>
-                {isLoading ? "Loading..." : <SignIn/>}
-              </Button>
+            <Button
+              type="submit"
+              className="w-full mt-4 bg-red-900"
+              disabled={isLoading}
+            >
+              {isLoading ? "Loading..." : <SignIn />}
+            </Button>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">
@@ -143,11 +173,14 @@ export default function LoginPage() {
         </Card>
 
         <div className="mt-6 text-center">
-          <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
+          <Link
+            href="/"
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
             ← Back to home
           </Link>
         </div>
       </div>
     </div>
-  )
+  );
 }
