@@ -165,40 +165,6 @@ export default function JobsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      {/* <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-2">
-              <Briefcase className="h-8 w-8 text-primary" />
-              <h1 className="text-2xl font-bold">JobBoard</h1>
-            </Link>
-            <nav className="hidden md:flex items-center space-x-6">
-              <Link href="/jobs" className="text-foreground font-medium">
-                Jobs
-              </Link>
-              <Link href="/about" className="text-muted-foreground hover:text-foreground transition-colors">
-                About
-              </Link>
-            </nav>
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon" className="relative">
-                {notifications > 0 ? <BellRing className="h-5 w-5" /> : <Bell className="h-5 w-5" />}
-                {notifications > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs">{notifications}</Badge>
-                )}
-              </Button>
-              <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-                {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              </Button>
-              <Link href="/login">
-                <Button variant="ghost">Login</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header> */}
-
       <Header/>
       <main className="container mx-auto px-4 py-8">
         {/* Search and Filters */}

@@ -1,17 +1,30 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Briefcase, Eye, EyeOff } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Briefcase, Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { registerUser } from "@/lib/actions/signup";
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -20,44 +33,73 @@ export default function SignUpPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    jobTitle: "",
-    experience: "",
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [agreeToTerms, setAgreeToTerms] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     // Basic validation
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!")
-      setIsLoading(false)
-      return
+      alert("Passwords don't match!");
+      setIsLoading(false);
+      return;
     }
 
     if (!agreeToTerms) {
-      alert("Please agree to the terms and conditions")
-      setIsLoading(false)
-      return
+      alert("Please agree to the terms and conditions");
+      setIsLoading(false);
+      return;
+    }
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
+      alert("Please fill in all required fields");
+      setIsLoading(false);
+      return;
+    }
+    if (formData.password.length < 6) {
+      alert("Password must be at least 6 characters long");
+      setIsLoading(false);
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      alert("Please enter a valid email address");
+      setIsLoading(false);
+      return;
+    }
+    if (!/^[a-zA-Z]+$/.test(formData.firstName) || !/^[a-zA-Z]+$/.test(formData.lastName)) {
+      alert("First and last names can only contain letters");
+      setIsLoading(false);
+      return;
     }
 
-    // Simulate signup process
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    try {
+      await registerUser({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+      });
 
-    alert("Account created successfully! Redirecting to jobs page...")
-    router.push("/jobs")
+      alert("Account created successfully! Redirecting...");
+      router.push("/login");
+    } catch (err : any) {
+      alert(err.message);
+    }
 
-    setIsLoading(false)
-  }
+    // alert("Account created successfully! Redirecting to jobs page...");
+    // router.push("/jobs");
+
+    setIsLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -69,13 +111,17 @@ export default function SignUpPage() {
             <span className="text-2xl font-bold">JobBoard</span>
           </Link>
           <h1 className="text-2xl font-bold">Create your account</h1>
-          <p className="text-muted-foreground">Join thousands of job seekers today</p>
+          <p className="text-muted-foreground">
+            Join thousands of job seekers today
+          </p>
         </div>
 
         <Card>
           <CardHeader>
             <CardTitle>Sign Up</CardTitle>
-            <CardDescription>Fill in your information to create your account</CardDescription>
+            <CardDescription>
+              Fill in your information to create your account
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -86,7 +132,9 @@ export default function SignUpPage() {
                     id="firstName"
                     placeholder="John"
                     value={formData.firstName}
-                    onChange={(e) => handleInputChange("firstName", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("firstName", e.target.value)
+                    }
                     required
                   />
                 </div>
@@ -96,7 +144,9 @@ export default function SignUpPage() {
                     id="lastName"
                     placeholder="Doe"
                     value={formData.lastName}
-                    onChange={(e) => handleInputChange("lastName", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("lastName", e.target.value)
+                    }
                     required
                   />
                 </div>
@@ -114,7 +164,7 @@ export default function SignUpPage() {
                 />
               </div>
 
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label htmlFor="jobTitle">Current Job Title</Label>
                 <Input
                   id="jobTitle"
@@ -122,9 +172,9 @@ export default function SignUpPage() {
                   value={formData.jobTitle}
                   onChange={(e) => handleInputChange("jobTitle", e.target.value)}
                 />
-              </div>
+              </div> */}
 
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label htmlFor="experience">Experience Level</Label>
                 <Select value={formData.experience} onValueChange={(value) => handleInputChange("experience", value)}>
                   <SelectTrigger>
@@ -137,7 +187,7 @@ export default function SignUpPage() {
                     <SelectItem value="lead">Lead/Principal (10+ years)</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
+              </div> */}
 
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
@@ -147,7 +197,9 @@ export default function SignUpPage() {
                     type={showPassword ? "text" : "password"}
                     placeholder="Create a strong password"
                     value={formData.password}
-                    onChange={(e) => handleInputChange("password", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("password", e.target.value)
+                    }
                     required
                   />
                   <Button
@@ -174,7 +226,9 @@ export default function SignUpPage() {
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder="Confirm your password"
                     value={formData.confirmPassword}
-                    onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("confirmPassword", e.target.value)
+                    }
                     required
                   />
                   <Button
@@ -197,7 +251,9 @@ export default function SignUpPage() {
                 <Checkbox
                   id="terms"
                   checked={agreeToTerms}
-                  onCheckedChange={(checked) => setAgreeToTerms(checked as boolean)}
+                  onCheckedChange={(checked) =>
+                    setAgreeToTerms(checked as boolean)
+                  }
                 />
                 <Label htmlFor="terms" className="text-sm">
                   I agree to the{" "}
@@ -228,11 +284,14 @@ export default function SignUpPage() {
         </Card>
 
         <div className="mt-6 text-center">
-          <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
+          <Link
+            href="/"
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
             ← Back to home
           </Link>
         </div>
       </div>
     </div>
-  )
+  );
 }
