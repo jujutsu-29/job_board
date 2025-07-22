@@ -18,8 +18,7 @@ import { Briefcase, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SignIn from "@/components/sign-in";
-import { signInWithCredentials } from "@/lib/actions/signin";
-import { signIn } from "next-auth/react"; // ✅ Correct
+import { signIn } from "next-auth/react";
 
 
 export default function LoginPage() {
