@@ -12,7 +12,7 @@ import { Briefcase, Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import SignIn from "@/components/sign-in"
-import SignUpPage from "../signup/page"
+import { signInWithCredentials } from "@/lib/actions/signin"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -23,18 +23,26 @@ export default function LoginPage() {
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     setIsLoading(true)
 
-    // Simulate login process
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    try {      
+      if (!email || !password) {
+        alert("Please enter both email and password")
+        setIsLoading(false)
+        return
+      }
 
-    // For demo purposes, accept any email/password
-    if (email && password) {
-      alert("Login successful! Redirecting to jobs page...")
+      // Call the signInWithCredentials function
+      await signInWithCredentials(email, password)
+      
+      // Redirect to jobs page on successful login
       router.push("/jobs")
-    } else {
-      alert("Please fill in all fields")
+    } catch (error) {
+      console.error("Login failed:", error)
+      alert("Login failed. Please check your credentials and try again.")
+      setIsLoading(false)
+      return      
     }
 
     setIsLoading(false)
