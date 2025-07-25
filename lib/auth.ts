@@ -1,11 +1,11 @@
-import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
-import Credentials from "next-auth/providers/credentials"
-import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import { PrismaClient } from "@prisma/client"
-import bcrypt from "bcryptjs"
+import NextAuth from "next-auth";
+import Google from "next-auth/providers/google";
+import Credentials from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -19,23 +19,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       async authorize(credentials) {
         const user = await prisma.user.findUnique({
-          where: { email: typeof credentials?.email === "string" ? credentials.email : undefined },
-        })
+          where: {
+            email:
+              typeof credentials?.email === "string"
+                ? credentials.email
+                : undefined,
+          },
+        });
 
         if (!user || !user.password) {
-          throw new Error("No user found")
+          throw new Error("No user found");
         }
 
         const isValid = await bcrypt.compare(
           typeof credentials.password === "string" ? credentials.password : "",
           typeof user.password === "string" ? user.password : ""
-        )
+        );
 
         if (!isValid) {
-          throw new Error("Invalid credentials")
+          throw new Error("Invalid credentials");
         }
 
-        return user
+        if (user && !user.emailVerified) {
+          throw new Error("Email not verified");
+        }
+
+        return user;
       },
     }),
   ],
@@ -46,4 +55,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/login",
     error: "/login", // optional, handle errors
   },
-})
+});
