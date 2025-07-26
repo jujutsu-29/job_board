@@ -46,20 +46,21 @@ export default function LoginPage() {
         redirect: false,
         email,
         password,
-      });
+        callbackUrl: "/jobs"
+      }) as any;
 
+      console.log("Login result:", result);
       if (result?.error) {
-        console.error("Login failed:", result.error);
-        alert("Login failed. Please check your credentials and try again.");
+        console.error("Login failed: whole result thing is here", result);
+        alert(`${result.code}`);
         setIsLoading(false);
         return;
       }
-      // Redirect to jobs page on successful login
       router.refresh();
       router.push("/jobs");
     } catch (error) {
       console.error("Login failed:", error);
-      alert("Login failed. Please check your credentials and try again.");
+      alert(`error logging in: ${error}`);
       setIsLoading(false);
       return;
     }

@@ -13,13 +13,24 @@ export async function POST(req: Request) {
   const code = generateOTP();
   const expiresAt = getOtpExpiry();
 
-  await prisma.otp.create({
-    data: {
-      code,
-      expiresAt,
-      userId: user.id,
-    },
-  });
+  // await prisma.otp.create({
+  //   data: {
+  //     code,
+  //     expiresAt,
+  //     userId: user.id,
+  //   },
+  // });
+
+  await prisma.otp.upsert({
+  where: { userId: user.id },
+  update: { code: code, expiresAt: expiresAt },
+  create: {
+    userId: user.id,
+    code: code,
+    expiresAt: expiresAt
+  }
+});
+
 
   await sendOtpMail(email, code);
 

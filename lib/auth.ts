@@ -1,11 +1,9 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-
-const prisma = new PrismaClient();
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -17,31 +15,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
-        const user = await prisma.user.findUnique({
-          where: {
-            email:
-              typeof credentials?.email === "string"
-                ? credentials.email
-                : undefined,
-          },
-        });
+       async authorize(creds) {
+        if (!creds?.email || !creds.password) {
+          throw new InvalidLoginError("Missing email or password");
+        }
 
+        const user = await prisma.user.findUnique({ where: { email: String(creds.email) } });
         if (!user || !user.password) {
-          throw new Error("No user found");
+          throw new InvalidLoginError("No user found");
         }
 
-        const isValid = await bcrypt.compare(
-          typeof credentials.password === "string" ? credentials.password : "",
-          typeof user.password === "string" ? user.password : ""
-        );
-
+        const isValid = await bcrypt.compare(String(creds.password), String(user.password));
         if (!isValid) {
-          throw new Error("Invalid credentials");
+          throw new InvalidLoginError("Invalid email or password");
         }
 
-        if (user && !user.emailVerified) {
-          throw new Error("Email not verified");
+        if (!user.emailVerified) {
+          throw new InvalidLoginError("Please verify your email before logging in");
+          // throw new Error("Please verify your email before logging in");
         }
 
         return user;
@@ -53,6 +44,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   pages: {
     signIn: "/login",
-    error: "/login", // optional, handle errors
+    error: "/login",
   },
 });
+
+
+class InvalidLoginError extends CredentialsSignin {
+  code = "custom";
+  constructor(message: string) {
+    super(message);
+    this.code = message;
+  }
+}

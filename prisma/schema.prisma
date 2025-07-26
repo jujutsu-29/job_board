@@ -56,10 +56,10 @@ model Session {
 }
 
 model Otp {
-  id         String   @id @default(cuid())
+  id         String   @id @default(uuid())
+  userId     String   @unique  
   code       String
   expiresAt  DateTime
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
 }

@@ -25,6 +25,7 @@ import { Briefcase, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { registerUser } from "@/lib/actions/signup";
+import axios from "axios";
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
@@ -89,8 +90,9 @@ export default function SignUpPage() {
         password: formData.password,
       });
 
+      await axios.post("/api/auth/send-otp", { email: formData.email });
       alert("Account created successfully! Redirecting...");
-      router.push("/login");
+      router.push(`/otp?email=${encodeURIComponent(formData.email)}`);
     } catch (err : any) {
       alert(err.message);
     }
