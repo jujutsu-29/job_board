@@ -49,9 +49,9 @@ export default function LoginPage() {
         callbackUrl: "/jobs"
       }) as any;
 
-      console.log("Login result:", result);
+      // console.log("Login result:", result);
       if (result?.error) {
-        console.error("Login failed: whole result thing is here", result);
+        // console.error("Login failed: whole result thing is here", result);
         alert(`${result.code}`);
         setIsLoading(false);
         return;
@@ -59,7 +59,7 @@ export default function LoginPage() {
       router.refresh();
       router.push("/jobs");
     } catch (error) {
-      console.error("Login failed:", error);
+      // console.error("Login failed:", error);
       alert(`error logging in: ${error}`);
       setIsLoading(false);
       return;

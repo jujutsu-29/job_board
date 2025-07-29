@@ -11,7 +11,7 @@ const Header = () => {
   const { theme, setTheme } = useTheme();
   const { data: session, status } = useSession();
 
-  console.log("Session data:", session);
+  // console.log("Session data:", session);
   const isLoggedIn = status === "authenticated";
   const pathname = usePathname();
 
