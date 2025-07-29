@@ -1,105 +1,64 @@
-// 'use client';
-// import { useState } from "react";
-// import axios from "axios";
-// export default function OTP () {
-//     const email = new URLSearchParams(window.location.search).get("email");
+"use client";
 
-//     const submitOTP = async (e: React.FormEvent) => {
-//         e.preventDefault();
-//         const result = await axios.post("/api/auth/verify-otp", { email: email, otp });
-//         console.log("OTP submitted:", otp);
+import type React from "react";
 
-//         if(result.data.success) {
-           
-//                 alert("OTP verified successfully!");
-//                 window.location.href = "/login"; // Redirect to login or another page
-//             } else {
-//                 alert("Invalid or expired OTP. Please try again.");
-//             }
-//         }
-    
-
-//     const [otp, setOtp] = useState<string>("");
-//     return (
-//         <div className="flex items-center justify-center h-screen">
-//             <div className="bg-white p-8 rounded shadow-md w-96">
-//                 <h2 className="text-2xl font-bold mb-4">Enter OTP</h2>
-//                 <p className="mb-6">Please enter the OTP sent to your email.</p>
-//                 <form>
-//                     <input
-//                         type="text"
-//                         placeholder="Enter OTP"
-//                         className="w-full p-2 border border-gray-300 rounded mb-4"
-//                         value={otp}
-//                         onChange={(e) => setOtp(e.target.value)}
-//                     />
-//                     <button
-//                         type="submit"
-//                         className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-//                         onClick={submitOTP}
-//                     >
-//                         Verify OTP
-//                     </button>
-//                 </form>
-//             </div>
-//         </div>
-//     )
-// }
-
-"use client"
-
-import type React from "react"
-
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Briefcase } from "lucide-react"
-import Link from "next/link"
-import { toast } from "@/hooks/use-toast"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Briefcase } from "lucide-react";
+import Link from "next/link";
+import { toast } from "@/hooks/use-toast";
+import axios from "axios";
 
 export default function VerifyOTPPage() {
-  const [otp, setOtp] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const email = new URLSearchParams(window.location.search).get("email");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
     try {
-      const response = await fetch("/api/auth/verify-otp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ otp }),
-      })
+      const response = await axios.post("/api/auth/verify-otp", {
+        email: email,
+        otp,
+      });
 
-      if (response.ok) {
+      if (response.data.success) {
         toast({
           title: "Success",
           description: "OTP verified successfully!",
-        })
-        // Redirect or handle success
+        });
+        window.location.href = "/login";
       } else {
-        const error = await response.json()
+        const error = (await response.data.error) || new Error("Invalid OTP");
+        console.error("OTP verification failed:", error);
         toast({
           title: "Error",
           description: error.message || "Invalid OTP",
           variant: "destructive",
-        })
+        });
       }
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to verify OTP",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -111,13 +70,17 @@ export default function VerifyOTPPage() {
             <span className="text-2xl font-bold">JobBoard</span>
           </Link>
           <h1 className="text-2xl font-bold">Verify OTP</h1>
-          <p className="text-muted-foreground">Enter the verification code sent to your device</p>
+          <p className="text-muted-foreground">
+            Enter the verification code sent to your device
+          </p>
         </div>
 
         <Card>
           <CardHeader>
             <CardTitle>Enter Verification Code</CardTitle>
-            <CardDescription>Please enter the 6-digit code we sent to your registered device</CardDescription>
+            <CardDescription>
+              Please enter the 6-digit code we sent to your registered device
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -135,25 +98,35 @@ export default function VerifyOTPPage() {
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading || otp.length !== 6}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={loading || otp.length !== 6}
+              >
                 {loading ? "Verifying..." : "Verify OTP"}
               </Button>
             </form>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">
-                Didn't receive the code? <button className="text-primary hover:underline">Resend OTP</button>
+                Didn't receive the code?{" "}
+                <button className="text-primary hover:underline">
+                  Resend OTP
+                </button>
               </p>
             </div>
           </CardContent>
         </Card>
 
         <div className="mt-6 text-center">
-          <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground">
+          <Link
+            href="/login"
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
             ← Back to login
           </Link>
         </div>
       </div>
     </div>
-  )
+  );
 }

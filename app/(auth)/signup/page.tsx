@@ -92,7 +92,7 @@ export default function SignUpPage() {
 
       await axios.post("/api/auth/send-otp", { email: formData.email });
       alert("Account created successfully! Redirecting...");
-      router.push(`/otp?email=${encodeURIComponent(formData.email)}`);
+      router.push(`/verify-otp?email=${encodeURIComponent(formData.email)}`);
     } catch (err : any) {
       alert(err.message);
     }
