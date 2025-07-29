@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,12 +17,16 @@ import { Briefcase } from "lucide-react";
 import Link from "next/link";
 import { toast } from "@/hooks/use-toast";
 import axios from "axios";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function VerifyOTPPage() {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const email = new URLSearchParams(window.location.search).get("email");
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email");
+
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +43,7 @@ export default function VerifyOTPPage() {
           title: "Success",
           description: "OTP verified successfully!",
         });
-        window.location.href = "/login";
+        router.push("/login");
       } else {
         const error = (await response.data.error) || new Error("Invalid OTP");
         console.error("OTP verification failed:", error);
