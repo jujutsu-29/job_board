@@ -68,7 +68,7 @@ const Header = () => {
                   className="w-8 h-8 rounded-full hidden md:block"
                 />
                 <span className="text-sm text-muted-foreground hidden md:inline">
-                  {session?.user?.email}
+                  {session?.user?.name}
                 </span>
                 <Button
                   variant="ghost"
