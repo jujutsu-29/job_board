@@ -1,85 +1,95 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { ArrowLeft } from "lucide-react"
-import { toast } from "@/hooks/use-toast"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ArrowLeft } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import axios from "axios";
 
 interface JobFormData {
-  title: string
-  companyId: string
-  location: string
-  description: string
-  applyUrl: string
-  status: "draft" | "published"
-  isFeatured: boolean
-  expiresAt: string
+  title: string;
+  companyName: string;
+  location: string;
+  description: string;
+  applyUrl: string;
+  status: "draft" | "published";
+  isFeatured: boolean;
+  expiresAt: string;
 }
 
 export default function NewJobPage() {
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<JobFormData>({
     title: "",
-    companyId: "",
+    companyName: "",
     location: "",
     description: "",
     applyUrl: "",
     status: "draft",
     isFeatured: false,
     expiresAt: "",
-  })
+  });
 
-  const handleInputChange = (field: keyof JobFormData, value: string | boolean) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+  const handleInputChange = (
+    field: keyof JobFormData,
+    value: string | boolean
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
     try {
-      const response = await fetch("/api/admin/jobs", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      })
+      const response = await axios.post("/api/admin/jobs", formData);
 
-      if (response.ok) {
+      if (response.status === 201) {
         toast({
           title: "Success",
           description: "Job created successfully",
-        })
-        router.push("/admin/jobs")
+        });
+        router.push("/admin/jobs");
       } else {
-        const error = await response.json()
+        const error = response;
         toast({
           title: "Error",
-          description: error.message || "Failed to create job",
+          description: String(error) || "Failed to create job",
           variant: "destructive",
-        })
+        });
       }
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to create job",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -96,7 +106,9 @@ export default function NewJobPage() {
       <Card>
         <CardHeader>
           <CardTitle>Job Details</CardTitle>
-          <CardDescription>Fill in the information for the new job posting</CardDescription>
+          <CardDescription>
+            Fill in the information for the new job posting
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -113,17 +125,14 @@ export default function NewJobPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="companyId">Company *</Label>
-                <Select value={formData.companyId} onValueChange={(value) => handleInputChange("companyId", value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a company" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="company1">TechCorp Inc.</SelectItem>
-                    <SelectItem value="company2">StartupXYZ</SelectItem>
-                    <SelectItem value="company3">DesignStudio</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="companyName">Company *</Label>
+                <Input
+                  id="companyName"
+                  value={formData.companyName}
+                  onChange={(e) => handleInputChange("companyName", e.target.value)}
+                  placeholder="e.g. Senior Frontend Developer"
+                  required
+                />
               </div>
 
               <div className="space-y-2">
@@ -131,7 +140,9 @@ export default function NewJobPage() {
                 <Input
                   id="location"
                   value={formData.location}
-                  onChange={(e) => handleInputChange("location", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("location", e.target.value)
+                  }
                   placeholder="e.g. San Francisco, CA or Remote"
                   required
                 />
@@ -143,7 +154,9 @@ export default function NewJobPage() {
                   id="applyUrl"
                   type="url"
                   value={formData.applyUrl}
-                  onChange={(e) => handleInputChange("applyUrl", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("applyUrl", e.target.value)
+                  }
                   placeholder="https://company.com/apply"
                   required
                 />
@@ -151,7 +164,10 @@ export default function NewJobPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
-                <Select value={formData.status} onValueChange={(value) => handleInputChange("status", value)}>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value) => handleInputChange("status", value)}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -168,7 +184,9 @@ export default function NewJobPage() {
                   id="expiresAt"
                   type="datetime-local"
                   value={formData.expiresAt}
-                  onChange={(e) => handleInputChange("expiresAt", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("expiresAt", e.target.value)
+                  }
                 />
               </div>
             </div>
@@ -178,25 +196,35 @@ export default function NewJobPage() {
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => handleInputChange("description", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("description", e.target.value)
+                }
                 placeholder="Describe the job role, requirements, and benefits..."
                 className="min-h-[200px]"
                 required
               />
-              <p className="text-sm text-muted-foreground">You can use Markdown formatting for rich text</p>
+              <p className="text-sm text-muted-foreground">
+                You can use Markdown formatting for rich text
+              </p>
             </div>
 
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="isFeatured"
                 checked={formData.isFeatured}
-                onCheckedChange={(checked) => handleInputChange("isFeatured", checked as boolean)}
+                onCheckedChange={(checked) =>
+                  handleInputChange("isFeatured", checked as boolean)
+                }
               />
               <Label htmlFor="isFeatured">Featured Job</Label>
             </div>
 
             <div className="flex justify-end space-x-4">
-              <Button type="button" variant="outline" onClick={() => router.back()}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.back()}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={loading}>
@@ -207,5 +235,5 @@ export default function NewJobPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
