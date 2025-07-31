@@ -102,7 +102,8 @@ export default function JobsPage() {
   const handleApply = (jobId: number) => {
     const applyJob = jobs.find((job) => job.id === jobId);
     if (applyJob) {
-      router.push(`${applyJob.applyUrl}`);
+      // router.push(`${applyJob.applyUrl}`);
+      window.open(applyJob.applyUrl, "_blank");
     }
   };
 
@@ -193,12 +194,23 @@ export default function JobsPage() {
                   </p>
 
                   <div className="flex justify-between items-center pt-4">
-                    <Link
+                    {/* <Link
                       href={`/jobs/${job.slug}-${job.id}`}
                       className="text-primary hover:underline"
                     >
                       View Details
-                    </Link>
+                    </Link> */}
+
+                    <a
+                      href={`/jobs/${job.slug}-${job.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`px-4 py-2 underline md:underline-offset-4 rounded ${
+                        theme === "light" ? "text-black" : "text-white"
+                      }`}
+                    >
+                      View Details
+                    </a>
 
                     <Button onClick={() => handleApply(job.id)}>
                       Apply Now

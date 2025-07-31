@@ -40,48 +40,68 @@ export async function POST(request: NextRequest) {
     const {
       title,
       companyName,
-      location,
       description,
       applyUrl,
       status,
       isFeatured,
+      source,
+      postedAt,
       expiresAt,
+      createdById = session.user.id,
+      jobType,
+      salary,
+      experience,
+      requirements,
+      basicQualifications,
+      keyResponsibilities,
+      technicalSkills,
+      locationsAvailable,
+      tags,
     } = body;
 
-    if (!title || !companyName || !location || !description || !applyUrl) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
+    // if (!title || !companyName || !description || !applyUrl) {
+    //   return NextResponse.json(
+    //     { error: "Missing required fields" },
+    //     { status: 400 }
+    //   );
+    // }
 
-    const slug = slugify(title, { lower: true, strict: true })
+    const slug = slugify(title, { lower: true, strict: true });
 
     const existingCompany = await prisma.company.findFirst({
       where: { name: companyName },
     });
 
-    const newCompany = existingCompany || await prisma.company.create({
+    const newCompany =
+      existingCompany ||
+      (await prisma.company.create({
         data: {
           name: companyName,
         },
-      });
-    
+      }));
 
     const job = await prisma.job.create({
       data: {
         title,
         company: { connect: { id: newCompany.id } },
-        location,
         description,
-        applyUrl, 
-        slug,
+        applyUrl,
         status,
         isFeatured,
+        source: source,
+        createdById: session.user.id,
+        jobType,
+        salary,
+        experience,
+        requirements,
+        basicQualifications,
+        keyResponsibilities,
+        technicalSkills,
+        locationsAvailable,
+        tags,
+        slug,
         expiresAt: expiresAt ? new Date(expiresAt) : null,
         postedAt: status === "published" ? new Date() : null,
-        source: "manual",
-        createdById: session.user.id,
       },
     });
 

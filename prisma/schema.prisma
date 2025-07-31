@@ -72,34 +72,42 @@ model Otp {
 }
 
 model Company {
-  id      String  @id @default(cuid())
-  name    String
-  domain  String? @unique
-  jobs    Job[]
+  id     String  @id @default(cuid())
+  name   String
+  domain String? @unique
+  jobs   Job[]
 }
 
-enum JobStatus { 
-  draft 
-  published 
-  archived 
+enum JobStatus {
+  draft
+  published
+  archived
   closed
 }
 
 model Job {
-  id           String   @id @default(cuid())
-  title        String
-  companyId    String
-  company      Company  @relation(fields: [companyId], references: [id])
-  location     String
-  description  String
-  applyUrl     String       // official apply link
-  slug         String       @unique // SEO slug
-  status       JobStatus    @default(draft)
-  isFeatured   Boolean      @default(false)
-  source       String?      // "manual" | "greenhouse" | ...
-  postedAt     DateTime?    // set when published
-  expiresAt    DateTime?
-  createdById  String?
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+id          String    @id @default(cuid())
+title       String
+companyId   String
+company     Company   @relation(fields: [companyId], references: [id])
+description String
+applyUrl    String // official apply link
+slug        String    @unique // SEO slug
+status      JobStatus @default(draft)
+isFeatured  Boolean   @default(false)
+source      String? // "manual" | "greenhouse" | ...
+postedAt    DateTime? // set when published
+expiresAt   DateTime?
+createdById String?
+createdAt   DateTime  @default(now())
+updatedAt   DateTime  @updatedAt
+jobType     String? 
+salary      String? 
+experience   String? 
+requirements String[] @default([]) 
+basicQualifications String[] @default([])
+keyResponsibilities String[] @default([])
+technicalSkills String[] @default([])
+locationsAvailable String[] @default([])
+tags        String[] @default([]) // e.g. ["remote", "full-time",
 }

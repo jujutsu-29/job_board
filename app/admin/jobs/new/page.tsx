@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -30,12 +29,23 @@ import axios from "axios";
 interface JobFormData {
   title: string;
   companyName: string;
-  location: string;
   description: string;
   applyUrl: string;
-  status: "draft" | "published";
+  status: "draft" | "published" | "archived" | "closed";
   isFeatured: boolean;
+  source: string;
+  postedAt: string;
   expiresAt: string;
+  createdById: string;
+  jobType: string;
+  salary: string;
+  expeience: string;
+  requirements: string;
+  basicQualifications: string;
+  keyResponsibilities: string;
+  technicalSkills: string;
+  locationsAvailable: string;
+  tags: string;
 }
 
 export default function NewJobPage() {
@@ -44,12 +54,23 @@ export default function NewJobPage() {
   const [formData, setFormData] = useState<JobFormData>({
     title: "",
     companyName: "",
-    location: "",
     description: "",
     applyUrl: "",
     status: "draft",
     isFeatured: false,
+    source: "",
+    postedAt: "",
     expiresAt: "",
+    createdById: "",
+    jobType: "",
+    salary: "",
+    expeience: "",
+    requirements: "",
+    basicQualifications: "",
+    keyResponsibilities: "",
+    technicalSkills: "",
+    locationsAvailable: "",
+    tags: "",
   });
 
   const handleInputChange = (
@@ -64,7 +85,31 @@ export default function NewJobPage() {
     setLoading(true);
 
     try {
-      const response = await axios.post("/api/admin/jobs", formData);
+      const response = await axios.post("/api/admin/jobs", {
+        ...formData,
+        // Convert comma-separated strings to arrays for array fields
+        requirements: formData.requirements
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        basicQualifications: formData.basicQualifications
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        keyResponsibilities: formData.keyResponsibilities
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        technicalSkills: formData.technicalSkills
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        locationsAvailable: formData.locationsAvailable
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        tags: formData.tags.split("\n").map((s) => s.trim()).filter(Boolean),
+      });
 
       if (response.status === 201) {
         toast({
@@ -73,10 +118,9 @@ export default function NewJobPage() {
         });
         router.push("/admin/jobs");
       } else {
-        const error = response;
         toast({
           title: "Error",
-          description: String(error) || "Failed to create job",
+          description: "Failed to create job",
           variant: "destructive",
         });
       }
@@ -111,7 +155,7 @@ export default function NewJobPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="title">Job Title *</Label>
@@ -123,45 +167,47 @@ export default function NewJobPage() {
                   required
                 />
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="companyName">Company *</Label>
                 <Input
                   id="companyName"
                   value={formData.companyName}
                   onChange={(e) => handleInputChange("companyName", e.target.value)}
-                  placeholder="e.g. Senior Frontend Developer"
+                  placeholder="e.g. Acme Corp"
                   required
                 />
               </div>
-
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label htmlFor="location">Location *</Label>
                 <Input
                   id="location"
                   value={formData.location}
-                  onChange={(e) =>
-                    handleInputChange("location", e.target.value)
-                  }
-                  placeholder="e.g. San Francisco, CA or Remote"
+                  onChange={(e) => handleInputChange("location", e.target.value)}
+                  placeholder="e.g. Remote or San Francisco, CA"
                   required
                 />
-              </div>
-
+              </div> */}
               <div className="space-y-2">
                 <Label htmlFor="applyUrl">Apply URL *</Label>
                 <Input
                   id="applyUrl"
                   type="url"
                   value={formData.applyUrl}
-                  onChange={(e) =>
-                    handleInputChange("applyUrl", e.target.value)
-                  }
+                  onChange={(e) => handleInputChange("applyUrl", e.target.value)}
                   placeholder="https://company.com/apply"
                   required
                 />
               </div>
-
+              {/* <div className="space-y-2">
+                <Label htmlFor="slug">Slug *</Label>
+                <Input
+                  id="slug"
+                  value={formData.slug}
+                  onChange={(e) => handleInputChange("slug", e.target.value)}
+                  placeholder="e.g. senior-frontend-developer"
+                  required
+                />
+              </div> */}
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
                 <Select
@@ -169,24 +215,135 @@ export default function NewJobPage() {
                   onValueChange={(value) => handleInputChange("status", value)}
                 >
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="draft">Draft</SelectItem>
                     <SelectItem value="published">Published</SelectItem>
+                    <SelectItem value="archived">Archived</SelectItem>
+                    <SelectItem value="closed">Closed</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-
+              <div className="space-y-2">
+                <Label htmlFor="isFeatured">Featured</Label>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="isFeatured"
+                    checked={formData.isFeatured}
+                    onCheckedChange={(checked) =>
+                      handleInputChange("isFeatured", checked as boolean)
+                    }
+                  />
+                  <span>Mark as featured</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="source">Source</Label>
+                <Input
+                  id="source"
+                  value={formData.source}
+                  onChange={(e) => handleInputChange("source", e.target.value)}
+                  placeholder='e.g. "manual", "greenhouse"'
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="postedAt">Posted At</Label>
+                <Input
+                  id="postedAt"
+                  type="datetime-local"
+                  value={formData.postedAt}
+                  onChange={(e) => handleInputChange("postedAt", e.target.value)}
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="expiresAt">Expires At</Label>
                 <Input
                   id="expiresAt"
                   type="datetime-local"
                   value={formData.expiresAt}
-                  onChange={(e) =>
-                    handleInputChange("expiresAt", e.target.value)
-                  }
+                  onChange={(e) => handleInputChange("expiresAt", e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="jobType">Job Type</Label>
+                <Input
+                  id="jobType"
+                  value={formData.jobType}
+                  onChange={(e) => handleInputChange("jobType", e.target.value)}
+                  placeholder="e.g. Full-time, Part-time"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="salary">Salary</Label>
+                <Input
+                  id="salary"
+                  value={formData.salary}
+                  onChange={(e) => handleInputChange("salary", e.target.value)}
+                  placeholder="e.g. $100k - $150k"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="expeience">Experience</Label>
+                <Input
+                  id="expeience"
+                  value={formData.expeience}
+                  onChange={(e) => handleInputChange("expeience", e.target.value)}
+                  placeholder="e.g. 3+ years"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="requirements">Requirements</Label>
+                <Textarea
+                  id="requirements"
+                  value={formData.requirements}
+                  onChange={(e) => handleInputChange("requirements", e.target.value)}
+                  placeholder="Comma separated, e.g. React, TypeScript, REST APIs"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="basicQualifications">Basic Qualifications</Label>
+                <Textarea
+                  id="basicQualifications"
+                  value={formData.basicQualifications}
+                  onChange={(e) => handleInputChange("basicQualifications", e.target.value)}
+                  placeholder="Comma separated, e.g. Bachelor's degree, 2+ years experience"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="keyResponsibilities">Key Responsibilities</Label>
+                <Textarea
+                  id="keyResponsibilities"
+                  value={formData.keyResponsibilities}
+                  onChange={(e) => handleInputChange("keyResponsibilities", e.target.value)}
+                  placeholder="Comma separated, e.g. Lead team, Write code"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="technicalSkills">Technical Skills</Label>
+                <Textarea
+                  id="technicalSkills"
+                  value={formData.technicalSkills}
+                  onChange={(e) => handleInputChange("technicalSkills", e.target.value)}
+                  placeholder="Comma separated, e.g. JavaScript, Node.js, SQL"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="locationsAvailable">Locations Available</Label>
+                <Textarea
+                  id="locationsAvailable"
+                  value={formData.locationsAvailable}
+                  onChange={(e) => handleInputChange("locationsAvailable", e.target.value)}
+                  placeholder="Comma separated, e.g. Remote, New York, London"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="tags">Tags</Label>
+                <Textarea
+                  id="tags"
+                  value={formData.tags}
+                  onChange={(e) => handleInputChange("tags", e.target.value)}
+                  placeholder="Comma separated, e.g. remote, full-time, urgent"
                 />
               </div>
             </div>
@@ -196,9 +353,7 @@ export default function NewJobPage() {
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) =>
-                  handleInputChange("description", e.target.value)
-                }
+                onChange={(e) => handleInputChange("description", e.target.value)}
                 placeholder="Describe the job role, requirements, and benefits..."
                 className="min-h-[200px]"
                 required
@@ -206,17 +361,6 @@ export default function NewJobPage() {
               <p className="text-sm text-muted-foreground">
                 You can use Markdown formatting for rich text
               </p>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="isFeatured"
-                checked={formData.isFeatured}
-                onCheckedChange={(checked) =>
-                  handleInputChange("isFeatured", checked as boolean)
-                }
-              />
-              <Label htmlFor="isFeatured">Featured Job</Label>
             </div>
 
             <div className="flex justify-end space-x-4">

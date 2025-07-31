@@ -35,33 +35,9 @@ import {
   BookOpen,
 } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
-
-// Mock job data - replace with actual data fetching
-const jobData = {
-  id: "amazon-sde-2024",
-  title: "{{jobTitle}}",
-  company: "{{company}}",
-  companyLogo: "{{companyLogo}}",
-  description: "{{description}}",
-  salary: "{{salary}}",
-  location: "{{location}}",
-  jobType: "{{jobType}}",
-  experience: "{{experience}}",
-  postedDate: "{{postedDate}}",
-  applyUrl: "{{applyUrl}}",
-  requirements: ["{{requirement1}}", "{{requirement2}}", "{{requirement3}}", "{{requirement4}}"],
-  basicQualifications: ["{{basicQualification1}}", "{{basicQualification2}}", "{{basicQualification3}}"],
-  keyResponsibilities: ["{{responsibility1}}", "{{responsibility2}}", "{{responsibility3}}", "{{responsibility4}}"],
-  preferredQualifications: [
-    "{{preferredQualification1}}",
-    "{{preferredQualification2}}",
-    "{{preferredQualification3}}",
-  ],
-  technicalSkills: ["{{technicalSkill1}}", "{{technicalSkill2}}", "{{technicalSkill3}}", "{{technicalSkill4}}"],
-  locationsAvailable: ["{{location1}}", "{{location2}}", "{{location3}}"],
-  viewCount: 100, // Mock view count
-  applicationCount: 50, // Mock application count
-}
+import axios from "axios"
+import { useParams } from "next/navigation"
+import { formatDateTime } from "@/lib/utils"
 
 interface CollapsibleSectionProps {
   title: string
@@ -74,14 +50,14 @@ function CollapsibleSection({ title, icon, children, defaultOpen = true }: Colla
   const [isOpen, setIsOpen] = useState(defaultOpen)
 
   return (
-    <Card className="shadow-sm border-0 bg-white/50 backdrop-blur-sm">
+    <Card className="shadow-sm border-0 bg-white/50 dark:bg-neutral-900/60 backdrop-blur-sm">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors rounded-t-lg">
+          <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-neutral-800/60 transition-colors rounded-t-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="p-2 bg-primary/10 rounded-lg">{icon}</div>
-                <CardTitle className="text-lg font-semibold">{title}</CardTitle>
+                <div className="p-2 bg-primary/10 dark:bg-primary/20 rounded-lg">{icon}</div>
+                <CardTitle className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">{title}</CardTitle>
               </div>
               <div className="md:hidden">
                 {isOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
@@ -97,20 +73,57 @@ function CollapsibleSection({ title, icon, children, defaultOpen = true }: Colla
   )
 }
 
+interface Job {
+  id: string
+  title: string
+  company: {
+    name: string
+    logo?: string
+  }
+  type: string
+  location: string
+  salary: string
+  posted: string
+  description: string
+  slug: string
+  applyUrl: string
+  requirements: string[]
+  basicQualifications: string[]
+  keyResponsibilities: string[]
+  technicalSkills: string[]
+  locationsAvailable: string[]
+  postedAt?: string
+  jobType: string
+  experience: string
+}
+
 export default function JobPostPage() {
   const [isSticky, setIsSticky] = useState(false)
+  const [jobData, setJobData] = useState<Job | null>(null)
 
+  const params = useParams();
+  const slugWithId = params?.id as string | undefined;
+  const id = slugWithId?.split("-").at(-1)
+  async function fetchingJob () {
+    if (!id) return;
+    const { data } = await axios(`/api/admin/jobs/${id}`);
+    setJobData(data.job);
+  }
+  
+  console.log("Job data", jobData);
   useEffect(() => {
+    fetchingJob();
     const handleScroll = () => {
       setIsSticky(window.scrollY > 100)
     }
-
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
-
+  
+  if (!jobData) {
+    return <div className="text-center py-12 text-neutral-700 dark:text-neutral-200">Loading job details...</div>
+  }
   const handleApplyNow = () => {
-    // In a real app, this would redirect to the apply URL
     window.open(jobData.applyUrl, "_blank")
   }
 
@@ -125,7 +138,7 @@ export default function JobPostPage() {
 
   const handleSocialShare = (platform: string) => {
     const url = window.location.href
-    const text = `Check out this job opportunity: ${jobData.title} at ${jobData.company}`
+    const text = `Check out this job opportunity: ${jobData.title} at ${jobData.company.name}`
 
     const shareUrls = {
       twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
@@ -137,22 +150,22 @@ export default function JobPostPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-900 transition-colors">
       {/* Breadcrumb Navigation */}
-      <div className="bg-white/80 backdrop-blur-sm border-b sticky top-0 z-40">
+      <div className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm border-b sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                <BreadcrumbLink href="/" className="text-neutral-900 dark:text-neutral-100">Home</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/jobs">Jobs</BreadcrumbLink>
+                <BreadcrumbLink href="/jobs" className="text-neutral-900 dark:text-neutral-100">Jobs</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
-              <BreadcrumbPage className="font-medium">
-                {jobData.company} {jobData.title.split(" ").slice(0, 3).join(" ")}...
+              <BreadcrumbPage className="font-medium text-neutral-900 dark:text-neutral-100">
+                {jobData.company.name} {jobData.title.split(" ").slice(0, 3).join(" ")}...
               </BreadcrumbPage>
             </BreadcrumbList>
           </Breadcrumb>
@@ -160,49 +173,41 @@ export default function JobPostPage() {
       </div>
 
       {/* Hero Section */}
-      <section className="py-12 px-4">
+      <section className="py-8 px-2 md:py-12 md:px-4">
         <div className="container mx-auto">
-          <div className="bg-white rounded-2xl shadow-xl border-0 overflow-hidden">
-            <div className="bg-gradient-to-r from-primary/10 via-blue-50 to-purple-50 p-8 md:p-12">
+          <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xl border-0 overflow-hidden">
+            <div className="bg-gradient-to-r from-primary/10 via-blue-50 to-purple-50 dark:from-primary/20 dark:via-neutral-900 dark:to-neutral-900 p-6 md:p-12">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
                 <div className="flex-1">
                   <div className="flex items-center space-x-4 mb-4">
-                    {jobData.companyLogo && (
-                      <div className="w-16 h-16 bg-white rounded-xl shadow-md flex items-center justify-center">
-                        <Building className="h-8 w-8 text-primary" />
-                      </div>
-                    )}
                     <div>
-                      <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">{jobData.title}</h1>
-                      <p className="text-xl text-gray-600 mt-2">{jobData.company}</p>
+                      <h1 className="text-2xl md:text-4xl font-bold text-neutral-900 dark:text-neutral-100 leading-tight">{jobData.title}</h1>
+                      <p className="text-lg md:text-xl text-neutral-700 dark:text-neutral-300 mt-2">{jobData.company.name}</p>
                     </div>
                   </div>
-
-                  <p className="text-lg text-gray-700 mb-6 leading-relaxed">{jobData.description}</p>
-
+                  <p className="text-base md:text-lg text-neutral-800 dark:text-neutral-200 mb-6 leading-relaxed">{jobData.description}</p>
                   <div className="flex flex-wrap gap-3 mb-6">
-                    <Badge variant="secondary" className="px-3 py-1 text-sm">
+                    <Badge variant="secondary" className="px-3 py-1 text-sm flex items-center bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100">
                       <DollarSign className="h-4 w-4 mr-1" />
                       {jobData.salary}
                     </Badge>
-                    <Badge variant="secondary" className="px-3 py-1 text-sm">
+                    <Badge variant="secondary" className="px-3 py-1 text-sm flex items-center bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100">
                       <MapPin className="h-4 w-4 mr-1" />
                       {jobData.location}
                     </Badge>
-                    <Badge variant="secondary" className="px-3 py-1 text-sm">
+                    <Badge variant="secondary" className="px-3 py-1 text-sm flex items-center bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100">
                       <Briefcase className="h-4 w-4 mr-1" />
                       {jobData.jobType}
                     </Badge>
-                    <Badge variant="secondary" className="px-3 py-1 text-sm">
+                    <Badge variant="secondary" className="px-3 py-1 text-sm flex items-center bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100">
                       <Users className="h-4 w-4 mr-1" />
                       {jobData.experience}
                     </Badge>
-                    <Badge variant="secondary" className="px-3 py-1 text-sm">
+                    <Badge variant="secondary" className="px-3 py-1 text-sm flex items-center bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100">
                       <Calendar className="h-4 w-4 mr-1" />
-                      {jobData.postedDate}
+                      {formatDateTime(jobData.postedAt ?? "")}
                     </Badge>
                   </div>
-
                   <Button
                     size="lg"
                     className="text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
@@ -219,7 +224,7 @@ export default function JobPostPage() {
       </section>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 pb-12">
+      <div className="container mx-auto px-2 md:px-4 pb-12">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content Column */}
           <div className="lg:col-span-2 space-y-6">
@@ -229,7 +234,7 @@ export default function JobPostPage() {
                 {jobData.requirements.map((req, index) => (
                   <li key={index} className="flex items-start space-x-3">
                     <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">{req}</span>
+                    <span className="text-neutral-800 dark:text-neutral-200">{req}</span>
                   </li>
                 ))}
               </ul>
@@ -241,7 +246,7 @@ export default function JobPostPage() {
                 {jobData.basicQualifications.map((qual, index) => (
                   <li key={index} className="flex items-start space-x-3">
                     <Award className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">{qual}</span>
+                    <span className="text-neutral-800 dark:text-neutral-200">{qual}</span>
                   </li>
                 ))}
               </ul>
@@ -253,19 +258,7 @@ export default function JobPostPage() {
                 {jobData.keyResponsibilities.map((resp, index) => (
                   <li key={index} className="flex items-start space-x-3">
                     <Briefcase className="h-5 w-5 text-purple-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">{resp}</span>
-                  </li>
-                ))}
-              </ul>
-            </CollapsibleSection>
-
-            {/* Preferred Qualifications */}
-            <CollapsibleSection title="Preferred Qualifications" icon={<Star className="h-5 w-5 text-yellow-600" />}>
-              <ul className="space-y-3">
-                {jobData.preferredQualifications.map((qual, index) => (
-                  <li key={index} className="flex items-start space-x-3">
-                    <Star className="h-5 w-5 text-yellow-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">{qual}</span>
+                    <span className="text-neutral-800 dark:text-neutral-200">{resp}</span>
                   </li>
                 ))}
               </ul>
@@ -275,7 +268,7 @@ export default function JobPostPage() {
             <CollapsibleSection title="Technical Skills Required" icon={<Code className="h-5 w-5 text-indigo-600" />}>
               <div className="flex flex-wrap gap-2">
                 {jobData.technicalSkills.map((skill, index) => (
-                  <Badge key={index} variant="outline" className="px-3 py-1 text-sm border-indigo-200 text-indigo-700">
+                  <Badge key={index} variant="outline" className="px-3 py-1 text-sm border-indigo-200 text-indigo-700 dark:text-indigo-200 dark:border-indigo-700">
                     {skill}
                   </Badge>
                 ))}
@@ -286,9 +279,9 @@ export default function JobPostPage() {
             <CollapsibleSection title="Locations Available" icon={<MapPin className="h-5 w-5 text-red-600" />}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {jobData.locationsAvailable.map((location, index) => (
-                  <div key={index} className="flex items-center space-x-3 p-3 bg-red-50 rounded-lg">
+                  <div key={index} className="flex items-center space-x-3 p-3 bg-red-50 dark:bg-red-900/30 rounded-lg">
                     <MapPin className="h-5 w-5 text-red-500" />
-                    <span className="text-gray-700 font-medium">{location}</span>
+                    <span className="text-neutral-800 dark:text-neutral-200 font-medium">{location}</span>
                   </div>
                 ))}
               </div>
@@ -299,23 +292,23 @@ export default function JobPostPage() {
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-6">
               {/* Apply Box */}
-              <Card className="shadow-lg border-0 bg-white">
-                <CardHeader className="bg-gradient-to-r from-primary to-blue-600 text-white rounded-t-lg">
+              <Card className="shadow-lg border-0 bg-white dark:bg-neutral-900">
+                <CardHeader className="bg-gradient-to-r from-primary to-blue-600 dark:from-primary dark:to-blue-900 text-white rounded-t-lg">
                   <CardTitle className="text-xl font-bold">Ready to Apply?</CardTitle>
-                  <CardDescription className="text-blue-100">Don't miss this opportunity!</CardDescription>
+                  <CardDescription className="text-blue-100 dark:text-blue-200">Don't miss this opportunity!</CardDescription>
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Salary:</span>
+                      <span className="text-neutral-700 dark:text-neutral-200">Salary:</span>
                       <span className="font-semibold text-green-600">{jobData.salary}</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Experience:</span>
+                      <span className="text-neutral-700 dark:text-neutral-200">Experience:</span>
                       <span className="font-semibold">{jobData.experience}</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Job Type:</span>
+                      <span className="text-neutral-700 dark:text-neutral-200">Job Type:</span>
                       <span className="font-semibold">{jobData.jobType}</span>
                     </div>
                     <Separator />
@@ -331,9 +324,9 @@ export default function JobPostPage() {
               </Card>
 
               {/* Share Job */}
-              <Card className="shadow-lg border-0 bg-white">
+              <Card className="shadow-lg border-0 bg-white dark:bg-neutral-900">
                 <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
+                  <CardTitle className="flex items-center space-x-2 text-neutral-900 dark:text-neutral-100">
                     <Share2 className="h-5 w-5" />
                     <span>Share this Job</span>
                   </CardTitle>
@@ -375,9 +368,9 @@ export default function JobPostPage() {
               </Card>
 
               {/* Job Stats */}
-              <Card className="shadow-lg border-0 bg-white">
+              <Card className="shadow-lg border-0 bg-white dark:bg-neutral-900">
                 <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
+                  <CardTitle className="flex items-center space-x-2 text-neutral-900 dark:text-neutral-100">
                     <BookOpen className="h-5 w-5" />
                     <span>Job Details</span>
                   </CardTitle>
@@ -385,20 +378,12 @@ export default function JobPostPage() {
                 <CardContent>
                   <div className="space-y-3 text-sm">
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Posted:</span>
-                      <span className="font-medium">{jobData.postedDate}</span>
+                      <span className="text-neutral-700 dark:text-neutral-200">Posted:</span>
+                      <span className="font-medium">{formatDateTime(jobData.postedAt ?? "")}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Job ID:</span>
-                      <span className="font-medium">{jobData.id}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Views:</span>
-                      <span className="font-medium">{jobData.viewCount}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Applications:</span>
-                      <span className="font-medium">{jobData.applicationCount}</span>
+                      <span className="text-neutral-700 dark:text-neutral-200">Company:</span>
+                      <span className="font-medium">{jobData.company.name}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -409,14 +394,12 @@ export default function JobPostPage() {
       </div>
 
       {/* Sticky Apply Button for Mobile */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-50 p-4">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-neutral-900 border-t shadow-lg z-50 p-4">
         <Button className="w-full text-lg py-4 rounded-xl shadow-md" onClick={handleApplyNow}>
           Apply Now
           <ExternalLink className="ml-2 h-5 w-5" />
         </Button>
       </div>
-
-      {/* Mobile spacing for sticky button */}
       <div className="lg:hidden h-20"></div>
     </div>
   )

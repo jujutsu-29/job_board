@@ -61,7 +61,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       },
     });
 
-    return NextResponse.json({job : job}, {status: 201}) 
+    return NextResponse.json({ job }, { status: 200 })
   } catch (error) {
     console.error("Error fetching job:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
