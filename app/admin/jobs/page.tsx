@@ -115,8 +115,10 @@ export default function JobsPage() {
     }
   }
 
-  const copyJobLink = (slug: string) => {
-    const url = `${window.location.origin}/jobs/${slug}`
+  const copyJobLink = (slug: string, id: string) => {
+    console.log("Copying job link for slug:", slug)
+    console.log("Extracted ID:", id)
+    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${slug}-${id}`
     navigator.clipboard.writeText(url)
     toast({
       title: "Success",
@@ -228,7 +230,7 @@ export default function JobsPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => copyJobLink(job.slug)}>
+                          <DropdownMenuItem onClick={() => copyJobLink(job.slug, job.id)}>
                             <Copy className="mr-2 h-4 w-4" />
                             Copy Link
                           </DropdownMenuItem>
