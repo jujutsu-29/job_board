@@ -34,6 +34,7 @@ import {
   DollarSign,
   MapPin,
   Moon,
+  Router,
   Search,
   Sun,
   Users,
@@ -41,11 +42,13 @@ import {
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import Header from "@/components/Header";
+import { useRouter } from "next/navigation";
 
 export default function JobsPage() {
   interface Job {
     id: number;
     title: string;
+    applyUrl: string;
     company: {
       name: string;
     };
@@ -54,6 +57,7 @@ export default function JobsPage() {
     salary: string;
     posted: string;
     description: string;
+    slug: string;
     requirements: string[];
     benefits: string[];
   }
@@ -65,6 +69,7 @@ export default function JobsPage() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
+  const router = useRouter();
   useEffect(() => {
     setMounted(true);
     fetchJobs();
@@ -82,20 +87,6 @@ export default function JobsPage() {
       console.error("Error fetching jobs:", error);
     }
   };
-  // interface Job {
-  //   id: number
-  //   title: string
-  //   company: {
-  //   name: string
-  // }
-  //   location: string
-  //   type: string
-  //   salary: string
-  //   posted: string
-  //   description: string
-  //   requirements: string[]
-  //   benefits: string[]
-  // }
 
   // const filteredJobs: Job[] = (jobs as Job[] | undefined)?.filter((job: Job) => {
   //   const matchesSearch =
@@ -109,9 +100,10 @@ export default function JobsPage() {
   // }) ?? []
 
   const handleApply = (jobId: number) => {
-    alert(
-      `Applied to job ${jobId}! You will be redirected to the application form.`
-    );
+    const applyJob = jobs.find((job) => job.id === jobId);
+    if (applyJob) {
+      router.push(`${applyJob.applyUrl}`);
+    }
   };
 
   if (!mounted) {
@@ -201,68 +193,12 @@ export default function JobsPage() {
                   </p>
 
                   <div className="flex justify-between items-center pt-4">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="outline">View Details</Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                        <DialogHeader>
-                          <DialogTitle className="text-2xl">
-                            {job.title}
-                          </DialogTitle>
-                          <DialogDescription className="text-lg">
-                            {job.company.name} • {job.location} • {job.type}
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-6">
-                          <div className="flex items-center gap-4 text-sm">
-                            <Badge variant="secondary">{job.type}</Badge>
-                            <div className="flex items-center gap-1">
-                              <DollarSign className="h-4 w-4" />
-                              {job.salary}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Clock className="h-4 w-4" />
-                              {job.posted}
-                            </div>
-                          </div>
-
-                          <div>
-                            <h3 className="font-semibold mb-2">
-                              Job Description
-                            </h3>
-                            <p className="text-muted-foreground">
-                              {job.description}
-                            </p>
-                          </div>
-
-                          {/* <div>
-                            <h3 className="font-semibold mb-2">Requirements</h3>
-                            <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                              {job.requirements.map((req, index) => (
-                                <li key={index}>{req}</li>
-                              ))}
-                            </ul>
-                          </div> */}
-
-                          {/* <div>
-                            <h3 className="font-semibold mb-2">Benefits</h3>
-                            <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                              {job.benefits.map((benefit, index) => (
-                                <li key={index}>{benefit}</li>
-                              ))}
-                            </ul>
-                          </div> */}
-
-                          <Button
-                            className="w-full"
-                            onClick={() => handleApply(job.id)}
-                          >
-                            Apply Now
-                          </Button>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                    <Link
+                      href={`/jobs/${job.slug}-${job.id}`}
+                      className="text-primary hover:underline"
+                    >
+                      View Details
+                    </Link>
 
                     <Button onClick={() => handleApply(job.id)}>
                       Apply Now

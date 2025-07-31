@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { type NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-
+import slugify from "slugify";
 export async function GET(request: NextRequest) {
   try {
     // const session = await auth();
@@ -48,18 +48,6 @@ export async function POST(request: NextRequest) {
       expiresAt,
     } = body;
 
-    console.log("body element it is", body);
-    console.log("body element it is", {
-      title,
-      companyName,
-      location,
-      description,
-      applyUrl,
-      status,
-      isFeatured,
-      expiresAt,
-    });
-    // Validate required fields
     if (!title || !companyName || !location || !description || !applyUrl) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -67,10 +55,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const slug = title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
+    const slug = slugify(title, { lower: true, strict: true })
 
     const existingCompany = await prisma.company.findFirst({
       where: { name: companyName },
