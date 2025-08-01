@@ -75,7 +75,9 @@ model Company {
   id     String  @id @default(cuid())
   name   String
   website String? @unique
-  companyDescription String?
+  description String?
+  companyType String?
+  tags   String[] @default([])
   logo   String?
   jobs   Job[]
 }
