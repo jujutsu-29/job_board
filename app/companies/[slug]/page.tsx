@@ -15,78 +15,65 @@ import {
 import { ExternalLink, MapPin, Briefcase, Users, Calendar, Globe, Building2, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { useTheme } from "next-themes"
+import axios from "axios"
+import { useParams } from "next/navigation"
+import { formatDateTime } from "@/lib/utils"
 
-// Mock company data - replace with actual data fetching
-const companyData = {
-  id: "techcorp-inc",
-  name: "{{companyName}}",
-  slug: "{{companySlug}}",
-  logo: "{{companyLogo}}",
-  website: "{{companyWebsite}}",
-  description: "{{companyDescription}}",
-  industry: "{{industry}}",
-  size: "{{companySize}}",
-  founded: "{{foundedYear}}",
-  headquarters: "{{headquarters}}",
-  culture: "{{companyCulture}}",
-  benefits: ["{{benefit1}}", "{{benefit2}}", "{{benefit3}}", "{{benefit4}}"],
-  socialLinks: {
-    linkedin: "{{linkedinUrl}}",
-    twitter: "{{twitterUrl}}",
-    github: "{{githubUrl}}",
-  },
+
+interface Company {
+  name: string;
+  website: string;
+  description: string;
+  companyType: string;
+  tags: string[];
+  slug: string;
+  jobs: {
+    title: string;
+    description: string;
+    jobType: string;
+    postedAt: string;
+    slug: string;
+  }[];
 }
 
-// Mock open positions data
-const openPositions = [
-  {
-    id: "1",
-    title: "{{jobTitle1}}",
-    location: "{{jobLocation1}}",
-    type: "{{jobType1}}",
-    department: "{{department1}}",
-    postedDate: "{{postedDate1}}",
-    slug: "{{jobSlug1}}",
-  },
-  {
-    id: "2",
-    title: "{{jobTitle2}}",
-    location: "{{jobLocation2}}",
-    type: "{{jobType2}}",
-    department: "{{department2}}",
-    postedDate: "{{postedDate2}}",
-    slug: "{{jobSlug2}}",
-  },
-  {
-    id: "3",
-    title: "{{jobTitle3}}",
-    location: "{{jobLocation3}}",
-    type: "{{jobType3}}",
-    department: "{{department3}}",
-    postedDate: "{{postedDate3}}",
-    slug: "{{jobSlug3}}",
-  },
-  {
-    id: "4",
-    title: "{{jobTitle4}}",
-    location: "{{jobLocation4}}",
-    type: "{{jobType4}}",
-    department: "{{department4}}",
-    postedDate: "{{postedDate4}}",
-    slug: "{{jobSlug4}}",
-  },
-]
-
 export default function CompanyProfilePage() {
-  const { theme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+ const params = useParams()
+  const slug = params?.slug as string | undefined
+  const [company, setCompany] = useState<Company | null>(null)
+  const [loading, setLoading] = useState(true)
 
+  if (!slug) return;
   useEffect(() => {
-    setMounted(true)
-  }, [])
 
-  if (!mounted) {
-    return null
+    const fetchCompany = async () => {
+      try {
+        const res = await axios.get(`/api/admin/company/${slug}`);
+        setCompany(res.data.company);
+      } catch (error) {
+        console.error("Failed to fetch company:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchCompany();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-lg text-muted-foreground">Loading company data...</p>
+      </div>
+    )
+  }
+  console.log("Company data:", company)
+
+  if (!company) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-lg text-destructive">Company not found.</p>
+      </div>
+    )
   }
 
   return (
@@ -104,7 +91,7 @@ export default function CompanyProfilePage() {
                 <BreadcrumbLink href="/companies">Companies</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
-              <BreadcrumbPage className="font-medium">{companyData.name}</BreadcrumbPage>
+              <BreadcrumbPage className="font-medium">{company.name}</BreadcrumbPage>
             </BreadcrumbList>
           </Breadcrumb>
         </div>
@@ -122,8 +109,8 @@ export default function CompanyProfilePage() {
                   </div>
                 </div>
                 <div className="flex-1">
-                  <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{companyData.name}</h1>
-                  <div className="flex flex-wrap gap-3 mb-6">
+                  <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{company.name}</h1>
+                  {/* <div className="flex flex-wrap gap-3 mb-6">
                     <Badge variant="secondary" className="px-3 py-1">
                       <Users className="h-4 w-4 mr-1" />
                       {companyData.size}
@@ -140,10 +127,10 @@ export default function CompanyProfilePage() {
                       <MapPin className="h-4 w-4 mr-1" />
                       {companyData.headquarters}
                     </Badge>
-                  </div>
+                  </div> */}
                   <div className="flex flex-col sm:flex-row gap-4">
                     <Button asChild className="shadow-md hover:shadow-lg transition-shadow">
-                      <a href={companyData.website} target="_blank" rel="noopener noreferrer">
+                      <a href={company.website} target="_blank" rel="noopener noreferrer">
                         <Globe className="h-4 w-4 mr-2" />
                         Visit Website
                         <ExternalLink className="h-4 w-4 ml-2" />
@@ -172,15 +159,15 @@ export default function CompanyProfilePage() {
             </CardHeader>
             <CardContent>
               <div className="prose prose-gray dark:prose-invert max-w-none">
-                <p className="text-lg text-muted-foreground leading-relaxed mb-6">{companyData.description}</p>
-                <p className="text-muted-foreground leading-relaxed">{companyData.culture}</p>
+                <p className="text-lg text-muted-foreground leading-relaxed mb-6">{company.description}</p>
+                {/* <p className="text-muted-foreground leading-relaxed">{companyData.culture}</p> */}
               </div>
             </CardContent>
           </Card>
         </section>
 
         {/* Company Benefits */}
-        <section className="mb-12" aria-labelledby="benefits-heading">
+        {/* <section className="mb-12" aria-labelledby="benefits-heading">
           <Card className="shadow-sm border bg-card">
             <CardHeader>
               <CardTitle id="benefits-heading" className="text-2xl font-bold text-foreground">
@@ -199,13 +186,13 @@ export default function CompanyProfilePage() {
               </div>
             </CardContent>
           </Card>
-        </section>
+        </section> */}
 
         {/* Open Positions */}
         <section id="open-positions" aria-labelledby="positions-heading">
           <div className="mb-8">
             <h2 id="positions-heading" className="text-3xl font-bold text-foreground mb-4">
-              Open Positions at {companyData.name}
+              Open Positions at {company.name}
             </h2>
             <p className="text-muted-foreground text-lg">
               Join our team and help us build the future. We're always looking for talented individuals.
@@ -213,15 +200,15 @@ export default function CompanyProfilePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {openPositions.map((job) => (
-              <article key={job.id} className="group">
+            {company.jobs.map((job) => (
+              <article key={job.slug} className="group">
                 <Card className="h-full shadow-sm border bg-card hover:shadow-lg transition-all duration-300 group-hover:scale-[1.02]">
                   <CardHeader>
                     <div className="flex justify-between items-start mb-2">
                       <Badge variant="outline" className="text-xs">
-                        {job.department}
+                        {company.companyType}
                       </Badge>
-                      <span className="text-xs text-muted-foreground">{job.postedDate}</span>
+                      <span className="text-xs text-muted-foreground">{formatDateTime(job.postedAt)}</span>
                     </div>
                     <CardTitle className="text-xl font-semibold text-foreground group-hover:text-primary transition-colors">
                       {job.title}
@@ -229,13 +216,13 @@ export default function CompanyProfilePage() {
                   </CardHeader>
                   <CardContent className="flex-1 flex flex-col justify-between">
                     <div className="space-y-3 mb-6">
-                      <div className="flex items-center text-sm text-muted-foreground">
+                      {/* <div className="flex items-center text-sm text-muted-foreground">
                         <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
                         <span>{job.location}</span>
-                      </div>
+                      </div> */}
                       <div className="flex items-center text-sm text-muted-foreground">
                         <Briefcase className="h-4 w-4 mr-2 flex-shrink-0" />
-                        <span>{job.type}</span>
+                        <span>{job.jobType}</span>
                       </div>
                     </div>
                     <Button asChild className="w-full shadow-sm hover:shadow-md transition-shadow">
@@ -250,7 +237,7 @@ export default function CompanyProfilePage() {
             ))}
           </div>
 
-          {openPositions.length === 0 && (
+          {company.jobs.length === 0 && (
             <Card className="shadow-sm border bg-card">
               <CardContent className="text-center py-12">
                 <Briefcase className="h-12 w-12 text-muted-foreground mx-auto mb-4" />

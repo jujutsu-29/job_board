@@ -10,13 +10,9 @@ export async function GET(request: NextRequest) {
     //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     // }
 
-    const jobs = await prisma.company.findMany({
-        include: {
-            jobs: true,
-      },
-    });
+    const companies = await prisma.company.findMany({});
 
-    return NextResponse.json(jobs);
+    return NextResponse.json(companies);
   } catch (error) {
     console.error("Error fetching jobs:", error);
     return NextResponse.json(
@@ -58,6 +54,7 @@ export async function POST(request: NextRequest) {
           description,
           companyType,
           tags,
+          slug: slug || existingCompany.slug,
         },
       });
       return NextResponse.json(
@@ -72,6 +69,7 @@ export async function POST(request: NextRequest) {
         description,
         companyType,
         tags,
+        slug
       },
     });
 

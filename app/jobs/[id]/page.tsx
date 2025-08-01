@@ -106,12 +106,10 @@ export default function JobPostPage() {
   const [jobData, setJobData] = useState<Job | null>(null)
 
   const params = useParams();
-  const slugWithId = params?.id as string | undefined;
-  const slug = slugWithId?.split("-").slice(0, -1).join("-") || "";
-  const id = slugWithId?.split("-").at(-1)
+  const slug = params?.id as string | undefined;
   async function fetchingJob () {
-    if (!id) return;
-    const { data } = await axios(`/api/admin/jobs/${id}`);
+    if (!slug) return;
+    const { data } = await axios(`/api/admin/jobs/${slug}`);
     setJobData(data.job);
   }
   
@@ -133,7 +131,7 @@ export default function JobPostPage() {
   }
 
   const handleShareJob = () => {
-    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${slug}-${id}`
+    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${slug}`
     navigator.clipboard.writeText(url)
     toast({
       title: "Link copied!",
@@ -142,7 +140,7 @@ export default function JobPostPage() {
   }
 
   const handleSocialShare = (platform: string) => {
-    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${slug}-${id}`
+    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${slug}`
     const text = `Check out this job opportunity: ${jobData.title} at ${jobData.company.name}`
 
     const shareUrls = {

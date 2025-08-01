@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { type NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import slugify from "slugify";
+import { createJobWithUniqueSlug } from "@/lib/utils";
 export async function GET(request: NextRequest) {
   try {
     // const session = await auth();
@@ -66,8 +67,6 @@ export async function POST(request: NextRequest) {
     //   );
     // }
 
-    const slug = slugify(title, { lower: true, strict: true });
-
     const existingCompany = await prisma.company.findFirst({
       where: { name: companyName },
     });
@@ -77,19 +76,21 @@ export async function POST(request: NextRequest) {
       (await prisma.company.create({
         data: {
           name: companyName,
+          slug: slugify(companyName, { lower: true, strict: true }),
+          description: "",
         },
       }));
 
-    const job = await prisma.job.create({
-      data: {
+    const job = await createJobWithUniqueSlug(
+      {
         title,
         company: { connect: { id: newCompany.id } },
         description,
         applyUrl,
         status,
         isFeatured,
-        source: source,
-        createdById: session.user.id,
+        source,
+        createdById,
         jobType,
         salary,
         experience,
@@ -99,11 +100,11 @@ export async function POST(request: NextRequest) {
         technicalSkills,
         locationsAvailable,
         tags,
-        slug,
         expiresAt: expiresAt ? new Date(expiresAt) : null,
         postedAt: status === "published" ? new Date() : null,
       },
-    });
+      title
+    );
 
     return NextResponse.json(job, { status: 201 });
   } catch (error) {

@@ -52,9 +52,9 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const slug = await params.id
+    const slug = (await params).id
     const job = await prisma.job.findUnique({
-      where: { id: slug },
+      where: { slug: slug },
       include: {
         company: {
           select: { name: true },

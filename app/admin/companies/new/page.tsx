@@ -70,7 +70,7 @@ export default function NewJobPage() {
           title: "Success",
           description: "Job created successfully",
         });
-        router.push("/admin/jobs");
+        router.push("/admin/companies");
       } else {
         toast({
           title: "Error",

@@ -72,14 +72,15 @@ model Otp {
 }
 
 model Company {
-  id     String  @id @default(cuid())
-  name   String
-  website String? @unique
+  id          String   @id @default(cuid())
+  name        String
+  website     String?  @unique
   description String?
   companyType String?
-  tags   String[] @default([])
-  logo   String?
-  jobs   Job[]
+  tags        String[] @default([])
+  logo        String?
+  slug        String?   @unique
+  jobs        Job[]
 }
 
 enum JobStatus {
@@ -90,28 +91,28 @@ enum JobStatus {
 }
 
 model Job {
-id          String    @id @default(cuid())
-title       String
-companyId   String
-company     Company   @relation(fields: [companyId], references: [id])
-description String
-applyUrl    String 
-slug        String    @unique 
-status      JobStatus @default(draft)
-isFeatured  Boolean   @default(false)
-source      String? 
-postedAt    DateTime? 
-expiresAt   DateTime?
-createdById String?
-createdAt   DateTime  @default(now())
-updatedAt   DateTime  @updatedAt
-jobType     String? 
-salary      String? 
-experience   String? 
-requirements String[] @default([]) 
-basicQualifications String[] @default([])
-keyResponsibilities String[] @default([])
-technicalSkills String[] @default([])
-locationsAvailable String[] @default([])
-tags        String[] @default([]) 
+  id                  String    @id @default(cuid())
+  title               String
+  companyId           String
+  company             Company   @relation(fields: [companyId], references: [id])
+  description         String
+  applyUrl            String
+  slug                String    @unique
+  status              JobStatus @default(draft)
+  isFeatured          Boolean   @default(false)
+  source              String?
+  postedAt            DateTime?
+  expiresAt           DateTime?
+  createdById         String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  jobType             String?
+  salary              String?
+  experience          String?
+  requirements        String[]  @default([])
+  basicQualifications String[]  @default([])
+  keyResponsibilities String[]  @default([])
+  technicalSkills     String[]  @default([])
+  locationsAvailable  String[]  @default([])
+  tags                String[]  @default([])
 }

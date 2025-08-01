@@ -50,15 +50,39 @@ const companiesData = [
   },
 ]
 
+interface Company {
+  id: string;
+  name: string;
+  companyType: string;
+  description: string;
+  industry: string;
+  slug: string;
+}
+
 export default function CompaniesPage() {
-  const [companies, setCompanies] = useState(companiesData)
+  const [companies, setCompanies] = useState<Company[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    fetchCompanies();
     setMounted(true)
   }, [])
 
+  const fetchCompanies = async () => {
+    try {
+      const response = await fetch("/api/admin/company");
+      if (!response.ok) {
+        throw new Error("Failed to fetch companies");
+      }
+      const data = await response.json();
+      setCompanies(data);
+    } catch (error) {
+      console.error("Error fetching companies:", error);
+    }
+  }
+
+  // console.log("Companies data:", companies)
   const filteredCompanies = companies.filter(
     (company) =>
       company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -130,7 +154,7 @@ export default function CompaniesPage() {
                       <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
                         {company.description}
                       </p>
-                      <div className="flex flex-wrap gap-2">
+                      {/* <div className="flex flex-wrap gap-2">
                         <Badge variant="secondary" className="text-xs">
                           <Users className="h-3 w-3 mr-1" />
                           {company.size}
@@ -143,7 +167,7 @@ export default function CompaniesPage() {
                           <Briefcase className="h-3 w-3 mr-1" />
                           {company.openPositions} open positions
                         </Badge>
-                      </div>
+                      </div> */}
                     </div>
                     <Button asChild className="w-full shadow-sm hover:shadow-md transition-shadow">
                       <Link href={`/companies/${company.slug}`}>
