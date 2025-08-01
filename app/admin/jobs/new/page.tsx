@@ -39,7 +39,7 @@ interface JobFormData {
   createdById: string;
   jobType: string;
   salary: string;
-  expeience: string;
+  experience: string;
   requirements: string;
   basicQualifications: string;
   keyResponsibilities: string;
@@ -64,7 +64,7 @@ export default function NewJobPage() {
     createdById: "",
     jobType: "",
     salary: "",
-    expeience: "",
+    experience: "",
     requirements: "",
     basicQualifications: "",
     keyResponsibilities: "",
@@ -287,8 +287,8 @@ export default function NewJobPage() {
                 <Label htmlFor="expeience">Experience</Label>
                 <Input
                   id="expeience"
-                  value={formData.expeience}
-                  onChange={(e) => handleInputChange("expeience", e.target.value)}
+                  value={formData.experience}
+                  onChange={(e) => handleInputChange("experience", e.target.value)}
                   placeholder="e.g. 3+ years"
                 />
               </div>
