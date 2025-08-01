@@ -74,7 +74,9 @@ model Otp {
 model Company {
   id     String  @id @default(cuid())
   name   String
-  domain String? @unique
+  website String? @unique
+  companyDescription String?
+  logo   String?
   jobs   Job[]
 }
 
@@ -91,12 +93,12 @@ title       String
 companyId   String
 company     Company   @relation(fields: [companyId], references: [id])
 description String
-applyUrl    String // official apply link
-slug        String    @unique // SEO slug
+applyUrl    String 
+slug        String    @unique 
 status      JobStatus @default(draft)
 isFeatured  Boolean   @default(false)
-source      String? // "manual" | "greenhouse" | ...
-postedAt    DateTime? // set when published
+source      String? 
+postedAt    DateTime? 
 expiresAt   DateTime?
 createdById String?
 createdAt   DateTime  @default(now())
@@ -109,5 +111,5 @@ basicQualifications String[] @default([])
 keyResponsibilities String[] @default([])
 technicalSkills String[] @default([])
 locationsAvailable String[] @default([])
-tags        String[] @default([]) // e.g. ["remote", "full-time",
+tags        String[] @default([]) 
 }

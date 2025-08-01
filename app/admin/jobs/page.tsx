@@ -116,8 +116,8 @@ export default function JobsPage() {
   }
 
   const copyJobLink = (slug: string, id: string) => {
-    console.log("Copying job link for slug:", slug)
-    console.log("Extracted ID:", id)
+    // console.log("Copying job link for slug:", slug)
+    // console.log("Extracted ID:", id)
     const url = `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${slug}-${id}`
     navigator.clipboard.writeText(url)
     toast({

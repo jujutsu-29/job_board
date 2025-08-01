@@ -33,11 +33,14 @@ import {
   Users,
   Award,
   BookOpen,
+  ArrowRight,
 } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import axios from "axios"
 import { useParams } from "next/navigation"
 import { formatDateTime } from "@/lib/utils"
+import Header from "@/components/Header"
+import Link from "next/link"
 
 interface CollapsibleSectionProps {
   title: string
@@ -95,6 +98,7 @@ interface Job {
   postedAt?: string
   jobType: string
   experience: string
+  companyDescription: string
 }
 
 export default function JobPostPage() {
@@ -103,6 +107,7 @@ export default function JobPostPage() {
 
   const params = useParams();
   const slugWithId = params?.id as string | undefined;
+  const slug = slugWithId?.split("-").slice(0, -1).join("-") || "";
   const id = slugWithId?.split("-").at(-1)
   async function fetchingJob () {
     if (!id) return;
@@ -128,7 +133,7 @@ export default function JobPostPage() {
   }
 
   const handleShareJob = () => {
-    const url = window.location.href
+    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${slug}-${id}`
     navigator.clipboard.writeText(url)
     toast({
       title: "Link copied!",
@@ -137,7 +142,7 @@ export default function JobPostPage() {
   }
 
   const handleSocialShare = (platform: string) => {
-    const url = window.location.href
+    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${slug}-${id}`
     const text = `Check out this job opportunity: ${jobData.title} at ${jobData.company.name}`
 
     const shareUrls = {
@@ -151,6 +156,7 @@ export default function JobPostPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-900 transition-colors">
+      <Header/>
       {/* Breadcrumb Navigation */}
       <div className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm border-b sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
@@ -288,6 +294,7 @@ export default function JobPostPage() {
             </CollapsibleSection>
           </div>
 
+          
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-24 space-y-6">
@@ -392,6 +399,29 @@ export default function JobPostPage() {
           </div>
         </div>
       </div>
+
+      <CollapsibleSection title="About the Company" icon={<Building className="h-5 w-5 text-orange-600" />}>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
+                    <Building className="h-6 w-6 text-orange-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground">{jobData.company.name}</h3>
+                    <p className="text-sm text-muted-foreground">Technology Company</p>
+                  </div>
+                </div>
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{jobData.companyDescription}</p>
+                <div className="pt-2">
+                  <Button variant="outline" asChild className="bg-transparent">
+                    <Link href={`/companies/${jobData.company.name.toLowerCase().replace(/\s+/g, "-")}`}>
+                      View Company Profile
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </CollapsibleSection>
 
       {/* Sticky Apply Button for Mobile */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-neutral-900 border-t shadow-lg z-50 p-4">
