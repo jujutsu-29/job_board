@@ -2,17 +2,24 @@ import { prisma } from "@/lib/prisma";
 import { type NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import slugify from "slugify";
+import { getAllCompanies } from "@/lib/actions/company";
+import { stat } from "fs";
 export async function GET(request: NextRequest) {
   try {
-    // const session = await auth();
+    const session = await auth();
 
-    // if (!session || session.user?.role !== "admin") {
-    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    // }
+    if (!session || session.user?.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    const companies = await prisma.company.findMany({});
+    const companies = await getAllCompanies();
 
-    return NextResponse.json(companies);
+    if (!companies || companies.length === 0) {
+      return NextResponse.json({ error: "No companies found" }, { status: 404 });
+    }
+
+    // console.log("Fetched companies:", companies);
+    return NextResponse.json(companies,{ status: 200});
   } catch (error) {
     console.error("Error fetching jobs:", error);
     return NextResponse.json(

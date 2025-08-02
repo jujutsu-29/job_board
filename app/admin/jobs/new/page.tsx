@@ -22,9 +22,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import axios from "axios";
+import { locationOptions } from "@/lib/utils";
 
 interface JobFormData {
   title: string;
@@ -44,9 +45,10 @@ interface JobFormData {
   basicQualifications: string;
   keyResponsibilities: string;
   technicalSkills: string;
-  locationsAvailable: string;
+  locationsAvailable: string[];
   tags: string;
 }
+
 
 export default function NewJobPage() {
   const router = useRouter();
@@ -69,9 +71,10 @@ export default function NewJobPage() {
     basicQualifications: "",
     keyResponsibilities: "",
     technicalSkills: "",
-    locationsAvailable: "",
+    locationsAvailable: [],
     tags: "",
   });
+
 
   const handleInputChange = (
     field: keyof JobFormData,
@@ -104,11 +107,14 @@ export default function NewJobPage() {
           .split("\n")
           .map((s) => s.trim())
           .filter(Boolean),
-        locationsAvailable: formData.locationsAvailable
+        // locationsAvailable: formData.locationsAvailable
+        //   .split("\n")
+        //   .map((s) => s.trim())
+          // .filter(Boolean),
+        tags: formData.tags
           .split("\n")
           .map((s) => s.trim())
           .filter(Boolean),
-        tags: formData.tags.split("\n").map((s) => s.trim()).filter(Boolean),
       });
 
       if (response.status === 201) {
@@ -172,7 +178,9 @@ export default function NewJobPage() {
                 <Input
                   id="companyName"
                   value={formData.companyName}
-                  onChange={(e) => handleInputChange("companyName", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("companyName", e.target.value)
+                  }
                   placeholder="e.g. Acme Corp"
                   required
                 />
@@ -193,7 +201,9 @@ export default function NewJobPage() {
                   id="applyUrl"
                   type="url"
                   value={formData.applyUrl}
-                  onChange={(e) => handleInputChange("applyUrl", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("applyUrl", e.target.value)
+                  }
                   placeholder="https://company.com/apply"
                   required
                 />
@@ -253,7 +263,9 @@ export default function NewJobPage() {
                   id="postedAt"
                   type="datetime-local"
                   value={formData.postedAt}
-                  onChange={(e) => handleInputChange("postedAt", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("postedAt", e.target.value)
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -262,7 +274,9 @@ export default function NewJobPage() {
                   id="expiresAt"
                   type="datetime-local"
                   value={formData.expiresAt}
-                  onChange={(e) => handleInputChange("expiresAt", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("expiresAt", e.target.value)
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -288,7 +302,9 @@ export default function NewJobPage() {
                 <Input
                   id="expeience"
                   value={formData.experience}
-                  onChange={(e) => handleInputChange("experience", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("experience", e.target.value)
+                  }
                   placeholder="e.g. 3+ years"
                 />
               </div>
@@ -297,25 +313,35 @@ export default function NewJobPage() {
                 <Textarea
                   id="requirements"
                   value={formData.requirements}
-                  onChange={(e) => handleInputChange("requirements", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("requirements", e.target.value)
+                  }
                   placeholder="Comma separated, e.g. React, TypeScript, REST APIs"
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="basicQualifications">Basic Qualifications</Label>
+                <Label htmlFor="basicQualifications">
+                  Basic Qualifications
+                </Label>
                 <Textarea
                   id="basicQualifications"
                   value={formData.basicQualifications}
-                  onChange={(e) => handleInputChange("basicQualifications", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("basicQualifications", e.target.value)
+                  }
                   placeholder="Comma separated, e.g. Bachelor's degree, 2+ years experience"
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="keyResponsibilities">Key Responsibilities</Label>
+                <Label htmlFor="keyResponsibilities">
+                  Key Responsibilities
+                </Label>
                 <Textarea
                   id="keyResponsibilities"
                   value={formData.keyResponsibilities}
-                  onChange={(e) => handleInputChange("keyResponsibilities", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("keyResponsibilities", e.target.value)
+                  }
                   placeholder="Comma separated, e.g. Lead team, Write code"
                 />
               </div>
@@ -324,18 +350,43 @@ export default function NewJobPage() {
                 <Textarea
                   id="technicalSkills"
                   value={formData.technicalSkills}
-                  onChange={(e) => handleInputChange("technicalSkills", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("technicalSkills", e.target.value)
+                  }
                   placeholder="Comma separated, e.g. JavaScript, Node.js, SQL"
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="locationsAvailable">Locations Available</Label>
-                <Textarea
-                  id="locationsAvailable"
-                  value={formData.locationsAvailable}
-                  onChange={(e) => handleInputChange("locationsAvailable", e.target.value)}
-                  placeholder="Comma separated, e.g. Remote, New York, London"
-                />
+                <div className="flex flex-wrap gap-4">
+                  {locationOptions.map((location) => (
+                    <div key={location} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`location-${location}`}
+                        checked={formData.locationsAvailable.includes(location)}
+                        onCheckedChange={(checked) => {
+                          setFormData((prev) => {
+                            const locations = prev.locationsAvailable;
+                            if (checked) {
+                              // Add location if not already present
+                              return {
+                                ...prev,
+                                locationsAvailable: [...locations, location],
+                              };
+                            } else {
+                              // Remove location
+                              return {
+                                ...prev,
+                                locationsAvailable: locations.filter((l) => l !== location),
+                              };
+                            }
+                          });
+                        }}
+                      />
+                      <Label htmlFor={`location-${location}`}>{location}</Label>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="tags">Tags</Label>
@@ -353,7 +404,9 @@ export default function NewJobPage() {
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) => handleInputChange("description", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("description", e.target.value)
+                }
                 placeholder="Describe the job role, requirements, and benefits..."
                 className="min-h-[200px]"
                 required

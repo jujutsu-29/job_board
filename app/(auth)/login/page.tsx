@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +18,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SignIn from "@/components/sign-in";
 import { signIn } from "next-auth/react";
-
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>("");
@@ -39,9 +37,6 @@ export default function LoginPage() {
         setIsLoading(false);
         return;
       }
-
-      // Call the signInWithCredentials function
-      // await signInWithCredentials(email, password)
       const result = await signIn("credentials", {
         redirect: false,
         email,
@@ -49,9 +44,7 @@ export default function LoginPage() {
         callbackUrl: "/jobs"
       }) as any;
 
-      // console.log("Login result:", result);
       if (result?.error) {
-        // console.error("Login failed: whole result thing is here", result);
         alert(`${result.code}`);
         setIsLoading(false);
         return;
@@ -59,33 +52,44 @@ export default function LoginPage() {
       router.refresh();
       router.push("/jobs");
     } catch (error) {
-      // console.error("Login failed:", error);
       alert(`error logging in: ${error}`);
       setIsLoading(false);
       return;
     }
-
     setIsLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-4 relative bg-background overflow-hidden">
+      {/* Animated blue-red glassy background */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 z-0"
+      >
+        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-blue-500/30 via-blue-400/20 to-red-400/20 blur-3xl opacity-80 animate-login-bg" />
+        <div className="absolute top-1/2 right-0 w-[400px] h-[400px] rounded-full bg-gradient-to-tr from-red-500/20 via-blue-400/10 to-blue-500/20 blur-2xl opacity-70 animate-login-bg-rev" />
+        <div className="absolute bottom-0 left-1/2 w-[500px] h-[500px] rounded-full bg-gradient-to-br from-blue-400/20 via-red-400/20 to-blue-500/10 blur-3xl opacity-60 animate-login-bg" />
+      </div>
+      <div className="w-full max-w-md relative z-10">
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center space-x-2 mb-6">
             <Briefcase className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold">JobBoard</span>
+            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-red-500 to-blue-400 bg-clip-text text-transparent animate-gradient-move">
+              JobBoard
+            </span>
           </Link>
-          <h1 className="text-2xl font-bold">Welcome back</h1>
+          <h1 className="text-2xl font-bold text-blue-900 dark:text-blue-100">Welcome back</h1>
           <p className="text-muted-foreground">
             Sign in to your account to continue
           </p>
         </div>
 
-        <Card>
+        <Card className="rounded-2xl shadow-xl border-0 bg-white/80 dark:bg-blue-950/80 backdrop-blur-md animate-fade-in-up">
           <CardHeader>
-            <CardTitle>Sign In</CardTitle>
+            <CardTitle className="bg-gradient-to-r from-blue-600 via-red-500 to-blue-400 bg-clip-text text-transparent animate-gradient-move">
+              Sign In
+            </CardTitle>
             <CardDescription>
               Enter your email and password to access your account
             </CardDescription>
@@ -101,6 +105,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  className="focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-700 transition"
                 />
               </div>
 
@@ -114,6 +119,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    className="focus:ring-2 focus:ring-red-400 dark:focus:ring-red-700 transition"
                   />
                   <Button
                     type="button"
@@ -149,14 +155,19 @@ export default function LoginPage() {
                 </Link>
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full bg-gradient-to-r from-blue-500 via-red-400 to-blue-600 text-white font-bold shadow-lg hover:from-blue-600 hover:to-red-500 transition-all duration-300 border-2 border-transparent hover:border-blue-400 animate-login-btn"
+                disabled={isLoading}
+              >
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
             <Button
-              type="submit"
-              className="w-full mt-4 bg-red-900"
+              type="button"
+              className="w-full mt-4 bg-gradient-to-r from-red-500 via-blue-400 to-blue-600 text-white font-bold shadow-md hover:from-red-600 hover:to-blue-700 transition-all duration-300 border-2 border-transparent hover:border-red-400"
               disabled={isLoading}
+              onClick={() => SignIn()}
             >
               {isLoading ? "Loading..." : <SignIn />}
             </Button>
@@ -181,6 +192,50 @@ export default function LoginPage() {
           </Link>
         </div>
       </div>
+      <style jsx>{`
+        .animate-gradient-move {
+          background-size: 200% 200%;
+          animation: gradient-move 6s ease-in-out infinite alternate;
+        }
+        @keyframes gradient-move {
+          0% { background-position: 0% 50%; }
+          100% { background-position: 100% 50%; }
+        }
+        .animate-login-bg {
+          animation: login-bg-move 12s ease-in-out infinite alternate;
+        }
+        .animate-login-bg-rev {
+          animation: login-bg-move-rev 14s ease-in-out infinite alternate;
+        }
+        @keyframes login-bg-move {
+          0%,100% { transform: translateY(0) scale(1);}
+          50% { transform: translateY(20px) scale(1.08);}
+        }
+        @keyframes login-bg-move-rev {
+          0%,100% { transform: translateY(0) scale(1);}
+          50% { transform: translateY(-20px) scale(1.05);}
+        }
+        @keyframes fade-in-up {
+          0% {
+            opacity: 0;
+            transform: translateY(40px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-in-up {
+          animation: fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .animate-login-btn {
+          animation: login-btn-glow 2.5s cubic-bezier(0.4,0,0.6,1) infinite alternate;
+        }
+        @keyframes login-btn-glow {
+          0% { box-shadow: 0 4px 24px 0 rgba(59,130,246,0.16), 0 1.5px 6px 0 rgba(239,68,68,0.10);}
+          100% { box-shadow: 0 8px 32px 0 rgba(239,68,68,0.18), 0 2px 8px 0 rgba(59,130,246,0.12);}
+        }
+      `}</style>
     </div>
   );
 }

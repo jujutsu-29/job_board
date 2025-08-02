@@ -109,7 +109,7 @@ export default function JobPostPage() {
   const slug = params?.id as string | undefined;
   async function fetchingJob () {
     if (!slug) return;
-    const { data } = await axios(`/api/admin/jobs/${slug}`);
+    const { data } = await axios(`/api/jobs/${slug}`);
     setJobData(data.job);
   }
   
