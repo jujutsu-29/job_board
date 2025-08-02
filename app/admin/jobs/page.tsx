@@ -1,11 +1,18 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,59 +20,79 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Search, MoreHorizontal, Edit, Trash2, Copy, Eye, EyeOff } from "lucide-react"
-import { toast } from "@/hooks/use-toast"
-
+} from "@/components/ui/dropdown-menu";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Plus,
+  Search,
+  MoreHorizontal,
+  Edit,
+  Trash2,
+  Copy,
+  Eye,
+  EyeOff,
+} from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface Job {
-  id: string
-  title: string
+  id: string;
+  title: string;
   company: {
-    name: string
-  }
-  location: string
-  status: "draft" | "published" | "archived" | "closed"
-  isFeatured: boolean
-  postedAt: string | null
-  createdAt: string
-  slug: string
+    name: string;
+  };
+  locationsAvailable: string[];
+  status: "draft" | "published" | "archived" | "closed";
+  isFeatured: boolean;
+  postedAt: string | null;
+  createdAt: string;
+  slug: string;
 }
 
 export default function JobsPage() {
-  const router = useRouter()
-  const [jobs, setJobs] = useState<Job[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
+  const router = useRouter();
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
-    fetchJobs()
-  }, [])
+    fetchJobs();
+  }, []);
 
   const fetchJobs = async () => {
     try {
-      const response = await fetch("/api/admin/jobs")
+      const response = await fetch("/api/admin/jobs");
       if (response.ok) {
-        const data = await response.json()
-        setJobs(data)
+        const data = await response.json();
+        setJobs(data);
       }
     } catch (error) {
-      console.error("Failed to fetch jobs:", error)
+      console.error("Failed to fetch jobs:", error);
       toast({
         title: "Error",
         description: "Failed to fetch jobs",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleStatusToggle = async (jobId: string, currentStatus: string) => {
-    const newStatus = currentStatus === "published" ? "draft" : "published"
+    const newStatus = currentStatus === "published" ? "draft" : "published";
 
     try {
       const response = await fetch(`/api/admin/jobs/${jobId}`, {
@@ -74,64 +101,66 @@ export default function JobsPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ status: newStatus }),
-      })
+      });
 
       if (response.ok) {
-        fetchJobs()
+        fetchJobs();
         toast({
           title: "Success",
-          description: `Job ${newStatus === "published" ? "published" : "unpublished"} successfully`,
-        })
+          description: `Job ${
+            newStatus === "published" ? "published" : "unpublished"
+          } successfully`,
+        });
       }
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to update job status",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const handleDelete = async (jobId: string) => {
-    if (!confirm("Are you sure you want to delete this job?")) return
+    if (!confirm("Are you sure you want to delete this job?")) return;
 
     try {
       const response = await fetch(`/api/admin/jobs/${jobId}`, {
         method: "DELETE",
-      })
+      });
 
       if (response.ok) {
-        fetchJobs()
+        fetchJobs();
         toast({
           title: "Success",
           description: "Job deleted successfully",
-        })
+        });
       }
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to delete job",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const copyJobLink = (slug: string) => {
-    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${slug}`
-    navigator.clipboard.writeText(url)
+    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${slug}`;
+    navigator.clipboard.writeText(url);
     toast({
       title: "Success",
       description: "Job link copied to clipboard",
-    })
-  }
+    });
+  };
 
   const filteredJobs = jobs.filter((job) => {
     const matchesSearch =
       job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.company.name.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = statusFilter === "all" || job.status === statusFilter
-    return matchesSearch && matchesStatus
-  })
+      job.company.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "all" || job.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   const getStatusBadge = (status: string) => {
     const variants = {
@@ -139,13 +168,21 @@ export default function JobsPage() {
       published: "default",
       archived: "outline",
       closed: "destructive",
-    } as const
+    } as const;
 
-    return <Badge variant={variants[status as keyof typeof variants] || "secondary"}>{status}</Badge>
-  }
+    return (
+      <Badge variant={variants[status as keyof typeof variants] || "secondary"}>
+        {status}
+      </Badge>
+    );
+  };
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Loading...
+      </div>
+    );
   }
 
   return (
@@ -217,9 +254,17 @@ export default function JobsPage() {
                       </div>
                     </TableCell>
                     <TableCell>{job.company.name}</TableCell>
-                    <TableCell>{job.location}</TableCell>
+                    <TableCell>
+                      {job.locationsAvailable.join(", ").length > 50
+                        ? job.locationsAvailable.join(", ").slice(0, 50) + "..."
+                        : job.locationsAvailable.join(", ")}
+                    </TableCell>
                     <TableCell>{getStatusBadge(job.status)}</TableCell>
-                    <TableCell>{job.postedAt ? new Date(job.postedAt).toLocaleDateString() : "Not posted"}</TableCell>
+                    <TableCell>
+                      {job.postedAt
+                        ? new Date(job.postedAt).toLocaleDateString()
+                        : "Not posted"}
+                    </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -229,16 +274,26 @@ export default function JobsPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => copyJobLink(job.slug)}>
+                          <DropdownMenuItem
+                            onClick={() => copyJobLink(job.slug)}
+                          >
                             <Copy className="mr-2 h-4 w-4" />
                             Copy Link
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => router.push(`/admin/jobs/${job.id}/edit`)}>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              router.push(`/admin/jobs/${job.id}/edit`)
+                            }
+                          >
                             <Edit className="mr-2 h-4 w-4" />
                             Edit
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleStatusToggle(job.id, job.status)}>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleStatusToggle(job.id, job.status)
+                            }
+                          >
                             {job.status === "published" ? (
                               <>
                                 <EyeOff className="mr-2 h-4 w-4" />
@@ -252,7 +307,10 @@ export default function JobsPage() {
                             )}
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => handleDelete(job.id)} className="text-destructive">
+                          <DropdownMenuItem
+                            onClick={() => handleDelete(job.id)}
+                            className="text-destructive"
+                          >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Delete
                           </DropdownMenuItem>
@@ -273,5 +331,5 @@ export default function JobsPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

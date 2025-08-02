@@ -7,23 +7,21 @@ export interface Company {
 }
 
 
-
-
 export interface Job {
     id: number;
+    experience: string
     title: string;
     applyUrl: string;
     company: {
       name: string;
     };
-    location: string;
-    type: string;
+    locationsAvailable: string[];
+    jobType: string;
     salary: string;
     posted: string;
     description: string;
     slug: string;
     requirements: string[];
-    benefits: string[];
   }
 
 

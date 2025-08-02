@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,13 +13,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Briefcase, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -97,30 +89,40 @@ export default function SignUpPage() {
       alert(err.message);
     }
 
-    // alert("Account created successfully! Redirecting to jobs page...");
-    // router.push("/jobs");
-
     setIsLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-4 relative bg-background overflow-hidden">
+      {/* Animated blue-red glassy background */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 z-0"
+      >
+        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-blue-500/30 via-blue-400/20 to-red-400/20 blur-3xl opacity-80 animate-signup-bg" />
+        <div className="absolute top-1/2 right-0 w-[400px] h-[400px] rounded-full bg-gradient-to-tr from-red-500/20 via-blue-400/10 to-blue-500/20 blur-2xl opacity-70 animate-signup-bg-rev" />
+        <div className="absolute bottom-0 left-1/2 w-[500px] h-[500px] rounded-full bg-gradient-to-br from-blue-400/20 via-red-400/20 to-blue-500/10 blur-3xl opacity-60 animate-signup-bg" />
+      </div>
+      <div className="w-full max-w-md relative z-10">
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center space-x-2 mb-6">
             <Briefcase className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold">JobBoard</span>
+            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-red-500 to-blue-400 bg-clip-text text-transparent animate-gradient-move">
+              JobBoard
+            </span>
           </Link>
-          <h1 className="text-2xl font-bold">Create your account</h1>
+          <h1 className="text-2xl font-bold text-blue-900 dark:text-blue-100">Create your account</h1>
           <p className="text-muted-foreground">
             Join thousands of job seekers today
           </p>
         </div>
 
-        <Card>
+        <Card className="rounded-2xl shadow-xl border-0 bg-white/80 dark:bg-blue-950/80 backdrop-blur-md animate-fade-in-up">
           <CardHeader>
-            <CardTitle>Sign Up</CardTitle>
+            <CardTitle className="bg-gradient-to-r from-blue-600 via-red-500 to-blue-400 bg-clip-text text-transparent animate-gradient-move">
+              Sign Up
+            </CardTitle>
             <CardDescription>
               Fill in your information to create your account
             </CardDescription>
@@ -138,6 +140,7 @@ export default function SignUpPage() {
                       handleInputChange("firstName", e.target.value)
                     }
                     required
+                    className="focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-700 transition"
                   />
                 </div>
                 <div className="space-y-2">
@@ -150,6 +153,7 @@ export default function SignUpPage() {
                       handleInputChange("lastName", e.target.value)
                     }
                     required
+                    className="focus:ring-2 focus:ring-red-400 dark:focus:ring-red-700 transition"
                   />
                 </div>
               </div>
@@ -163,33 +167,9 @@ export default function SignUpPage() {
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   required
+                  className="focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-700 transition"
                 />
               </div>
-
-              {/* <div className="space-y-2">
-                <Label htmlFor="jobTitle">Current Job Title</Label>
-                <Input
-                  id="jobTitle"
-                  placeholder="e.g. Software Engineer"
-                  value={formData.jobTitle}
-                  onChange={(e) => handleInputChange("jobTitle", e.target.value)}
-                />
-              </div> */}
-
-              {/* <div className="space-y-2">
-                <Label htmlFor="experience">Experience Level</Label>
-                <Select value={formData.experience} onValueChange={(value) => handleInputChange("experience", value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your experience level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="entry">Entry Level (0-2 years)</SelectItem>
-                    <SelectItem value="mid">Mid Level (3-5 years)</SelectItem>
-                    <SelectItem value="senior">Senior Level (6-10 years)</SelectItem>
-                    <SelectItem value="lead">Lead/Principal (10+ years)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div> */}
 
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
@@ -203,6 +183,7 @@ export default function SignUpPage() {
                       handleInputChange("password", e.target.value)
                     }
                     required
+                    className="focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-700 transition"
                   />
                   <Button
                     type="button"
@@ -232,6 +213,7 @@ export default function SignUpPage() {
                       handleInputChange("confirmPassword", e.target.value)
                     }
                     required
+                    className="focus:ring-2 focus:ring-red-400 dark:focus:ring-red-700 transition"
                   />
                   <Button
                     type="button"
@@ -269,7 +251,11 @@ export default function SignUpPage() {
                 </Label>
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full bg-gradient-to-r from-blue-500 via-red-400 to-blue-600 text-white font-bold shadow-lg hover:from-blue-600 hover:to-red-500 transition-all duration-300 border-2 border-transparent hover:border-blue-400 animate-signup-btn"
+                disabled={isLoading}
+              >
                 {isLoading ? "Creating account..." : "Create Account"}
               </Button>
             </form>
@@ -294,6 +280,50 @@ export default function SignUpPage() {
           </Link>
         </div>
       </div>
+      <style jsx>{`
+        .animate-gradient-move {
+          background-size: 200% 200%;
+          animation: gradient-move 6s ease-in-out infinite alternate;
+        }
+        @keyframes gradient-move {
+          0% { background-position: 0% 50%; }
+          100% { background-position: 100% 50%; }
+        }
+        .animate-signup-bg {
+          animation: signup-bg-move 12s ease-in-out infinite alternate;
+        }
+        .animate-signup-bg-rev {
+          animation: signup-bg-move-rev 14s ease-in-out infinite alternate;
+        }
+        @keyframes signup-bg-move {
+          0%,100% { transform: translateY(0) scale(1);}
+          50% { transform: translateY(20px) scale(1.08);}
+        }
+        @keyframes signup-bg-move-rev {
+          0%,100% { transform: translateY(0) scale(1);}
+          50% { transform: translateY(-20px) scale(1.05);}
+        }
+        @keyframes fade-in-up {
+          0% {
+            opacity: 0;
+            transform: translateY(40px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-in-up {
+          animation: fade-in-up 1s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .animate-signup-btn {
+          animation: signup-btn-glow 2.5s cubic-bezier(0.4,0,0.6,1) infinite alternate;
+        }
+        @keyframes signup-btn-glow {
+          0% { box-shadow: 0 4px 24px 0 rgba(59,130,246,0.16), 0 1.5px 6px 0 rgba(239,68,68,0.10);}
+          100% { box-shadow: 0 8px 32px 0 rgba(239,68,68,0.18), 0 2px 8px 0 rgba(59,130,246,0.12);}
+        }
+      `}</style>
     </div>
   );
 }

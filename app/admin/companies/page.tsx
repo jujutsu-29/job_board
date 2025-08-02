@@ -12,12 +12,17 @@ export default function AdminCompaniesPage() {
   useEffect(() => {
     fetch("/api/admin/company") 
       .then((r) => r.json())
-      .then(setCompanies)
+      .then((data) => setCompanies(data))
   }, [])
 
+  if (!companies) {
+    return <div>Loading...</div>;
+  }
+
+  
   const filtered = companies.filter((c) =>
     `${c.name} ${c.industry}`.toLowerCase().includes(search.toLowerCase())
-  )
+  );
 
   return (
     <>
