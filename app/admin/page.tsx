@@ -10,7 +10,7 @@ interface DashboardStats {
   totalJobs: number
   publishedJobs: number
   draftJobs: number
-  totalApplications: number
+  postArchived: number
 }
 
 export default function AdminDashboard() {
@@ -20,17 +20,17 @@ export default function AdminDashboard() {
     totalJobs: 0,
     publishedJobs: 0,
     draftJobs: 0,
-    totalApplications: 0,
+    postArchived: 0,
   })
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (status === "loading") return
 
-    // if (!session || session.user?.role !== "admin") {
-    //   router.push("/login")
-    //   return
-    // }
+    if (!session || session.user?.role !== "admin") {
+      router.push("/login")
+      return
+    }
 
     fetchStats()
   }, [session, status, router])
@@ -64,7 +64,7 @@ export default function AdminDashboard() {
         <p className="text-muted-foreground">Welcome back, {session?.user?.name}</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Jobs</CardTitle>
@@ -98,7 +98,7 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card>
+        {/* <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Applications</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -107,11 +107,11 @@ export default function AdminDashboard() {
             <div className="text-2xl font-bold">{stats.totalApplications}</div>
             <p className="text-xs text-muted-foreground">Total applications</p>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+      <div className="grid gap-4 md:grid-cols-1">
+        {/* <Card>
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
             <CardDescription>Latest job postings and updates</CardDescription>
@@ -122,26 +122,26 @@ export default function AdminDashboard() {
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <div className="flex-1">
                   <p className="text-sm font-medium">New job posted</p>
-                  <p className="text-xs text-muted-foreground">Senior Frontend Developer - 2 hours ago</p>
+                  <p className="text-xs text-muted-foreground">{stats.newJobPosted}</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-4">
+              {/* <div className="flex items-center space-x-4">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                 <div className="flex-1">
                   <p className="text-sm font-medium">Job updated</p>
-                  <p className="text-xs text-muted-foreground">Product Manager - 4 hours ago</p>
+                  <p className="text-xs text-muted-foreground">{stats.}</p>
                 </div>
-              </div>
-              <div className="flex items-center space-x-4">
+              </div> */}
+              {/* <div className="flex items-center space-x-4">
                 <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                 <div className="flex-1">
                   <p className="text-sm font-medium">Job archived</p>
-                  <p className="text-xs text-muted-foreground">UX Designer - 1 day ago</p>
+                  <p className="text-xs text-muted-foreground">{stats.postArchived}</p>
                 </div>
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
         <Card>
           <CardHeader>
@@ -149,7 +149,7 @@ export default function AdminDashboard() {
             <CardDescription>Common administrative tasks</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
+            <div className="space-y-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
               <button
                 onClick={() => router.push("/admin/jobs/new")}
                 className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors"
@@ -163,6 +163,20 @@ export default function AdminDashboard() {
               >
                 <div className="font-medium">Manage Jobs</div>
                 <div className="text-sm text-muted-foreground">View and edit existing jobs</div>
+              </button>
+              <button
+                onClick={() => router.push("/admin/companies/new")}
+                className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors"
+              >
+                <div className="font-medium">Create New Company</div>
+                <div className="text-sm text-muted-foreground">Post a new company</div>
+              </button>
+              <button
+                onClick={() => router.push("/admin/companies")}
+                className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors"
+              >
+                <div className="font-medium">Manage Companies</div>
+                <div className="text-sm text-muted-foreground">View and edit existing companies</div>
               </button>
             </div>
           </CardContent>

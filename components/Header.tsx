@@ -37,6 +37,16 @@ const Header = () => {
               Jobs
             </Link>
             <Link
+              href="/companies"
+              className={`transition-colors ${
+                pathname === "/companies"
+                  ? "text-foreground font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Company
+            </Link>
+            <Link
               href="/about"
               className={`transition-colors ${
                 pathname === "/about"

@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Search, MoreHorizontal, Edit, Trash2, Copy, Eye, EyeOff } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 
+
 interface Job {
   id: string
   title: string

@@ -27,26 +27,26 @@ import { toast } from "@/hooks/use-toast";
 import axios from "axios";
 
 interface JobFormData {
-  title: string;
-  companyName: string;
-  description: string;
-  applyUrl: string;
-  status: "draft" | "published" | "archived" | "closed";
-  isFeatured: boolean;
-  source: string;
-  postedAt: string;
-  expiresAt: string;
-  createdById: string;
-  jobType: string;
-  salary: string;
-  experience: string;
-  requirements: string;
-  basicQualifications: string;
-  keyResponsibilities: string;
-  technicalSkills: string;
-  locationsAvailable: string;
-  tags: string;
-}
+    title: string;
+    companyName: string;
+    description: string;
+    applyUrl: string;
+    status: "draft" | "published" | "archived" | "closed";
+    isFeatured: boolean;
+    source: string;
+    postedAt: string;
+    expiresAt: string;
+    createdById: string;
+    jobType: string;
+    salary: string;
+    experience: string;
+    requirements: string;
+    basicQualifications: string;
+    keyResponsibilities: string;
+    technicalSkills: string;
+    locationsAvailable: string;
+    tags: string;
+  }
 
 export default function NewJobPage() {
   const router = useRouter();

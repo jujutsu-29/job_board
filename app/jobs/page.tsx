@@ -43,24 +43,9 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import Header from "@/components/Header";
 import { useRouter } from "next/navigation";
+import { Job } from "@/types/types";
 
 export default function JobsPage() {
-  interface Job {
-    id: number;
-    title: string;
-    applyUrl: string;
-    company: {
-      name: string;
-    };
-    location: string;
-    type: string;
-    salary: string;
-    posted: string;
-    description: string;
-    slug: string;
-    requirements: string[];
-    benefits: string[];
-  }
   const [jobs, setJobs] = useState<Job[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [locationFilter, setLocationFilter] = useState("all");
@@ -77,7 +62,7 @@ export default function JobsPage() {
 
   const fetchJobs = async () => {
     try {
-      const response = await fetch("/api/admin/jobs");
+      const response = await fetch("/api/jobs");
       if (!response.ok) {
         throw new Error("Failed to fetch jobs");
       }
@@ -194,23 +179,18 @@ export default function JobsPage() {
                   </p>
 
                   <div className="flex justify-between items-center pt-4">
-                    {/* <Link
-                      href={`/jobs/${job.slug}-${job.id}`}
-                      className="text-primary hover:underline"
-                    >
-                      View Details
-                    </Link> */}
-
-                    <a
-                      href={`/jobs/${job.slug}-${job.id}`}
+                    <Link
+                      href={`/jobs/${job.slug}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`px-4 py-2 underline md:underline-offset-4 rounded ${
-                        theme === "light" ? "text-black" : "text-white"
-                      }`}
+                      className={`
+        px-4 py-2 underline rounded
+        ${theme === "light" ? "text-black" : "text-white"}
+        hover:text-primary
+      `}
                     >
                       View Details
-                    </a>
+                    </Link>
 
                     <Button onClick={() => handleApply(job.id)}>
                       Apply Now

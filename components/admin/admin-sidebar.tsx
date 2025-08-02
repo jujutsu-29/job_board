@@ -10,7 +10,7 @@ import { LayoutDashboard, Briefcase, Users, Settings, ChevronLeft, ChevronRight 
 const navigation = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "Jobs", href: "/admin/jobs", icon: Briefcase },
-  { name: "Company", href: "/admin/companies", icon: Users },
+  { name: "Companies", href: "/admin/companies", icon: Users },
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ]
 
