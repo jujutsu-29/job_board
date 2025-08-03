@@ -76,7 +76,7 @@ export default function LoginPage() {
           <Link href="/" className="inline-flex items-center space-x-2 mb-6">
             <Briefcase className="h-8 w-8 text-primary" />
             <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-red-500 to-blue-400 bg-clip-text text-transparent animate-gradient-move">
-              JobBoard
+              Rolespot
             </span>
           </Link>
           <h1 className="text-2xl font-bold text-blue-900 dark:text-blue-100">Welcome back</h1>

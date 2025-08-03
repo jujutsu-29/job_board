@@ -44,7 +44,7 @@ const Testimonials = () => {
             What Our Users Say
           </h2>
           <p className="text-xl text-blue-900/80 dark:text-blue-100/80">
-            Join thousands of professionals who found their perfect job through JobBoard.
+            Join thousands of professionals who found their perfect job through Rolespot.
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
