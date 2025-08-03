@@ -38,7 +38,7 @@ export function CompanyCard({ company }: { company: Company }) {
           asChild
           className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white hover:from-blue-600 hover:to-blue-800 shadow-md transition"
         >
-          <Link href={`/companies/${company.slug}`}>
+          <Link target="_blank" href={`/companies/${company.slug}`}>
             View Company <ArrowRight className="h-4 w-4 ml-2" />
           </Link>
         </Button>

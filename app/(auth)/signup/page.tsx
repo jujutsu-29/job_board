@@ -82,9 +82,10 @@ export default function SignUpPage() {
         password: formData.password,
       });
 
-      await axios.post("/api/auth/send-otp", { email: formData.email });
+      // await axios.post("/api/auth/send-otp", { email: formData.email });
       alert("Account created successfully! Redirecting...");
-      router.push(`/verify-otp?email=${encodeURIComponent(formData.email)}`);
+      // router.push(`/verify-otp?email=${encodeURIComponent(formData.email)}`);
+      router.push("login");
     } catch (err : any) {
       alert(err.message);
     }
@@ -109,7 +110,7 @@ export default function SignUpPage() {
           <Link href="/" className="inline-flex items-center space-x-2 mb-6">
             <Briefcase className="h-8 w-8 text-primary" />
             <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-red-500 to-blue-400 bg-clip-text text-transparent animate-gradient-move">
-              JobBoard
+              Rolespot
             </span>
           </Link>
           <h1 className="text-2xl font-bold text-blue-900 dark:text-blue-100">Create your account</h1>

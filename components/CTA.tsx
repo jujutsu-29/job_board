@@ -19,7 +19,7 @@ const CTA = () => {
             Ready to Find Your Next Opportunity?
           </h2>
           <p className="text-xl text-blue-900/90 dark:text-blue-100/80 mb-8">
-            Join JobBoard today and discover thousands of job opportunities from top companies worldwide.
+            Join Rolespot today and discover thousands of job opportunities from top companies worldwide.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/signup">

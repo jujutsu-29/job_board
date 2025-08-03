@@ -31,35 +31,35 @@ export default function VerifyOTPPage() {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      const response = await axios.post("/api/auth/verify-otp", {
-        email: email,
-        otp,
-      });
+  //   try {
+  //     const response = await axios.post("/api/auth/verify-otp", {
+  //       email: email,
+  //       otp,
+  //     });
 
-      if (response.data.success) {
-        toast({
-          title: "Success",
-          description: "OTP verified successfully!",
-        });
-        router.push("/login");
-      } else {
-        const error = (await response.data.error) || new Error("Invalid OTP");
-        toast({
-          title: "Error",
-          description: error.message || "Invalid OTP",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to verify OTP",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+  //     if (response.data.success) {
+  //       toast({
+  //         title: "Success",
+  //         description: "OTP verified successfully!",
+  //       });
+  //       router.push("/login");
+  //     } else {
+  //       const error = (await response.data.error) || new Error("Invalid OTP");
+  //       toast({
+  //         title: "Error",
+  //         description: error.message || "Invalid OTP",
+  //         variant: "destructive",
+  //       });
+  //     }
+  //   } catch (error) {
+  //     toast({
+  //       title: "Error",
+  //       description: "Failed to verify OTP",
+  //       variant: "destructive",
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //   }
   };
 
   return (
@@ -76,7 +76,7 @@ export default function VerifyOTPPage() {
           <Link href="/" className="inline-flex items-center space-x-2 mb-6">
             <Briefcase className="h-8 w-8 text-primary" />
             <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-red-500 to-blue-400 bg-clip-text text-transparent animate-gradient-move">
-              JobBoard
+              Rolespot
             </span>
           </Link>
           <h1 className="text-2xl font-bold text-blue-900 dark:text-blue-100">

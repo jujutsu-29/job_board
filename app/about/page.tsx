@@ -90,7 +90,7 @@ export default function AboutPage() {
               <h1 className="text-4xl md:text-5xl font-bold mb-6">Connecting Talent with Opportunity</h1>
               <p className="text-xl text-muted-foreground mb-8">
                 We believe everyone deserves to find meaningful work that aligns with their skills, values, and
-                aspirations. That's why we built JobBoard - to make job searching simple, efficient, and successful.
+                aspirations. That's why we built Rolespot - to make job searching simple, efficient, and successful.
               </p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                 {stats.map((stat, index) => (
@@ -113,7 +113,7 @@ export default function AboutPage() {
                 <div>
                   <h3 className="text-2xl font-bold mb-4">Founded on Experience</h3>
                   <p className="text-muted-foreground mb-6">
-                    JobBoard was born from the frustration of navigating outdated job search platforms. Our founders,
+                    Rolespot was born from the frustration of navigating outdated job search platforms. Our founders,
                     having experienced the challenges of both job seeking and hiring, set out to create a better
                     solution.
                   </p>
@@ -131,7 +131,7 @@ export default function AboutPage() {
                   <Users className="h-16 w-16 text-primary mx-auto mb-4" />
                   <h4 className="text-xl font-semibold mb-2">50,000+ Success Stories</h4>
                   <p className="text-muted-foreground">
-                    Every month, thousands of professionals find their next opportunity through JobBoard
+                    Every month, thousands of professionals find their next opportunity through Rolespot
                   </p>
                 </div>
               </div>
@@ -202,7 +202,7 @@ export default function AboutPage() {
             <div className="max-w-2xl mx-auto">
               <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Start Your Journey?</h2>
               <p className="text-xl text-muted-foreground mb-8">
-                Join thousands of professionals who have found their dream jobs through JobBoard.
+                Join thousands of professionals who have found their dream jobs through Rolespot.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/signup">
@@ -228,7 +228,7 @@ export default function AboutPage() {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <Briefcase className="h-6 w-6 text-primary" />
-                <span className="text-lg font-bold">JobBoard</span>
+                <span className="text-lg font-bold">Rolespot</span>
               </div>
               <p className="text-muted-foreground">
                 Connecting talented professionals with amazing opportunities worldwide.
@@ -296,7 +296,7 @@ export default function AboutPage() {
             </div>
           </div>
           <div className="border-t mt-8 pt-8 text-center text-muted-foreground">
-            <p>&copy; 2024 JobBoard. All rights reserved.</p>
+            <p>&copy; 2025 Rolespot. All rights reserved.</p>
           </div>
         </div>
       </footer>

@@ -9,7 +9,7 @@ const Footer = () => {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <Briefcase className="h-6 w-6 text-primary" />
-                <span className="text-lg font-bold">JobBoard</span>
+                <span className="text-lg font-bold">Rolespot</span>
               </div>
               <p className="text-muted-foreground">
                 Connecting talented professionals with amazing opportunities worldwide.
@@ -77,7 +77,7 @@ const Footer = () => {
             </div>
           </div>
           <div className="border-t mt-8 pt-8 text-center text-muted-foreground">
-            <p>&copy; 2024 JobBoard. All rights reserved.</p>
+            <p>&copy; 2025 Rolespot. All rights reserved.</p>
           </div>
         </div>
       </footer>

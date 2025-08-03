@@ -25,7 +25,7 @@ export default function Header() {
         <div className="flex items-center space-x-2">
           <Briefcase className="h-8 w-8 text-primary" />
           <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-red-500 to-blue-400 bg-clip-text text-transparent animate-gradient-move">
-            JobBoard
+            Rolespot
           </h1>
         </div>
 
