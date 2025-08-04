@@ -79,7 +79,7 @@ export default function CompanyProfilePage() {
       </div>
     );
   }
-  console.log("Company data:", company);
+  // console.log("Company data:", company);
 
   if (!company) {
     return (
@@ -151,7 +151,7 @@ export default function CompanyProfilePage() {
                       className="shadow-md hover:shadow-lg transition-shadow"
                     >
                       <Link
-                        href={company.website}
+                        href={company?.website}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center"

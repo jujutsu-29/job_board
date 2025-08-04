@@ -49,14 +49,14 @@ export function CompaniesHeader({
             <p className="text-lg text-muted-foreground">{description}</p>
           </div>
 
-          {showNewButton && newButtonHref && (
+          {/* {showNewButton && newButtonHref && (
             <Button asChild className="self-start">
               <Link href={newButtonHref} className="flex items-center space-x-2">
                 <Briefcase className="h-5 w-5" />
                 <span>Post a New Company</span>
               </Link>
             </Button>
-          )}
+          )} */}
         </div>
 
         <div className="relative max-w-md mb-6">

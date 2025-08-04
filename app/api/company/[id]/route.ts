@@ -24,6 +24,7 @@ export async function GET(
         },
       },
     });
+    // console.log("Fetched company:", company);
 
     return NextResponse.json({ company }, { status: 200 });
   } catch (error) {

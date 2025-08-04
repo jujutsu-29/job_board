@@ -72,6 +72,9 @@ export async function POST(request: NextRequest) {
           name: companyName,
           slug: slugify(companyName, { lower: true, strict: true }),
           description: "",
+          logo: "",
+          website: "",
+          companyType: "",
         },
       }));
 
