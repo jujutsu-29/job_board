@@ -57,7 +57,11 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       where: { slug: slug },
       include: {
         company: {
-          select: { name: true },
+          select: { name: true,
+            logo: true,
+            description: true,
+            companyType: true
+          },
         },
       },
     });

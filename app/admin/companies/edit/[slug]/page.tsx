@@ -1,8 +1,8 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { use, useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,6 +34,10 @@ interface JobFormData {
 }
 
 export default function NewJobPage() {
+  const params = useParams();
+  const slug = params?.slug as string | undefined;
+
+  //   console.log("slug coming is this ", slug);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<JobFormData>({
@@ -51,12 +55,48 @@ export default function NewJobPage() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleBackClick = () => {
+    console.log("Back button clicked");
+    router.push("/admin/companies");
+  };
+
+  function fetchingExistingData() {
+    // if (!slug) return;
+
+    axios
+      .get(`/api/admin/company/${slug}`)
+      .then((response) => {
+        const company = response.data.company;
+        setFormData({
+          name: company.name || "",
+          website: company.website || "",
+          description: company.description || "",
+          companyType: company.companyType || "",
+          tags: (company.tags || []).join("\n"),
+        });
+        // });
+      })
+      .catch((error) => {
+        console.error("Error fetching existing data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch existing company data",
+          variant: "destructive",
+        });
+      });
+  }
+  useEffect(() => {
+    if (slug) {
+      fetchingExistingData();
+    }
+  }, [slug]);
+  //   const existingData = await axios.get(`/api/admin/company/${slug}`);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+    // console.log("Form data being submitted:", formData);
     try {
-      const response = await axios.post("/api/admin/company", {
+      const response = await axios.put(`/api/admin/company/${slug}`, {
         ...formData,
         // Convert comma-separated strings to arrays for array fields
         tags: formData.tags
@@ -92,12 +132,12 @@ export default function NewJobPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
-        <Button variant="ghost" size="icon" onClick={() => router.back()}>
+        <Button variant="ghost" size="icon" onClick={handleBackClick}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">Create New Company</h1>
-          <p className="text-muted-foreground">Add a new company data</p>
+          <h1 className="text-3xl font-bold">Edit Company</h1>
+          <p className="text-muted-foreground">Update the company data</p>
         </div>
       </div>
 
@@ -105,7 +145,7 @@ export default function NewJobPage() {
         <CardHeader>
           <CardTitle>Company Details</CardTitle>
           <CardDescription>
-            Fill in the information for the new company data
+            Fill in the information for the company data
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -115,7 +155,7 @@ export default function NewJobPage() {
                 <Label htmlFor="title">Company name*</Label>
                 <Input
                   id="name"
-                  value={formData.name}
+                  value={formData?.name}
                   onChange={(e) => handleInputChange("name", e.target.value)}
                   placeholder="e.g. Amazon, Google"
                   required
@@ -126,10 +166,8 @@ export default function NewJobPage() {
                 <Input
                   id="website"
                   type="url"
-                  value={formData.website}
-                  onChange={(e) =>
-                    handleInputChange("website", e.target.value)
-                  }
+                  value={formData?.website}
+                  onChange={(e) => handleInputChange("website", e.target.value)}
                   placeholder="https://amazon.com/"
                   required
                 />
@@ -197,7 +235,7 @@ export default function NewJobPage() {
                 Cancel
               </Button>
               <Button type="submit" disabled={loading}>
-                {loading ? "Creating..." : "Create Entry"}
+                {loading ? "Editing..." : "Edit Entry"}
               </Button>
             </div>
           </form>

@@ -165,11 +165,11 @@ export default function AdminDashboard() {
                 <div className="text-sm text-muted-foreground">View and edit existing jobs</div>
               </button>
               <button
-                onClick={() => router.push("/admin/companies/new")}
+                onClick={() => router.push("/admin/companies")}
                 className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors"
               >
-                <div className="font-medium">Create New Company</div>
-                <div className="text-sm text-muted-foreground">Post a new company</div>
+                <div className="font-medium">Edit Company</div>
+                <div className="text-sm text-muted-foreground">Edit current company</div>
               </button>
               <button
                 onClick={() => router.push("/admin/companies")}

@@ -106,6 +106,8 @@ interface Job {
   company: {
     name: string;
     logo?: string;
+    description?: string;
+    companyType?: string;
   };
   type: string;
   location: string;
@@ -137,7 +139,7 @@ export default function JobPostPage() {
     setJobData(data.job);
   }
 
-  console.log("Job data", jobData);
+  // console.log("Job data", jobData);
   useEffect(() => {
     fetchingJob();
     const handleScroll = () => {
@@ -258,7 +260,9 @@ export default function JobPostPage() {
                       className="px-3 py-1 text-sm flex items-center bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
                     >
                       <MapPin className="h-4 w-4 mr-1" />
-                      {jobData.location}
+                      {jobData.locationsAvailable.length > 0
+                        ? jobData.locationsAvailable.join(", ")
+                        : "No locations available"}
                     </Badge>
                     <Badge
                       variant="secondary"
@@ -529,42 +533,44 @@ export default function JobPostPage() {
         </div>
       </div>
 
-      <CollapsibleSection
-        title="About the Company"
-        icon={<Building className="h-5 w-5 text-orange-600" />}
-      >
-        <div className="space-y-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
-              <Building className="h-6 w-6 text-orange-600" />
+      <section className="py-8 px-2 md:py-12 md:px-4">
+        <CollapsibleSection
+          title="About the Company"
+          icon={<Building className="h-5 w-5 text-orange-600" />}
+        >
+          <div className="space-y-4">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
+                <Building className="h-6 w-6 text-orange-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">
+                  {jobData.company.name}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {jobData.company.companyType}
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-lg font-semibold text-foreground">
-                {jobData.company.name}
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Technology Company
-              </p>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+              {jobData.company.description ||
+                "No description available for this company."}
+            </p>
+            <div className="pt-2">
+              <Button variant="outline" asChild className="bg-transparent">
+                <Link
+                  href={`/companies/${jobData.company.name
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")}`}
+                >
+                  View Company Profile
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Link>
+              </Button>
             </div>
           </div>
-          <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-            {jobData.companyDescription}
-          </p>
-          <div className="pt-2">
-            <Button variant="outline" asChild className="bg-transparent">
-              <Link
-                href={`/companies/${jobData.company.name
-                  .toLowerCase()
-                  .replace(/\s+/g, "-")}`}
-              >
-                View Company Profile
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </CollapsibleSection>
-
+        </CollapsibleSection>
+      </section>
       {/* Sticky Apply Button for Mobile */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-neutral-900 border-t shadow-lg z-50 p-4">
         <Button

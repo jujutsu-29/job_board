@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Providers } from "./providers"
 import Script from "next/script"
 import { GA_MEASUREMENT_ID } from "@/lib/gtag" // Make sure this path is correct
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -46,7 +47,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Providers>{children}</Providers>
+          <Providers>
+            <Toaster/> {children}</Providers>
         </ThemeProvider>
       </body>
     </html>

@@ -79,7 +79,7 @@ export default function CompanyProfilePage() {
       </div>
     );
   }
-  console.log("Company data:", company);
+  // console.log("Company data:", company);
 
   if (!company) {
     return (

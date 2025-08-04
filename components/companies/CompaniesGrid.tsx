@@ -1,8 +1,18 @@
 import { Company } from "@/types/types";
 import { CompanyCard } from "./CompanyCard";
 import { Building2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export function CompaniesGrid({ companies }: { companies: Company[] }) {
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const pathname = usePathname();
+  useEffect(() => {
+    if (pathname.includes("admin")) {
+      setIsAdmin(true);
+    }
+  }, [pathname]);
   if (companies.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16">
@@ -20,7 +30,9 @@ export function CompaniesGrid({ companies }: { companies: Company[] }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
       {companies.map((c) => (
-        <CompanyCard key={c.id} company={c} />
+        <div key={c.id}>
+          <CompanyCard company={c} isAdmin={isAdmin} />
+        </div>
       ))}
     </div>
   );
