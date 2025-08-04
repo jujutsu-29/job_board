@@ -151,7 +151,7 @@ export default function CompanyProfilePage() {
                       className="shadow-md hover:shadow-lg transition-shadow"
                     >
                       <Link
-                        href={company.website}
+                        href={company?.website}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center"
