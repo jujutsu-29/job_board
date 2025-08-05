@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Briefcase, Moon, Sun, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
+import Image from "next/image";
 
 const navLinks = [
   { href: "/jobs", label: "Jobs" },
@@ -23,7 +24,15 @@ export default function Header() {
       <div className="container mx-auto flex items-center justify-between px-4 py-4">
         {/* Logo */}
         <div className="flex items-center space-x-2">
-          <Briefcase className="h-8 w-8 text-primary" />
+          {/* <Briefcase className="h-8 w-8 text-primary" />
+           */}
+          <Image
+            src="/rolespot_noBG.png"
+            alt="Rolespot Logo"
+            width={32}
+            height={32}
+            className="h-8 w-8 text-primary"
+          />
           <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-red-500 to-blue-400 bg-clip-text text-transparent animate-gradient-move">
             Rolespot
           </h1>

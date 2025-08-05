@@ -17,6 +17,7 @@ import Link from "next/link";
 import { toast } from "@/hooks/use-toast";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 export default function VerifyOTPPage() {
   const [otp, setOtp] = useState("");
@@ -74,7 +75,13 @@ export default function VerifyOTPPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center space-x-2 mb-6">
-            <Briefcase className="h-8 w-8 text-primary" />
+            <Image
+                        src="/rolespot_noBG.png"
+                        alt="Rolespot Logo"
+                        width={32}
+                        height={32}
+                        className="h-8 w-8 text-primary"
+                      />
             <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-red-500 to-blue-400 bg-clip-text text-transparent animate-gradient-move">
               Rolespot
             </span>

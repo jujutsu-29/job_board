@@ -1,13 +1,30 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Briefcase, Users, Target, Heart, Award, Zap, Globe, Moon, Sun } from "lucide-react"
-import Link from "next/link"
-import { useTheme } from "next-themes"
-import Header from "@/components/Header"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Briefcase,
+  Users,
+  Target,
+  Heart,
+  Award,
+  Zap,
+  Globe,
+  Moon,
+  Sun,
+} from "lucide-react";
+import Link from "next/link";
+import { useTheme } from "next-themes";
+import Header from "@/components/Header";
+import Image from "next/image";
 
 const teamMembers = [
   {
@@ -34,68 +51,77 @@ const teamMembers = [
     bio: "Marketing strategist focused on connecting talent with opportunities.",
     image: "/placeholder.svg?height=200&width=200",
   },
-]
+];
 
 const values = [
   {
     icon: Target,
     title: "Mission-Driven",
-    description: "We're committed to connecting talented individuals with their dream careers.",
+    description:
+      "We're committed to connecting talented individuals with their dream careers.",
   },
   {
     icon: Heart,
     title: "People-First",
-    description: "Every decision we make prioritizes the success and well-being of our users.",
+    description:
+      "Every decision we make prioritizes the success and well-being of our users.",
   },
   {
     icon: Zap,
     title: "Innovation",
-    description: "We continuously evolve our platform with cutting-edge technology.",
+    description:
+      "We continuously evolve our platform with cutting-edge technology.",
   },
   {
     icon: Globe,
     title: "Global Impact",
     description: "Building bridges between talent and opportunities worldwide.",
   },
-]
+];
 
 const stats = [
   { number: "2019", label: "Founded" },
   { number: "50,000+", label: "Job Seekers" },
   { number: "5,000+", label: "Companies" },
   { number: "95%", label: "Success Rate" },
-]
+];
 
 export default function AboutPage() {
-  const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   if (!mounted) {
-    return null
+    return null;
   }
 
   return (
     <div className="min-h-screen bg-background">
-      <Header/>
+      <Header />
 
       <main>
         {/* Hero Section */}
         <section className="py-20 px-4">
           <div className="container mx-auto text-center">
             <div className="max-w-3xl mx-auto">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">Connecting Talent with Opportunity</h1>
+              <h1 className="text-4xl md:text-5xl font-bold mb-6">
+                Connecting Talent with Opportunity
+              </h1>
               <p className="text-xl text-muted-foreground mb-8">
-                We believe everyone deserves to find meaningful work that aligns with their skills, values, and
-                aspirations. That's why we built Rolespot - to make job searching simple, efficient, and successful.
+                We believe everyone deserves to find meaningful work that aligns
+                with their skills, values, and aspirations. That's why we built
+                Rolespot - to make job searching simple, efficient, and
+                successful.
               </p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                 {stats.map((stat, index) => (
                   <div key={index}>
-                    <div className="text-2xl md:text-3xl font-bold text-primary mb-2">{stat.number}</div>
+                    <div className="text-2xl md:text-3xl font-bold text-primary mb-2">
+                      {stat.number}
+                    </div>
                     <div className="text-muted-foreground">{stat.label}</div>
                   </div>
                 ))}
@@ -108,19 +134,26 @@ export default function AboutPage() {
         <section className="py-20 px-4 bg-muted/50">
           <div className="container mx-auto">
             <div className="max-w-4xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Our Story</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+                Our Story
+              </h2>
               <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div>
-                  <h3 className="text-2xl font-bold mb-4">Founded on Experience</h3>
+                  <h3 className="text-2xl font-bold mb-4">
+                    Founded on Experience
+                  </h3>
                   <p className="text-muted-foreground mb-6">
-                    Rolespot was born from the frustration of navigating outdated job search platforms. Our founders,
-                    having experienced the challenges of both job seeking and hiring, set out to create a better
-                    solution.
+                    Rolespot was born from the frustration of navigating
+                    outdated job search platforms. Our founders, having
+                    experienced the challenges of both job seeking and hiring,
+                    set out to create a better solution.
                   </p>
                   <p className="text-muted-foreground mb-6">
-                    We launched in 2019 with a simple mission: make job searching as efficient and effective as
-                    possible. Today, we're proud to have helped thousands of professionals find their dream jobs while
-                    helping companies discover amazing talent.
+                    We launched in 2019 with a simple mission: make job
+                    searching as efficient and effective as possible. Today,
+                    we're proud to have helped thousands of professionals find
+                    their dream jobs while helping companies discover amazing
+                    talent.
                   </p>
                   <Badge variant="secondary" className="text-sm">
                     <Award className="h-4 w-4 mr-1" />
@@ -129,9 +162,12 @@ export default function AboutPage() {
                 </div>
                 <div className="bg-gradient-to-br from-primary/10 to-blue-500/10 rounded-lg p-8 text-center">
                   <Users className="h-16 w-16 text-primary mx-auto mb-4" />
-                  <h4 className="text-xl font-semibold mb-2">50,000+ Success Stories</h4>
+                  <h4 className="text-xl font-semibold mb-2">
+                    50,000+ Success Stories
+                  </h4>
                   <p className="text-muted-foreground">
-                    Every month, thousands of professionals find their next opportunity through Rolespot
+                    Every month, thousands of professionals find their next
+                    opportunity through Rolespot
                   </p>
                 </div>
               </div>
@@ -143,14 +179,20 @@ export default function AboutPage() {
         <section className="py-20 px-4">
           <div className="container mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Our Values</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Our Values
+              </h2>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                These core principles guide everything we do and shape the experience we create for our users.
+                These core principles guide everything we do and shape the
+                experience we create for our users.
               </p>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               {values.map((value, index) => (
-                <Card key={index} className="text-center hover:shadow-lg transition-shadow">
+                <Card
+                  key={index}
+                  className="text-center hover:shadow-lg transition-shadow"
+                >
                   <CardHeader>
                     <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-fit">
                       <value.icon className="h-8 w-8 text-primary" />
@@ -158,7 +200,9 @@ export default function AboutPage() {
                     <CardTitle className="text-xl">{value.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription className="text-base">{value.description}</CardDescription>
+                    <CardDescription className="text-base">
+                      {value.description}
+                    </CardDescription>
                   </CardContent>
                 </Card>
               ))}
@@ -170,14 +214,20 @@ export default function AboutPage() {
         <section className="py-20 px-4 bg-muted/50">
           <div className="container mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Meet Our Team</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Meet Our Team
+              </h2>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                We're a diverse group of professionals passionate about transforming the job search experience.
+                We're a diverse group of professionals passionate about
+                transforming the job search experience.
               </p>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               {teamMembers.map((member, index) => (
-                <Card key={index} className="text-center hover:shadow-lg transition-shadow">
+                <Card
+                  key={index}
+                  className="text-center hover:shadow-lg transition-shadow"
+                >
                   <CardHeader>
                     <div className="mx-auto mb-4">
                       <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-blue-500/20 rounded-full flex items-center justify-center">
@@ -185,10 +235,14 @@ export default function AboutPage() {
                       </div>
                     </div>
                     <CardTitle className="text-xl">{member.name}</CardTitle>
-                    <CardDescription className="text-primary font-medium">{member.role}</CardDescription>
+                    <CardDescription className="text-primary font-medium">
+                      {member.role}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground text-sm">{member.bio}</p>
+                    <p className="text-muted-foreground text-sm">
+                      {member.bio}
+                    </p>
                   </CardContent>
                 </Card>
               ))}
@@ -200,9 +254,12 @@ export default function AboutPage() {
         <section className="py-20 px-4">
           <div className="container mx-auto text-center">
             <div className="max-w-2xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Start Your Journey?</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Ready to Start Your Journey?
+              </h2>
               <p className="text-xl text-muted-foreground mb-8">
-                Join thousands of professionals who have found their dream jobs through Rolespot.
+                Join thousands of professionals who have found their dream jobs
+                through Rolespot.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/signup">
@@ -211,7 +268,11 @@ export default function AboutPage() {
                   </Button>
                 </Link>
                 <Link href="/jobs">
-                  <Button size="lg" variant="outline" className="text-lg px-8 py-6 bg-transparent">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="text-lg px-8 py-6 bg-transparent"
+                  >
                     Browse Jobs
                   </Button>
                 </Link>
@@ -227,28 +288,44 @@ export default function AboutPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <Briefcase className="h-6 w-6 text-primary" />
+                <Image
+                  src="/rolespot_noBG.png"
+                  alt="Rolespot Logo"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 text-primary"
+                />
                 <span className="text-lg font-bold">Rolespot</span>
               </div>
               <p className="text-muted-foreground">
-                Connecting talented professionals with amazing opportunities worldwide.
+                Connecting talented professionals with amazing opportunities
+                worldwide.
               </p>
             </div>
             <div>
               <h3 className="font-semibold mb-4">For Job Seekers</h3>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
-                  <Link href="/jobs" className="hover:text-foreground transition-colors">
+                  <Link
+                    href="/jobs"
+                    className="hover:text-foreground transition-colors"
+                  >
                     Browse Jobs
                   </Link>
                 </li>
                 <li>
-                  <Link href="/signup" className="hover:text-foreground transition-colors">
+                  <Link
+                    href="/signup"
+                    className="hover:text-foreground transition-colors"
+                  >
                     Create Profile
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-foreground transition-colors">
+                  <Link
+                    href="#"
+                    className="hover:text-foreground transition-colors"
+                  >
                     Career Advice
                   </Link>
                 </li>
@@ -258,17 +335,26 @@ export default function AboutPage() {
               <h3 className="font-semibold mb-4">For Employers</h3>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
-                  <Link href="#" className="hover:text-foreground transition-colors">
+                  <Link
+                    href="#"
+                    className="hover:text-foreground transition-colors"
+                  >
                     Post Jobs
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-foreground transition-colors">
+                  <Link
+                    href="#"
+                    className="hover:text-foreground transition-colors"
+                  >
                     Find Candidates
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-foreground transition-colors">
+                  <Link
+                    href="#"
+                    className="hover:text-foreground transition-colors"
+                  >
                     Pricing
                   </Link>
                 </li>
@@ -278,17 +364,26 @@ export default function AboutPage() {
               <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
-                  <Link href="/about" className="hover:text-foreground transition-colors">
+                  <Link
+                    href="/about"
+                    className="hover:text-foreground transition-colors"
+                  >
                     About Us
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-foreground transition-colors">
+                  <Link
+                    href="#"
+                    className="hover:text-foreground transition-colors"
+                  >
                     Contact
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="hover:text-foreground transition-colors">
+                  <Link
+                    href="#"
+                    className="hover:text-foreground transition-colors"
+                  >
                     Privacy Policy
                   </Link>
                 </li>
@@ -301,5 +396,5 @@ export default function AboutPage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }

@@ -56,7 +56,7 @@ export default function NewJobPage() {
   };
 
   const handleBackClick = () => {
-    console.log("Back button clicked");
+    // console.log("Back button clicked");
     router.push("/admin/companies");
   };
 

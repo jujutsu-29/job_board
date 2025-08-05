@@ -46,6 +46,8 @@ import {
   EyeOff,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { auth } from "@/lib/auth";
+import { useSession } from "next-auth/react";
 
 interface Job {
   id: string;
@@ -61,14 +63,26 @@ interface Job {
   slug: string;
 }
 
+
 export default function JobsPage() {
+  const { data: session, status } = useSession()
   const router = useRouter();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
+  // async function fetchingAuth() {
+
+  //   const authR = await auth();
+  //   console.log("Auth response:", authR);
+
+  // }
+ 
+  // console.log("Session data:", session);
+  // console.log("Session status:", status);
   useEffect(() => {
+    // fetchingAuth();
     fetchJobs();
   }, []);
 

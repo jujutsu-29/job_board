@@ -10,11 +10,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
@@ -36,36 +31,16 @@ import {
   BookOpen,
   ArrowRight,
 } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
-import axios from "axios";
-import { useParams } from "next/navigation";
-import { formatDateTime, socials } from "@/lib/utils";
+import { formatDateTime } from "@/lib/utils";
 import Header from "@/components/Header";
 import Link from "next/link";
-import Head from "next/head";
 import { ApplyNowButton, HandleShareJobButton, HandleSocialShareButton } from "@/lib/actions/client-actions";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { prisma } from "@/lib/prisma";
+import { jobsBySlug } from "@/lib/server/jobs";
 
-// --- Metadata for SEO ---
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const job = await prisma.job.findUnique({
-    where: { slug: params.id },
-    include: { company: true },
-  });
-  if (!job) return {};
-  return {
-    title: `${job.title} | Rolespot`,
-    description: job.description,
-    openGraph: {
-      title: job.title,
-      description: job.description,
-      images: job.company.logo ? [{ url: job.company.logo }] : [],
-    },
-  };
-}
+
 
 interface Job {
   id: string;
@@ -94,25 +69,31 @@ interface Job {
   companyDescription: string;
 }
 
-// export async function generateMetadata({ params }) {
-//   const job = await fetchJob(params.slug);
-//   return {
-//     title: `${job.title} | Rolespot`,
-//     description: job.excerpt,
-//     openGraph: {
-//       title: job.title,
-//       description: job.excerpt,
-//       images: [{ url: job.company.logoUrl }],
-//     },
-//   };
-// }
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string }
+}): Promise<Metadata> {
+  const job = await jobsBySlug(params.id)
+  if (!job) return {}
+  return {
+    title: `${job.title} | Rolespot`,
+    description: job.description,
+    openGraph: {
+      title: job.title,
+      description: job.description + " " + job.company.description,
+      url: `https://rolespot.com/jobs/${job.slug}`,
+      images:  [{ url: "/rolespot_noBG.png" }],
+    },
+  }
+}
+
+
+generateMetadata as any;
 
 export default async function JobPostPage({ params }: { params: { id: string } }) {
-  const slug = params.id;
-  const job = await prisma.job.findUnique({
-    where: { slug },
-    include: { company: true },
-  });
+  const slug = (await params).id;
+  const job = await jobsBySlug(slug);
   if (!job) return notFound();
 
   // Map DB fields to expected structure
