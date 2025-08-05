@@ -1,8 +1,4 @@
-"use client";
-
 import type React from "react";
-
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,16 +26,11 @@ import {
   CheckCircle,
   MapPin,
   Briefcase,
-  Star,
   Code,
   Building,
   Calendar,
   DollarSign,
   Share2,
-  Copy,
-  ChevronDown,
-  ChevronUp,
-  ExternalLink,
   Users,
   Award,
   BookOpen,
@@ -48,56 +39,32 @@ import {
 import { toast } from "@/hooks/use-toast";
 import axios from "axios";
 import { useParams } from "next/navigation";
-import { formatDateTime } from "@/lib/utils";
+import { formatDateTime, socials } from "@/lib/utils";
 import Header from "@/components/Header";
 import Link from "next/link";
 import Head from "next/head";
+import { ApplyNowButton, HandleShareJobButton, HandleSocialShareButton } from "@/lib/actions/client-actions";
+import { CollapsibleSection } from "@/components/CollapsibleSection";
+import { notFound } from "next/navigation";
+import { Metadata } from "next";
+import { prisma } from "@/lib/prisma";
 
-interface CollapsibleSectionProps {
-  title: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-}
-
-function CollapsibleSection({
-  title,
-  icon,
-  children,
-  defaultOpen = true,
-}: CollapsibleSectionProps) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-
-  return (
-    <Card className="shadow-sm border-0 bg-white/50 dark:bg-neutral-900/60 backdrop-blur-sm">
-      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <CollapsibleTrigger asChild>
-          <CardHeader className="cursor-pointer hover:bg-muted/50 dark:hover:bg-neutral-800/60 transition-colors rounded-t-lg">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-primary/10 dark:bg-primary/20 rounded-lg">
-                  {icon}
-                </div>
-                <CardTitle className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-                  {title}
-                </CardTitle>
-              </div>
-              <div className="md:hidden">
-                {isOpen ? (
-                  <ChevronUp className="h-5 w-5" />
-                ) : (
-                  <ChevronDown className="h-5 w-5" />
-                )}
-              </div>
-            </div>
-          </CardHeader>
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <CardContent className="pt-0">{children}</CardContent>
-        </CollapsibleContent>
-      </Collapsible>
-    </Card>
-  );
+// --- Metadata for SEO ---
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const job = await prisma.job.findUnique({
+    where: { slug: params.id },
+    include: { company: true },
+  });
+  if (!job) return {};
+  return {
+    title: `${job.title} | Rolespot`,
+    description: job.description,
+    openGraph: {
+      title: job.title,
+      description: job.description,
+      images: job.company.logo ? [{ url: job.company.logo }] : [],
+    },
+  };
 }
 
 interface Job {
@@ -127,69 +94,51 @@ interface Job {
   companyDescription: string;
 }
 
-export default function JobPostPage() {
-  const [isSticky, setIsSticky] = useState(false);
-  const [jobData, setJobData] = useState<Job | null>(null);
+// export async function generateMetadata({ params }) {
+//   const job = await fetchJob(params.slug);
+//   return {
+//     title: `${job.title} | Rolespot`,
+//     description: job.excerpt,
+//     openGraph: {
+//       title: job.title,
+//       description: job.excerpt,
+//       images: [{ url: job.company.logoUrl }],
+//     },
+//   };
+// }
 
-  const params = useParams();
-  const slug = params?.id as string | undefined;
-  async function fetchingJob() {
-    if (!slug) return;
-    const { data } = await axios(`/api/jobs/${slug}`);
-    setJobData(data.job);
-  }
+export default async function JobPostPage({ params }: { params: { id: string } }) {
+  const slug = params.id;
+  const job = await prisma.job.findUnique({
+    where: { slug },
+    include: { company: true },
+  });
+  if (!job) return notFound();
 
-  // console.log("Job data", jobData);
-  useEffect(() => {
-    fetchingJob();
-    const handleScroll = () => {
-      setIsSticky(window.scrollY > 100);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  if (!jobData) {
-    return (
-      <div className="text-center py-12 text-neutral-700 dark:text-neutral-200">
-        Loading job details...
-      </div>
-    );
-  }
-  const handleApplyNow = () => {
-    window.open(jobData.applyUrl, "_blank");
-  };
-
-  const handleShareJob = () => {
-    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${slug}`;
-    navigator.clipboard.writeText(url);
-    toast({
-      title: "Link copied!",
-      description: "Job link has been copied to your clipboard",
-    });
-  };
-
-  const handleSocialShare = (platform: string) => {
-    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${slug}`;
-    const text = `Check out this job opportunity: ${jobData.title} at ${jobData.company.name}`;
-
-    const shareUrls = {
-      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-        text
-      )}&url=${encodeURIComponent(url)}`,
-      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-        url
-      )}`,
-      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-        url
-      )}`,
-    };
-
-    window.open(
-      shareUrls[platform as keyof typeof shareUrls],
-      "_blank",
-      "width=600,height=400"
-    );
+  // Map DB fields to expected structure
+  const jobData = {
+    ...job,
+    company: {
+      ...job.company,
+      name: job.company.name,
+      logo: job.company.logo,
+      description: job.company.description,
+      companyType: job.company.companyType,
+    },
+    requirements: job.requirements || [],
+    basicQualifications: job.basicQualifications || [],
+    keyResponsibilities: job.keyResponsibilities || [],
+    technicalSkills: job.technicalSkills || [],
+    locationsAvailable: job.locationsAvailable || [],
+    postedAt: job.postedAt ? job.postedAt.toISOString() : "",
+    jobType: job.jobType,
+    experience: job.experience,
+    companyDescription: job.company.description,
+    applyUrl: job.applyUrl,
+    salary: job.salary,
+    title: job.title,
+    description: job.description,
+    slug: job.slug,
   };
 
   return (
@@ -286,14 +235,9 @@ export default function JobPostPage() {
                       {formatDateTime(jobData.postedAt ?? "")}
                     </Badge>
                   </div>
-                  <Button
-                    size="lg"
-                    className="text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                    onClick={handleApplyNow}
-                  >
-                    Apply Now
-                    <ExternalLink className="ml-2 h-5 w-5" />
-                  </Button>
+                  <ApplyNowButton
+                    applyUrl={jobData.applyUrl}
+                  />
                 </div>
               </div>
             </div>
@@ -313,7 +257,7 @@ export default function JobPostPage() {
                 icon={<CheckCircle className="h-5 w-5 text-green-600" />}
               >
                 <ul className="space-y-3">
-                  {jobData.requirements.map((req, index) => (
+                  {jobData.requirements.map((req: string, index: number) => (
                     <li key={index} className="flex items-start space-x-3">
                       <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
                       <span className="text-neutral-800 dark:text-neutral-200">
@@ -331,7 +275,7 @@ export default function JobPostPage() {
                 icon={<Award className="h-5 w-5 text-blue-600" />}
               >
                 <ul className="space-y-3">
-                  {jobData.basicQualifications.map((qual, index) => (
+                  {jobData.basicQualifications.map((qual: string, index: number) => (
                     <li key={index} className="flex items-start space-x-3">
                       <Award className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
                       <span className="text-neutral-800 dark:text-neutral-200">
@@ -349,7 +293,7 @@ export default function JobPostPage() {
                 icon={<Briefcase className="h-5 w-5 text-purple-600" />}
               >
                 <ul className="space-y-3">
-                  {jobData.keyResponsibilities.map((resp, index) => (
+                  {jobData.keyResponsibilities.map((resp: string, index: number) => (
                     <li key={index} className="flex items-start space-x-3">
                       <Briefcase className="h-5 w-5 text-purple-500 mt-0.5 flex-shrink-0" />
                       <span className="text-neutral-800 dark:text-neutral-200">
@@ -367,7 +311,7 @@ export default function JobPostPage() {
                 icon={<Code className="h-5 w-5 text-indigo-600" />}
               >
                 <div className="flex flex-wrap gap-2">
-                  {jobData.technicalSkills.map((skill, index) => (
+                  {jobData.technicalSkills.map((skill: string, index: number) => (
                     <Badge
                       key={index}
                       variant="outline"
@@ -379,7 +323,6 @@ export default function JobPostPage() {
                 </div>
               </CollapsibleSection>
             )}
-
             {/* Locations Available */}
             {jobData.locationsAvailable.length > 0 && (
               <CollapsibleSection
@@ -387,7 +330,7 @@ export default function JobPostPage() {
                 icon={<MapPin className="h-5 w-5 text-red-600" />}
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {jobData.locationsAvailable.map((location, index) => (
+                  {jobData.locationsAvailable.map((location: string, index: number) => (
                     <div
                       key={index}
                       className="flex items-center space-x-3 p-3 bg-red-50 dark:bg-red-900/30 rounded-lg"
@@ -440,13 +383,9 @@ export default function JobPostPage() {
                       <span className="font-semibold">{jobData.jobType}</span>
                     </div>
                     <Separator />
-                    <Button
-                      className="w-full text-lg py-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
-                      onClick={handleApplyNow}
-                    >
-                      Apply Now
-                      <ExternalLink className="ml-2 h-5 w-5" />
-                    </Button>
+                    <ApplyNowButton
+                      applyUrl={jobData.applyUrl}
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -461,40 +400,12 @@ export default function JobPostPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start bg-transparent"
-                      onClick={handleShareJob}
-                    >
-                      <Copy className="h-4 w-4 mr-2" />
-                      Copy Link
-                    </Button>
-                    <div className="flex space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 bg-transparent"
-                        onClick={() => handleSocialShare("linkedin")}
-                      >
-                        LinkedIn
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 bg-transparent"
-                        onClick={() => handleSocialShare("twitter")}
-                      >
-                        Twitter
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 bg-transparent"
-                        onClick={() => handleSocialShare("facebook")}
-                      >
-                        Facebook
-                      </Button>
-                    </div>
+                    <HandleShareJobButton slug={jobData.slug} />
+                    <HandleSocialShareButton
+                      slug={jobData.slug}
+                      title={jobData.title}
+                      name={jobData.company.name}
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -573,13 +484,7 @@ export default function JobPostPage() {
       </section>
       {/* Sticky Apply Button for Mobile */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-neutral-900 border-t shadow-lg z-50 p-4">
-        <Button
-          className="w-full text-lg py-4 rounded-xl shadow-md"
-          onClick={handleApplyNow}
-        >
-          Apply Now
-          <ExternalLink className="ml-2 h-5 w-5" />
-        </Button>
+        <ApplyNowButton applyUrl={jobData.applyUrl} />
       </div>
       <div className="lg:hidden h-20"></div>
     </div>

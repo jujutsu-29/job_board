@@ -8,6 +8,19 @@ import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"] })
 
+
+export const metadata = {
+  title: "Rolespot – Find Your Dream Job",
+  description: "A modern job board built for job seekers and employers",
+  icons: { icon: "/favicon.ico" },
+  openGraph: {
+    title: "Rolespot – Find Your Dream Job",
+    description: "A modern job board built for job seekers and employers",
+    url: "https://jobs.rolespot.space/",
+    images: [{ url: "/og-default.png", width: 1200, height: 630 }],
+  },
+}
+
 export default function RootLayout({
   children,
 }: {
