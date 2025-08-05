@@ -18,6 +18,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SignIn from "@/components/sign-in";
 import { signIn } from "next-auth/react";
+import Image from "next/image";
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>("");
@@ -74,7 +75,14 @@ export default function LoginPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center space-x-2 mb-6">
-            <Briefcase className="h-8 w-8 text-primary" />
+            {/* <Briefcase className="h-8 w-8 text-primary" /> */}
+            <Image
+              src="/rolespot_noBG.png"
+              alt="Rolespot Logo"
+              width={32}
+              height={32}
+              className="h-8 w-8"
+            />
             <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-red-500 to-blue-400 bg-clip-text text-transparent animate-gradient-move">
               Rolespot
             </span>

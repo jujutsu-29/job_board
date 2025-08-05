@@ -56,7 +56,7 @@ export default function NewJobPage() {
   };
 
   const handleBackClick = () => {
-    console.log("Back button clicked");
+    // console.log("Back button clicked");
     router.push("/admin/companies");
   };
 
@@ -108,20 +108,20 @@ export default function NewJobPage() {
       if (response.status === 201) {
         toast({
           title: "Success",
-          description: "Job created successfully",
+          description: "Company data updated successfully",
         });
         router.push("/admin/companies");
       } else {
         toast({
           title: "Error",
-          description: "Failed to create job",
+          description: "Failed to update company data",
           variant: "destructive",
         });
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create job",
+        description: "Failed to update company data",
         variant: "destructive",
       });
     } finally {

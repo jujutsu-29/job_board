@@ -59,3 +59,11 @@ export const locationOptions = [
   "Remote", "Pune", "New Delhi", "Karnataka",
   "Bengaluru", "Noida", "Nashik", "Gurugram"
 ];
+
+export const jobTypeOptions = [
+  "Full Time", "Part Time", "Contract", "Internship", "Freelance"
+];
+
+export const socials = [
+  "facebook", "twitter", "linkedin"
+]
