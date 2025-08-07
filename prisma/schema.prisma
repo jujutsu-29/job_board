@@ -79,7 +79,7 @@ model Company {
   companyType String?
   tags        String[] @default([])
   logo        String?
-  slug        String?   @unique
+  slug        String?  @unique
   jobs        Job[]
 }
 
