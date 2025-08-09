@@ -46,8 +46,6 @@ import {
   EyeOff,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { auth } from "@/lib/auth";
-import { useSession } from "next-auth/react";
 
 interface Job {
   id: string;
@@ -65,24 +63,14 @@ interface Job {
 
 
 export default function JobsPage() {
-  const { data: session, status } = useSession()
   const router = useRouter();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  // async function fetchingAuth() {
 
-  //   const authR = await auth();
-  //   console.log("Auth response:", authR);
-
-  // }
- 
-  // console.log("Session data:", session);
-  // console.log("Session status:", status);
   useEffect(() => {
-    // fetchingAuth();
     fetchJobs();
   }, []);
 
@@ -139,10 +127,15 @@ export default function JobsPage() {
     if (!confirm("Are you sure you want to delete this job?")) return;
 
     try {
-      const response = await fetch(`/api/admin/jobs/${jobId}`, {
+      const response = await fetch(`/api/admin/jobs`, {
+        body: JSON.stringify({ id: jobId }),
+        headers: {
+          "Content-Type": "application/json",
+        },
         method: "DELETE",
       });
 
+      console.log("Delete response:", response);
       if (response.ok) {
         fetchJobs();
         toast({
@@ -297,7 +290,7 @@ export default function JobsPage() {
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             onClick={() =>
-                              router.push(`/admin/jobs/${job.id}/edit`)
+                              router.push(`/admin/jobs/${job.slug}/edit`)
                             }
                           >
                             <Edit className="mr-2 h-4 w-4" />
