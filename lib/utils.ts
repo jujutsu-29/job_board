@@ -56,12 +56,12 @@ export async function createJobWithUniqueSlug(data: Omit<Prisma.JobCreateInput, 
 }
 
 export const locationOptions = [
-  "Remote", "Pune", "New Delhi", "Karnataka",
-  "Bengaluru", "Noida", "Nashik", "Gurugram"
+  "Remote", "Pune", "Nashik", "Mumbai", 
+  "Bengaluru", "New Delhi", "Noida", "Gurugram",  "Noida", "Chennai", 
 ];
 
-export const jobTypeOptions = [
-  "Full Time", "Part Time", "Contract", "Internship", "Freelance"
+export const jobTypes = [
+  "Full Time", "Part Time", "Internship", "Freelance"
 ];
 
 export const socials = [

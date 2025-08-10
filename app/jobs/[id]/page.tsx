@@ -24,23 +24,25 @@ import {
   Code,
   Building,
   Calendar,
-  DollarSign,
   Share2,
   Users,
   Award,
   BookOpen,
   ArrowRight,
+  IndianRupee,
 } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 import Header from "@/components/Header";
 import Link from "next/link";
-import { ApplyNowButton, HandleShareJobButton, HandleSocialShareButton } from "@/lib/actions/client-actions";
+import {
+  ApplyNowButton,
+  HandleShareJobButton,
+  HandleSocialShareButton,
+} from "@/lib/actions/client-actions";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { jobsBySlug } from "@/lib/server/jobs";
-
-
 
 interface Job {
   id: string;
@@ -67,15 +69,16 @@ interface Job {
   jobType: string;
   experience: string;
   companyDescription: string;
+  batches: string;
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string }
+  params: { id: string };
 }): Promise<Metadata> {
-  const job = await jobsBySlug(params.id)
-  if (!job) return {}
+  const job = await jobsBySlug(params.id);
+  if (!job) return {};
   return {
     title: `${job.title} | Rolespot`,
     description: job.description,
@@ -83,15 +86,18 @@ export async function generateMetadata({
       title: job.title,
       description: job.description + " " + job.company.description,
       url: `https://rolespot.com/jobs/${job.slug}`,
-      images:  [{ url: "/rolespot_noBG.png" }],
+      images: [{ url: "/rolespot_noBG.png" }],
     },
-  }
+  };
 }
-
 
 generateMetadata as any;
 
-export default async function JobPostPage({ params }: { params: { id: string } }) {
+export default async function JobPostPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const slug = (await params).id;
   const job = await jobsBySlug(slug);
   if (!job) return notFound();
@@ -120,6 +126,7 @@ export default async function JobPostPage({ params }: { params: { id: string } }
     title: job.title,
     description: job.description,
     slug: job.slug,
+    batches: job.batches,
   };
 
   return (
@@ -182,7 +189,7 @@ export default async function JobPostPage({ params }: { params: { id: string } }
                       variant="secondary"
                       className="px-3 py-1 text-sm flex items-center bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
                     >
-                      <DollarSign className="h-4 w-4 mr-1" />
+                      <IndianRupee className="h-4 w-4 mr-1" />
                       {jobData.salary}
                     </Badge>
                     <Badge
@@ -216,9 +223,7 @@ export default async function JobPostPage({ params }: { params: { id: string } }
                       {formatDateTime(jobData.postedAt ?? "")}
                     </Badge>
                   </div>
-                  <ApplyNowButton
-                    applyUrl={jobData.applyUrl}
-                  />
+                  <ApplyNowButton applyUrl={jobData.applyUrl} />
                 </div>
               </div>
             </div>
@@ -256,14 +261,16 @@ export default async function JobPostPage({ params }: { params: { id: string } }
                 icon={<Award className="h-5 w-5 text-blue-600" />}
               >
                 <ul className="space-y-3">
-                  {jobData.basicQualifications.map((qual: string, index: number) => (
-                    <li key={index} className="flex items-start space-x-3">
-                      <Award className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-neutral-800 dark:text-neutral-200">
-                        {qual}
-                      </span>
-                    </li>
-                  ))}
+                  {jobData.basicQualifications.map(
+                    (qual: string, index: number) => (
+                      <li key={index} className="flex items-start space-x-3">
+                        <Award className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                        <span className="text-neutral-800 dark:text-neutral-200">
+                          {qual}
+                        </span>
+                      </li>
+                    )
+                  )}
                 </ul>
               </CollapsibleSection>
             )}
@@ -274,14 +281,16 @@ export default async function JobPostPage({ params }: { params: { id: string } }
                 icon={<Briefcase className="h-5 w-5 text-purple-600" />}
               >
                 <ul className="space-y-3">
-                  {jobData.keyResponsibilities.map((resp: string, index: number) => (
-                    <li key={index} className="flex items-start space-x-3">
-                      <Briefcase className="h-5 w-5 text-purple-500 mt-0.5 flex-shrink-0" />
-                      <span className="text-neutral-800 dark:text-neutral-200">
-                        {resp}
-                      </span>
-                    </li>
-                  ))}
+                  {jobData.keyResponsibilities.map(
+                    (resp: string, index: number) => (
+                      <li key={index} className="flex items-start space-x-3">
+                        <Briefcase className="h-5 w-5 text-purple-500 mt-0.5 flex-shrink-0" />
+                        <span className="text-neutral-800 dark:text-neutral-200">
+                          {resp}
+                        </span>
+                      </li>
+                    )
+                  )}
                 </ul>
               </CollapsibleSection>
             )}
@@ -292,15 +301,17 @@ export default async function JobPostPage({ params }: { params: { id: string } }
                 icon={<Code className="h-5 w-5 text-indigo-600" />}
               >
                 <div className="flex flex-wrap gap-2">
-                  {jobData.technicalSkills.map((skill: string, index: number) => (
-                    <Badge
-                      key={index}
-                      variant="outline"
-                      className="px-3 py-1 text-sm border-indigo-200 text-indigo-700 dark:text-indigo-200 dark:border-indigo-700"
-                    >
-                      {skill}
-                    </Badge>
-                  ))}
+                  {jobData.technicalSkills.map(
+                    (skill: string, index: number) => (
+                      <Badge
+                        key={index}
+                        variant="outline"
+                        className="px-3 py-1 text-sm border-indigo-200 text-indigo-700 dark:text-indigo-200 dark:border-indigo-700"
+                      >
+                        {skill}
+                      </Badge>
+                    )
+                  )}
                 </div>
               </CollapsibleSection>
             )}
@@ -311,17 +322,19 @@ export default async function JobPostPage({ params }: { params: { id: string } }
                 icon={<MapPin className="h-5 w-5 text-red-600" />}
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {jobData.locationsAvailable.map((location: string, index: number) => (
-                    <div
-                      key={index}
-                      className="flex items-center space-x-3 p-3 bg-red-50 dark:bg-red-900/30 rounded-lg"
-                    >
-                      <MapPin className="h-5 w-5 text-red-500" />
-                      <span className="text-neutral-800 dark:text-neutral-200 font-medium">
-                        {location}
-                      </span>
-                    </div>
-                  ))}
+                  {jobData.locationsAvailable.map(
+                    (location: string, index: number) => (
+                      <div
+                        key={index}
+                        className="flex items-center space-x-3 p-3 bg-red-50 dark:bg-red-900/30 rounded-lg"
+                      >
+                        <MapPin className="h-5 w-5 text-red-500" />
+                        <span className="text-neutral-800 dark:text-neutral-200 font-medium">
+                          {location}
+                        </span>
+                      </div>
+                    )
+                  )}
                 </div>
               </CollapsibleSection>
             )}
@@ -341,32 +354,46 @@ export default async function JobPostPage({ params }: { params: { id: string } }
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-neutral-700 dark:text-neutral-200">
-                        Salary:
-                      </span>
-                      <span className="font-semibold text-green-600">
-                        {jobData.salary}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-neutral-700 dark:text-neutral-200">
-                        Experience:
-                      </span>
-                      <span className="font-semibold">
-                        {jobData.experience}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-neutral-700 dark:text-neutral-200">
-                        Job Type:
-                      </span>
-                      <span className="font-semibold">{jobData.jobType}</span>
-                    </div>
+                    {jobData.salary && (
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-neutral-700 dark:text-neutral-200">
+                          Salary:
+                        </span>
+                        <span className="font-semibold text-green-600">
+                          {jobData.salary}
+                        </span>
+                      </div>
+                    )}
+                    {jobData.experience && (
+                      <div className="flex items-center justify-between text-sm">
+                        {/* {&& (<div> */}
+                        <span className="text-neutral-700 dark:text-neutral-200">
+                          Experience:
+                        </span>
+                        <span className="font-semibold">
+                          {jobData.experience}
+                        </span>
+                        {/* </div>)} */}
+                      </div>
+                    )}
+                    {jobData.jobType && (
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-neutral-700 dark:text-neutral-200">
+                          Job Type:
+                        </span>
+                        <span className="font-semibold">{jobData.jobType}</span>
+                      </div>
+                    )}
+                    {jobData.batches && (
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-neutral-700 dark:text-neutral-200">
+                          Eligible Batches:
+                        </span>
+                        <span className="font-semibold">{jobData.batches}</span>
+                      </div>
+                    )}
                     <Separator />
-                    <ApplyNowButton
-                      applyUrl={jobData.applyUrl}
-                    />
+                    <ApplyNowButton applyUrl={jobData.applyUrl} />
                   </div>
                 </CardContent>
               </Card>

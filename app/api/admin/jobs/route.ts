@@ -52,6 +52,7 @@ export async function POST(request: NextRequest) {
       technicalSkills,
       locationsAvailable,
       tags,
+      batches
     } = body;
 
     // if (!title || !companyName || !description || !applyUrl) {
@@ -99,6 +100,7 @@ export async function POST(request: NextRequest) {
         tags,
         expiresAt: expiresAt ? new Date(expiresAt) : null,
         postedAt: status === "published" ? new Date() : null,
+        batches
       },
       title
     );
@@ -186,6 +188,7 @@ export async function PUT(request: NextRequest) {
       technicalSkills,
       locationsAvailable,
       tags,
+      batches,
     } = body.submitData;
 
     // Find or create company
@@ -230,9 +233,14 @@ export async function PUT(request: NextRequest) {
         tags: Array.isArray(tags) ? tags : [],
         expiresAt: expiresAt ? new Date(expiresAt) : null,
         postedAt: status === "published" && !postedAt ? new Date() : postedAt ? new Date(postedAt) : null,
+        batches
       },
       include: {
-        company: true,
+        company: {
+          select: {
+            name: true,
+          }
+        },
       },
     });
 

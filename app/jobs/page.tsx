@@ -22,17 +22,17 @@ import {
 import {
   Search,
   MapPin,
-  DollarSign,
   Clock,
   Briefcase,
   Users,
   ArrowRight,
   Building,
+  IndianRupee,
 } from "lucide-react";
 import Link from "next/link";
 import Header from "@/components/Header";
 import { Job } from "@/types/types";
-import { locationOptions } from "@/lib/utils";
+import { jobTypes, locationOptions } from "@/lib/utils";
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -152,11 +152,11 @@ export default function JobsPage() {
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
                   className="w-full md:w-48 rounded-lg border border-blue-200 dark:border-blue-800 bg-white/80 dark:bg-neutral-900/80 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-700 transition"
-                >
-                  <option value="all">All Jobs</option>
-                  <option value="Full Time">Full Time</option>
-                  <option value="Part Time">Part Time</option>
-                  <option value="Internship">Internship</option>
+                >{jobTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
                 </select>
               </div>
             </div>
@@ -209,7 +209,7 @@ export default function JobsPage() {
                         variant="secondary"
                         className="px-3 py-1 text-sm flex items-center bg-blue-100/80 dark:bg-blue-900/40 text-blue-900 dark:text-blue-100"
                       >
-                        <DollarSign className="h-4 w-4 mr-1" />
+                        <IndianRupee className="h-4 w-4 mr-1" />
                         {job.salary}
                       </Badge>
                       <Badge
