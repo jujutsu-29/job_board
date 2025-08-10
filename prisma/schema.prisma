@@ -96,7 +96,7 @@ model Job {
   companyId           String
   company             Company   @relation(fields: [companyId], references: [id])
   description         String
-  applyUrl            String
+  applyUrl            String    @unique    
   slug                String    @unique
   status              JobStatus @default(draft)
   isFeatured          Boolean   @default(false)
@@ -115,4 +115,5 @@ model Job {
   technicalSkills     String[]  @default([])
   locationsAvailable  String[]  @default([])
   tags                String[]  @default([])
+  batches             String?
 }

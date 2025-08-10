@@ -25,7 +25,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import axios from "axios";
-import { locationOptions } from "@/lib/utils";
+import { jobTypes, locationOptions } from "@/lib/utils";
 
 interface JobFormData {
   title: string;
@@ -47,6 +47,7 @@ interface JobFormData {
   technicalSkills: string;
   locationsAvailable: string[];
   tags: string;
+  batches: string;
 }
 
 interface JobFormProps {
@@ -76,6 +77,7 @@ const defaultFormData: JobFormData = {
   technicalSkills: "",
   locationsAvailable: [],
   tags: "",
+  batches: "",
 };
 
 export default function JobForm({ mode, initialData, slug, onSuccess }: JobFormProps) {
@@ -249,38 +251,65 @@ export default function JobForm({ mode, initialData, slug, onSuccess }: JobFormP
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
+                <Label htmlFor="status">Status*</Label>
                 <Select
                   value={formData.status}
                   onValueChange={(value) => handleInputChange("status", value)}
+                  required
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="draft">Draft</SelectItem>
                     <SelectItem value="published">Published</SelectItem>
+                    <SelectItem value="draft">Draft</SelectItem>
                     <SelectItem value="archived">Archived</SelectItem>
                     <SelectItem value="closed">Closed</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="jobType">Job Type</Label>
-                <Input
+                <Label htmlFor="jobType">Job Type*</Label>
+                <Select
+                  value={formData.jobType}
+                  onValueChange={(value) => handleInputChange("jobType", value)} 
+                  required
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select job type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {jobTypes.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {/* <Input
                   id="jobType"
                   value={formData.jobType}
                   onChange={(e) => handleInputChange("jobType", e.target.value)}
                   placeholder="e.g. Full-time, Part-time"
-                />
+                /> */}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="salary">Salary</Label>
+                <Label htmlFor="salary">Salary*</Label>
                 <Input
                   id="salary"
                   value={formData.salary}
                   onChange={(e) => handleInputChange("salary", e.target.value)}
                   placeholder="e.g. $100k - $150k"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="salary">Batches</Label>
+                <Input
+                  id="batches"
+                  value={formData.batches}
+                  onChange={(e) => handleInputChange("batches", e.target.value)}
+                  placeholder="e.g. 2023-2024"
                 />
               </div>
               <div className="space-y-2">

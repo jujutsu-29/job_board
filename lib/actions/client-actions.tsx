@@ -13,7 +13,7 @@ export function ApplyNowButton({
 }) {
   return (
     <Button
-      className={`w-full text-lg py-4 rounded-xl shadow-md ${className}`}
+      className={`w-full text-lg py-4 rounded-full shadow-md ${className}`}
       onClick={() => window.open(applyUrl, "_blank")}
     >
       Apply Now
