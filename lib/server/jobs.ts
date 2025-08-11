@@ -99,15 +99,17 @@ export async function updateJob(slug: string, submitData: any) {
       return { success: false, error: "Unauthorized" };
     }
 
+    const { companyName, ...jobData } = submitData;
+
     let company = await prisma.company.findFirst({
-      where: { name: submitData.companyName },
+      where: { name: companyName },
     });
 
     if (!company) {
       company = await prisma.company.create({
         data: {
-          name: submitData.companyName,
-          slug: submitData.companyName.toLowerCase().replace(/\s+/g, "-"),
+          name: companyName,
+          slug: companyName.toLowerCase().replace(/\s+/g, "-"),
           description: "",
           logo: "",
           website: "",
@@ -119,20 +121,20 @@ export async function updateJob(slug: string, submitData: any) {
     const updatedJob = await prisma.job.update({
       where: { slug },
       data: {
-        ...submitData,
+        ...jobData,
         companyId: company.id,
-        requirements: Array.isArray(submitData.requirements) ? submitData.requirements : [],
-        basicQualifications: Array.isArray(submitData.basicQualifications) ? submitData.basicQualifications : [],
-        keyResponsibilities: Array.isArray(submitData.keyResponsibilities) ? submitData.keyResponsibilities : [],
-        technicalSkills: Array.isArray(submitData.technicalSkills) ? submitData.technicalSkills : [],
-        locationsAvailable: Array.isArray(submitData.locationsAvailable) ? submitData.locationsAvailable : [],
-        tags: Array.isArray(submitData.tags) ? submitData.tags : [],
-        expiresAt: submitData.expiresAt ? new Date(submitData.expiresAt) : null,
+        requirements: Array.isArray(jobData.requirements) ? jobData.requirements : [],
+        basicQualifications: Array.isArray(jobData.basicQualifications) ? jobData.basicQualifications : [],
+        keyResponsibilities: Array.isArray(jobData.keyResponsibilities) ? jobData.keyResponsibilities : [],
+        technicalSkills: Array.isArray(jobData.technicalSkills) ? jobData.technicalSkills : [],
+        locationsAvailable: Array.isArray(jobData.locationsAvailable) ? jobData.locationsAvailable : [],
+        tags: Array.isArray(jobData.tags) ? jobData.tags : [],
+        expiresAt: jobData.expiresAt ? new Date(jobData.expiresAt) : null,
         postedAt:
-          submitData.status === "published" && !submitData.postedAt
+          jobData.status === "published" && !jobData.postedAt
             ? new Date()
-            : submitData.postedAt
-            ? new Date(submitData.postedAt)
+            : jobData.postedAt
+            ? new Date(jobData.postedAt)
             : null,
       },
       include: {

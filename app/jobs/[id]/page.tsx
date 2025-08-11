@@ -107,7 +107,7 @@ export default async function JobPostPage({
   const slug = (await params).id;
   const job = await jobsBySlug(slug);
   if (!job) return notFound();
-
+// console.log("Job data:", job);
   // Map DB fields to expected structure
   const jobData = {
     ...job,
@@ -484,9 +484,8 @@ export default async function JobPostPage({
             <div className="pt-2">
               <Button variant="outline" asChild className="bg-transparent">
                 <Link
-                  href={`/companies/${jobData.company.name
-                    .toLowerCase()
-                    .replace(/\s+/g, "-")}`}
+                target="_blank"
+                  href={`/companies/${jobData.company.slug}`}
                 >
                   View Company Profile
                   <ArrowRight className="h-4 w-4 ml-2" />
