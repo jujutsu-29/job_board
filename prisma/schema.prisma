@@ -81,6 +81,7 @@ model Company {
   logo        String?
   slug        String?  @unique
   jobs        Job[]
+  benefits    String[]  @default([])
 }
 
 enum JobStatus {

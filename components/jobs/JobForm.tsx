@@ -24,8 +24,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import axios from "axios";
 import { jobTypes, locationOptions } from "@/lib/utils";
+import { createJob, updateJob } from "@/lib/server/jobs";
 
 interface JobFormData {
   title: string;
@@ -156,35 +156,39 @@ export default function JobForm({ mode, initialData, slug, onSuccess }: JobFormP
           .filter(Boolean),
       };
 
-      const response = mode === "create"
-        ? await axios.post("/api/admin/jobs", submitData)
-        : await axios.put(`/api/admin/jobs`, { slug, submitData });
+    let result;
+    if (mode === "create") {
+      result = await createJob(submitData);
+    } else {
+      result = await updateJob(slug ?? "", submitData);
+  }
 
-      if (response.status === 201 || response.status === 200) {
-        toast({
-          title: "Success",
-          description: `Job ${mode === "create" ? "created" : "updated"} successfully`,
-        });
-        
-        if (onSuccess) {
-          onSuccess();
-        } else {
-          router.push("/admin/jobs");
-        }
-      } else {
-        throw new Error(`Failed to ${mode} job`);
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: `Failed to ${mode} job`,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+  if (result.success) {
+    toast({
+      title: "Success",
+      description: `Job ${mode === "create" ? "created" : "updated"} successfully`,
+    });
+
+    if (onSuccess) onSuccess();
+    else router.push("/admin/jobs");
+  } else {
+    toast({
+      title: "Error",
+      description: result.error || `Failed to ${mode} job`,
+      variant: "destructive",
+    });
+  }
+} catch (error) {
+  toast({
+    title: "Error",
+    description: "Unexpected error occurred",
+    variant: "destructive",
+  });
+} finally {
+  setLoading(false);
+}
+
     }
-  };
-
   const pageTitle = mode === "create" ? "Create New Job" : "Edit Job";
   const pageDescription = mode === "create" 
     ? "Add a new job posting" 

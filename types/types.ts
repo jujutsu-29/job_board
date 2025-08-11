@@ -2,13 +2,12 @@ export interface Company {
   id: string
   name: string
   slug: string
-  industry: string
   description: string
 }
 
 
 export interface Job {
-    id: number;
+    id: string;
     experience: string
     title: string;
     applyUrl: string;
@@ -18,12 +17,15 @@ export interface Job {
     locationsAvailable: string[];
     jobType: string;
     salary: string;
-    posted: string;
+    postedAt: string;
     description: string;
     slug: string;
-    requirements: string[];
   }
 
-
-
-
+export interface JobFormData {
+  name: string;
+  website: string;
+  description: string;
+  companyType: string;
+  tags: string;
+}
