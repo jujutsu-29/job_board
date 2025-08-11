@@ -102,13 +102,25 @@ export async function editCompany({
           .map((tag) => tag.trim())
           .filter(Boolean),
       },
+      include: {
+        jobs: {
+          select: {
+            slug: true,
+          },
+        },
+      },
     });
 
+    // console.log("Updated company:", updatedCompany);
     revalidatePath(`/companies/${slug}`);
     revalidatePath("/companies");
+    updatedCompany.jobs.map((job) => (
+      revalidatePath(`/jobs/${job.slug}`)
+    ))
     return { success: true, data: updatedCompany };
   } catch (error) {
     console.error("Error updating company:", error);
     return { success: false, error: "Internal server error" };
   }
 }
+  
