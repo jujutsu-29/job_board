@@ -2,13 +2,13 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { prisma } from "./prisma"
 import { Prisma } from "@prisma/client";
+import { auth } from "./auth";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatDateTime(dateString: string): string {
-  const date = new Date(dateString)
+export function formatDateTime(date: Date): string {
   return date.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -55,9 +55,14 @@ export async function createJobWithUniqueSlug(data: Omit<Prisma.JobCreateInput, 
   }
 }
 
+export async function isAdminFunction() {
+  const session = await auth();
+  return { isAdmin: (session && session.user?.role === "admin"), session };
+}
+
 export const locationOptions = [
   "Remote", "Pune", "Nashik", "Mumbai", 
-  "Bengaluru", "New Delhi", "Noida", "Gurugram",  "Noida", "Chennai", 
+  "Bengaluru", "New Delhi", "Noida", "Gurugram", "Chennai", 
 ];
 
 export const jobTypes = [

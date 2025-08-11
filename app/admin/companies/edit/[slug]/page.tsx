@@ -24,14 +24,8 @@ import {
 import { ArrowLeft } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import axios from "axios";
-
-interface JobFormData {
-  name: string;
-  website: string;
-  description: string;
-  companyType: string;
-  tags: string;
-}
+import { JobFormData } from "@/types/types";
+import { editCompany } from "@/lib/server/company";
 
 export default function NewJobPage() {
   const params = useParams();
@@ -96,16 +90,17 @@ export default function NewJobPage() {
     setLoading(true);
     // console.log("Form data being submitted:", formData);
     try {
-      const response = await axios.put(`/api/admin/company/${slug}`, {
-        ...formData,
-        // Convert comma-separated strings to arrays for array fields
-        tags: formData.tags
-          .split("\n")
-          .map((s) => s.trim())
-          .filter(Boolean),
-      });
+      const response = await editCompany({ slug: slug ?? "", formData })
+      // const response = await axios.put(`/api/admin/company/${slug}`, {
+      //   ...formData,
+      //   // Convert comma-separated strings to arrays for array fields
+      //   tags: formData.tags
+      //     .split("\n")
+      //     .map((s) => s.trim())
+      //     .filter(Boolean),
+      // });
 
-      if (response.status === 201) {
+      if (response.success) {
         toast({
           title: "Success",
           description: "Company data updated successfully",

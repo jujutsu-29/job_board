@@ -37,12 +37,17 @@ export async function GET(
   }
 }
 
-
 export async function PUT(
   request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
   try {
+    const session = await auth();
+
+    if (!session || session.user?.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    
     const slug = (await params).slug;
     const body = await request.json();
     // console.log("Updating company with slug:", slug, "and body:", body);

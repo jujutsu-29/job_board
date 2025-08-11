@@ -77,7 +77,7 @@ export async function generateMetadata({
 }: {
   params: { id: string };
 }): Promise<Metadata> {
-  const job = await jobsBySlug(params.id);
+  const job = await jobsBySlug((await params).id);
   if (!job) return {};
   return {
     title: `${job.title} | Rolespot`,
@@ -92,6 +92,12 @@ export async function generateMetadata({
 }
 
 generateMetadata as any;
+
+// ✅ Force static generation
+export const dynamic = "force-static";
+// ✅ Keep cache forever until manually revalidated
+export const revalidate = false;
+
 
 export default async function JobPostPage({
   params,
@@ -117,7 +123,7 @@ export default async function JobPostPage({
     keyResponsibilities: job.keyResponsibilities || [],
     technicalSkills: job.technicalSkills || [],
     locationsAvailable: job.locationsAvailable || [],
-    postedAt: job.postedAt ? job.postedAt.toISOString() : "",
+    postedAt: job.postedAt ? job.postedAt : new Date(0),
     jobType: job.jobType,
     experience: job.experience,
     companyDescription: job.company.description,
@@ -220,7 +226,7 @@ export default async function JobPostPage({
                       className="px-3 py-1 text-sm flex items-center bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
                     >
                       <Calendar className="h-4 w-4 mr-1" />
-                      {formatDateTime(jobData.postedAt ?? "")}
+                      {formatDateTime(jobData.postedAt)}
                     </Badge>
                   </div>
                   <ApplyNowButton applyUrl={jobData.applyUrl} />
@@ -433,7 +439,7 @@ export default async function JobPostPage({
                         Posted:
                       </span>
                       <span className="font-medium">
-                        {formatDateTime(jobData.postedAt ?? "")}
+                        {formatDateTime(jobData.postedAt)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">

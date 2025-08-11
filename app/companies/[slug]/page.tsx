@@ -1,6 +1,3 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -33,54 +30,15 @@ import { useTheme } from "next-themes";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { formatDateTime } from "@/lib/utils";
+import { getCompany } from "@/lib/server/company";
 
-interface Company {
-  name: string;
-  website: string;
-  description: string;
-  companyType: string;
-  tags: string[];
-  slug: string;
-  jobs: {
-    title: string;
-    description: string;
-    jobType: string;
-    postedAt: string;
-    slug: string;
-  }[];
-}
 
-export default function CompanyProfilePage() {
-  const params = useParams();
-  const slug = params?.slug as string | undefined;
-  const [company, setCompany] = useState<Company | null>(null);
-  const [loading, setLoading] = useState(true);
+export const dynamic = "force-static";
+export const revalidate = false;
 
-  if (!slug) return;
-  useEffect(() => {
-    const fetchCompany = async () => {
-      try {
-        const res = await axios.get(`/api/company/${slug}`);
-        setCompany(res.data.company);
-      } catch (error) {
-        console.error("Failed to fetch company:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCompany();
-  }, [slug]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-lg text-muted-foreground">Loading company data...</p>
-      </div>
-    );
-  }
-  // console.log("Company data:", company);
-
+export default async function CompanyProfilePage({ params }: { params: { slug: string } }) {
+  const company = await getCompany((await params).slug);
+  // console.log("data coming is this ", company)
   if (!company) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -151,7 +109,7 @@ export default function CompanyProfilePage() {
                       className="shadow-md hover:shadow-lg transition-shadow"
                     >
                       <Link
-                        href={company?.website}
+                        href={company?.website ?? "#"}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center"
@@ -201,7 +159,8 @@ export default function CompanyProfilePage() {
         </section>
 
         {/* Company Benefits */}
-        {/* <section className="mb-12" aria-labelledby="benefits-heading">
+        {company.benefits.length > 0 && (
+        <section className="mb-12" aria-labelledby="benefits-heading">
           <Card className="shadow-sm border bg-card">
             <CardHeader>
               <CardTitle id="benefits-heading" className="text-2xl font-bold text-foreground">
@@ -211,7 +170,7 @@ export default function CompanyProfilePage() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {companyData.benefits.map((benefit, index) => (
+                {company?.benefits?.map((benefit, index) => (
                   <div key={index} className="flex items-start space-x-3 p-4 bg-muted/50 rounded-lg">
                     <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
                     <span className="text-foreground">{benefit}</span>
@@ -220,7 +179,8 @@ export default function CompanyProfilePage() {
               </div>
             </CardContent>
           </Card>
-        </section> */}
+        </section>
+)}
 
         {/* Open Positions */}
         <section id="open-positions" aria-labelledby="positions-heading">
@@ -247,7 +207,7 @@ export default function CompanyProfilePage() {
                         {company.companyType}
                       </Badge>
                       <span className="text-xs text-muted-foreground">
-                        {formatDateTime(job.postedAt)}
+                        {formatDateTime(job?.postedAt ? job.postedAt : new Date(0))}
                       </span>
                     </div>
                     <CardTitle className="text-xl font-semibold text-foreground group-hover:text-primary transition-colors">
