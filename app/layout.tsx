@@ -33,6 +33,11 @@ export default function RootLayout({
         {/* Google Analytics Script */}
         {GA_MEASUREMENT_ID && (
           <>
+            <script
+              async
+              src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7741592237023403"
+              crossOrigin="anonymous"
+            ></script>
             <Script
               strategy="afterInteractive"
               src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
