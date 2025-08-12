@@ -25,6 +25,7 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import Header from "@/components/Header";
 import Image from "next/image";
+import Footer from "@/components/Footer";
 
 const teamMembers = [
   {
@@ -80,10 +81,10 @@ const values = [
 ];
 
 const stats = [
-  { number: "2019", label: "Founded" },
-  { number: "50,000+", label: "Job Seekers" },
-  { number: "5,000+", label: "Companies" },
-  { number: "95%", label: "Success Rate" },
+  { number: "2025", label: "Founded" },
+  { number: "5000+", label: "Job Seekers" },
+  { number: "500+", label: "Companies" },
+  // { number: "95%", label: "Success Rate" },
 ];
 
 export default function AboutPage() {
@@ -116,7 +117,7 @@ export default function AboutPage() {
                 Rolespot - to make job searching simple, efficient, and
                 successful.
               </p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
                 {stats.map((stat, index) => (
                   <div key={index}>
                     <div className="text-2xl md:text-3xl font-bold text-primary mb-2">
@@ -149,21 +150,17 @@ export default function AboutPage() {
                     set out to create a better solution.
                   </p>
                   <p className="text-muted-foreground mb-6">
-                    We launched in 2019 with a simple mission: make job
+                    We launched in 2025 with a simple mission: make job
                     searching as efficient and effective as possible. Today,
                     we're proud to have helped thousands of professionals find
                     their dream jobs while helping companies discover amazing
                     talent.
                   </p>
-                  <Badge variant="secondary" className="text-sm">
-                    <Award className="h-4 w-4 mr-1" />
-                    Best Job Platform 2023
-                  </Badge>
                 </div>
                 <div className="bg-gradient-to-br from-primary/10 to-blue-500/10 rounded-lg p-8 text-center">
                   <Users className="h-16 w-16 text-primary mx-auto mb-4" />
                   <h4 className="text-xl font-semibold mb-2">
-                    50,000+ Success Stories
+                    5000+ Success Stories
                   </h4>
                   <p className="text-muted-foreground">
                     Every month, thousands of professionals find their next
@@ -211,7 +208,7 @@ export default function AboutPage() {
         </section>
 
         {/* Team Section */}
-        <section className="py-20 px-4 bg-muted/50">
+        {/* <section className="py-20 px-4 bg-muted/50">
           <div className="container mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -248,7 +245,7 @@ export default function AboutPage() {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* CTA Section */}
         <section className="py-20 px-4">
@@ -282,119 +279,7 @@ export default function AboutPage() {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t bg-muted/50 py-12 px-4">
-        <div className="container mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <Image
-                  src="/rolespot_noBG.png"
-                  alt="Rolespot Logo"
-                  width={32}
-                  height={32}
-                  className="h-8 w-8 text-primary"
-                />
-                <span className="text-lg font-bold">Rolespot</span>
-              </div>
-              <p className="text-muted-foreground">
-                Connecting talented professionals with amazing opportunities
-                worldwide.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">For Job Seekers</h3>
-              <ul className="space-y-2 text-muted-foreground">
-                <li>
-                  <Link
-                    href="/jobs"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Browse Jobs
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/signup"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Create Profile
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Career Advice
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">For Employers</h3>
-              <ul className="space-y-2 text-muted-foreground">
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Post Jobs
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Find Candidates
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Pricing
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">Company</h3>
-              <ul className="space-y-2 text-muted-foreground">
-                <li>
-                  <Link
-                    href="/about"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    About Us
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Contact
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="hover:text-foreground transition-colors"
-                  >
-                    Privacy Policy
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t mt-8 pt-8 text-center text-muted-foreground">
-            <p>&copy; 2025 Rolespot. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer/>
     </div>
   );
 }
