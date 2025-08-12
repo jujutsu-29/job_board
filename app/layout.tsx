@@ -30,11 +30,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7741592237023403"
-          crossOrigin="anonymous"
-        ></script>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3149724962399059"
+     crossorigin="anonymous"></script>
         {/* Google Analytics Script */}
         {GA_MEASUREMENT_ID && (
           <>
