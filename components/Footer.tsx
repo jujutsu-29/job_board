@@ -25,7 +25,57 @@ const Footer = () => {
             </p>
           </div>
           <div>
-            <h3 className="font-semibold mb-4">For Job Seekers</h3>
+            <h3 className="font-semibold mb-4">Legal</h3>
+            <ul className="space-y-2 text-muted-foreground">
+              <li>
+                <Link
+                  href="/privacy-policy"
+                  className="hover:text-foreground transition-colors"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/terms"
+                  className="hover:text-foreground transition-colors"
+                >
+                  Terms & Conditions
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/disclaimer"
+                  className="hover:text-foreground transition-colors"
+                >
+                  Disclaimer
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-semibold mb-4">Support</h3>
+            <ul className="space-y-2 text-muted-foreground">
+              <li>
+                <Link
+                  href="/contact"
+                  className="hover:text-foreground transition-colors"
+                >
+                  Contact Us
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/about"
+                  className="hover:text-foreground transition-colors"
+                >
+                  About Us
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-semibold mb-4">Jobs</h3>
             <ul className="space-y-2 text-muted-foreground">
               <li>
                 <Link
@@ -37,76 +87,10 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/signup"
+                  href="/companies"
                   className="hover:text-foreground transition-colors"
                 >
-                  Create Profile
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  className="hover:text-foreground transition-colors"
-                >
-                  Career Advice
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-4">For Employers</h3>
-            <ul className="space-y-2 text-muted-foreground">
-              <li>
-                <Link
-                  href="#"
-                  className="hover:text-foreground transition-colors"
-                >
-                  Post Jobs
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  className="hover:text-foreground transition-colors"
-                >
-                  Find Candidates
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  className="hover:text-foreground transition-colors"
-                >
-                  Pricing
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-4">Company</h3>
-            <ul className="space-y-2 text-muted-foreground">
-              <li>
-                <Link
-                  href="/about"
-                  className="hover:text-foreground transition-colors"
-                >
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  className="hover:text-foreground transition-colors"
-                >
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  className="hover:text-foreground transition-colors"
-                >
-                  Privacy Policy
+                  Companies
                 </Link>
               </li>
             </ul>

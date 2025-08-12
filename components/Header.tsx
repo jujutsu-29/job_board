@@ -26,16 +26,18 @@ export default function Header() {
         <div className="flex items-center space-x-2">
           {/* <Briefcase className="h-8 w-8 text-primary" />
            */}
-          <Image
-            src="/rolespot_noBG.png"
-            alt="Rolespot Logo"
-            width={32}
-            height={32}
-            className="h-8 w-8 text-primary"
-          />
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-red-500 to-blue-400 bg-clip-text text-transparent animate-gradient-move">
-            Rolespot
-          </h1>
+          <Link href="/" className="flex">
+            <Image
+              src="/rolespot_noBG.png"
+              alt="Rolespot Logo"
+              width={32}
+              height={32}
+              className="h-8 w-8 text-primary"
+            />
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-red-500 to-blue-400 bg-clip-text text-transparent animate-gradient-move">
+              Rolespot
+            </h1>
+          </Link>
         </div>
 
         {/* Desktop Nav */}

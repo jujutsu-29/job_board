@@ -1,6 +1,5 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
 import Hero from "@/components/Hero";
 import Stats from "@/components/Stats";
 import Features from "@/components/Features";
@@ -9,17 +8,9 @@ import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { BottomTabBar } from "@/components/BottomTabBar";
+import Legal from "@/components/Legal";
 
 export default function LandingPage() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
 
   return (
     <div className="min-h-screen relative overflow-x-hidden bg-background">
@@ -64,6 +55,8 @@ export default function LandingPage() {
 
       {/* Footer */}
       <Footer />
+
+      <Legal />
 
       <BottomTabBar />
       {/* Animations */}
