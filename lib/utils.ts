@@ -62,7 +62,7 @@ export async function isAdminFunction() {
 
 export const locationOptions = [
   "Remote", "Pune", "Nashik", "Mumbai", 
-  "Bengaluru", "New Delhi", "Noida", "Gurugram", "Chennai", "Hyderabad"
+  "Bengaluru", "New Delhi", "Noida", "Gurugram", "Chennai", "Hyderabad", "Kolkata", "All Over India"
 ];
 
 export const jobTypes = [

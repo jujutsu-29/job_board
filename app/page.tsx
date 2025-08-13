@@ -8,7 +8,6 @@ import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { BottomTabBar } from "@/components/BottomTabBar";
-import Legal from "@/components/Legal";
 
 export default function LandingPage() {
 
@@ -56,7 +55,7 @@ export default function LandingPage() {
       {/* Footer */}
       <Footer />
 
-      <Legal />
+      {/* <Legal /> */}
 
       <BottomTabBar />
       {/* Animations */}
