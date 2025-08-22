@@ -34,12 +34,14 @@ export default function NewJobPage() {
   //   console.log("slug coming is this ", slug);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
   const [formData, setFormData] = useState<JobFormData>({
     name: "",
     website: "",
     description: "",
     companyType: "draft",
     tags: "",
+    logo: null,
   });
 
   const handleInputChange = (
@@ -54,6 +56,28 @@ export default function NewJobPage() {
     router.push("/admin/companies");
   };
 
+  async function handleImageUpload(file: File) {
+    // console.log("handleImageUpload called with file:", file);
+    if (!file) return;
+    // 1. ask backend for presigned url
+    const { url } = await fetch("/api/s3/presign", {
+      method: "POST",
+      body: JSON.stringify({ fileName: file.name, fileType: file.type }),
+    }).then((res) => res.json());
+
+    // console.log("Presigned URL received:", url);
+    // 2. upload directly to S3
+    const responseAfterUpload = await fetch(url, {
+      method: "PUT",
+      body: file,
+      headers: { "Content-Type": file.type },
+    });
+    // console.log("response after upload:", responseAfterUpload);
+
+    // 3. image is available at url.split("?")[0]
+    return url.split("?")[0];
+  }
+
   function fetchingExistingData() {
     // if (!slug) return;
 
@@ -67,6 +91,7 @@ export default function NewJobPage() {
           description: company.description || "",
           companyType: company.companyType || "",
           tags: (company.tags || []).join("\n"),
+          logo: company.logo || null,
         });
         // });
       })
@@ -86,11 +111,19 @@ export default function NewJobPage() {
   }, [slug]);
   //   const existingData = await axios.get(`/api/admin/company/${slug}`);
   const handleSubmit = async (e: React.FormEvent) => {
+    // if(!formData) return;
     e.preventDefault();
     setLoading(true);
+    // console.log("Form data at submit time:", formData);
+    if (file) {
+      // console.log("got file here, inside call, ", file);
+      const response = await handleImageUpload(file);
+      // console.log("Image uploaded successfully ", response);
+      formData.logo = response; // Update formData with the uploaded image URL
+    }
     // console.log("Form data being submitted:", formData);
     try {
-      const response = await editCompany({ slug: slug ?? "", formData })
+      const response = await editCompany({ slug: slug ?? "", formData });
       // const response = await axios.put(`/api/admin/company/${slug}`, {
       //   ...formData,
       //   // Convert comma-separated strings to arrays for array fields
@@ -201,6 +234,21 @@ export default function NewJobPage() {
                   onChange={(e) => handleInputChange("tags", e.target.value)}
                   placeholder="Comma separated, e.g. remote, full-time, urgent"
                 />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="logo">Upload Logo</Label>
+                <div className="grid w-full max-w-sm items-center gap-3">
+                  <Label htmlFor="logo">Logo</Label>
+                  <Input
+                    id="logo"
+                    type="file"
+                    onChange={(e) => {
+                      // console.log("File selected:", e.target.files?.[0]);
+                      setFile(e.target.files?.[0] ?? null);
+                      // handleInputChange("logo", file as any);
+                    }}
+                  />
+                </div>
               </div>
             </div>
 
