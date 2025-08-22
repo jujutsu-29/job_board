@@ -1,25 +1,11 @@
 "use server"
 import { prisma } from "@/lib/prisma";
-import { Company, JobFormData } from "@/types/types";
+import { Company, CompanyIndividual, JobFormData } from "@/types/types";
 import { auth } from "../auth";
 import { isAdminFunction } from "../utils";
 import { revalidatePath } from "next/cache";
 
-interface CompanyIndividual {
-  name: string;
-  website: string;
-  description: string;
-  companyType: string;
-  tags: string[];
-  slug: string;
-  benefits: string[];
-  jobs: {
-    title: string;
-    jobType: string;
-    postedAt: Date;
-    slug: string;
-  }[];
-}
+
 
 export async function getCompany(slug: string): Promise<CompanyIndividual> {
   const response = await prisma.company.findUnique({
@@ -35,7 +21,7 @@ export async function getCompany(slug: string): Promise<CompanyIndividual> {
       },
     },
   });
-
+  // console.log("Company response coming from backend:", response);
   if (!response) {
     throw new Error("Company not found");
   }
@@ -48,6 +34,7 @@ export async function getCompany(slug: string): Promise<CompanyIndividual> {
     tags: response.tags ?? [],
     slug: response.slug ?? "",
     benefits: response.benefits ?? [],
+    logo: response.logo ?? "",
     jobs: response.jobs.map((job) => ({
       title: job.title,
       jobType: job.jobType ?? "",

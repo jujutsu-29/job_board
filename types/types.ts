@@ -28,4 +28,22 @@ export interface JobFormData {
   description: string;
   companyType: string;
   tags: string;
+  logo: File | null;
+}
+
+export interface CompanyIndividual {
+  name: string;
+  website: string;
+  description: string;
+  companyType: string;
+  tags: string[];
+  slug: string;
+  benefits: string[];
+  logo?: string;
+  jobs: {
+    title: string;
+    jobType: string;
+    postedAt: Date;
+    slug: string;
+  }[];
 }
