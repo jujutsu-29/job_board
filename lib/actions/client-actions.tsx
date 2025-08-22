@@ -1,8 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Copy, ExternalLink } from "lucide-react";
-import { socials } from "../utils";
-import { toast } from "sonner";
+import { copyJobLink, socials } from "../utils";
 
 export function ApplyNowButton({
   applyUrl,
@@ -31,12 +30,7 @@ export function HandleShareJobButton({ slug }: { slug: string }) {
         const shareUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${slug}`;
         navigator.clipboard
           .writeText(shareUrl)
-          .then(() => {
-            // alert("Job link copied to clipboard!");
-            toast.success("Job link copied to clipboard!", {
-              description: "You can now share this job with others.",
-            });
-          })
+          .then(() => copyJobLink(slug))
           .catch((err) => {
             console.error("Failed to copy job link: ", err);
           });

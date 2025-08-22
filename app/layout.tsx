@@ -17,7 +17,7 @@ export const metadata = {
   openGraph: {
     title: "Rolespot – Find Your Dream Job",
     description: "A modern job board built for job seekers and employers",
-    url: "https://jobs.rolespot.space/",
+    url: "https://rolespot.space/",
     images: [{ url: "/rolespot_noBG.png", width: 1200, height: 630 }],
   },
 };

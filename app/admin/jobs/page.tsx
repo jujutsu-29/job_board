@@ -46,6 +46,7 @@ import {
   EyeOff,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { copyJobLink } from "@/lib/utils";
 
 interface Job {
   id: string;
@@ -92,6 +93,15 @@ export default function JobsPage() {
       setLoading(false);
     }
   };
+
+  // const copyJobLink = (slug: string) => {
+  //   const url = `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${slug}`;
+  //   navigator.clipboard.writeText(url);
+  //   toast({
+  //     title: "Success",
+  //     description: "Job link copied to clipboard",
+  //   });
+  // };
 
   const handleStatusToggle = async (jobId: string, currentStatus: string) => {
     const newStatus = currentStatus === "published" ? "draft" : "published";
@@ -152,14 +162,7 @@ export default function JobsPage() {
     }
   };
 
-  const copyJobLink = (slug: string) => {
-    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${slug}`;
-    navigator.clipboard.writeText(url);
-    toast({
-      title: "Success",
-      description: "Job link copied to clipboard",
-    });
-  };
+ 
 
   const filteredJobs = jobs.filter((job) => {
     const matchesSearch =

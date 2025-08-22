@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge"
 import { prisma } from "./prisma"
 import { Prisma } from "@prisma/client";
 import { auth } from "./auth";
+import { toast } from "@/hooks/use-toast";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -25,7 +26,7 @@ export function slugify(title: string): string {
     .replace(/[^a-z0-9\s-]/g, "")
     .trim()
     .replace(/\s+/g, "-")
-    .slice(0, 50);
+    // .slice(0, 50);
 }
 
 export async function createJobWithUniqueSlug(data: Omit<Prisma.JobCreateInput, "slug">, title: string) {
@@ -72,3 +73,12 @@ export const jobTypes = [
 export const socials = [
   "facebook", "twitter", "linkedin"
 ]
+
+export const copyJobLink = (slug: string) => {
+    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/jobs/${slug}`;
+    navigator.clipboard.writeText(url);
+    toast({
+      title: "Success",
+      description: "Job link copied to clipboard",
+    });
+  };
