@@ -84,6 +84,7 @@ export async function editCompany({
         website: formData.website,
         description: formData.description,
         companyType: formData.companyType,
+        logo: formData.logo,
         tags: formData.tags
           .split("\n")
           .map((tag) => tag.trim())

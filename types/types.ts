@@ -28,7 +28,7 @@ export interface JobFormData {
   description: string;
   companyType: string;
   tags: string;
-  logo: File | null;
+  logo: string | null;
 }
 
 export interface CompanyIndividual {
