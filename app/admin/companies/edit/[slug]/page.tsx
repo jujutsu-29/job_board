@@ -116,13 +116,14 @@ export default function NewJobPage() {
     setLoading(true);
     // console.log("Form data at submit time:", formData);
     if (file) {
-      // console.log("got file here, inside call, ", file);
+      console.log("got file here, inside call, ", file);
       const response = await handleImageUpload(file);
-      // console.log("Image uploaded successfully ", response);
+      console.log("Image uploaded successfully ", response);
       formData.logo = response; // Update formData with the uploaded image URL
     }
     // console.log("Form data being submitted:", formData);
     try {
+      console.log("formdata ", formData)
       const response = await editCompany({ slug: slug ?? "", formData });
       // const response = await axios.put(`/api/admin/company/${slug}`, {
       //   ...formData,
