@@ -26,6 +26,7 @@ import { toast } from "@/hooks/use-toast";
 import axios from "axios";
 import { JobFormData } from "@/types/types";
 import { editCompany } from "@/lib/server/company";
+import UploadDropzone from "@/components/DropZoneImages";
 
 export default function NewJobPage() {
   const params = useParams();
@@ -240,13 +241,19 @@ export default function NewJobPage() {
                 <Label htmlFor="logo">Upload Logo</Label>
                 <div className="grid w-full max-w-sm items-center gap-3">
                   <Label htmlFor="logo">Logo</Label>
-                  <Input
+                  {/* <Input
                     id="logo"
                     type="file"
                     onChange={(e) => {
                       // console.log("File selected:", e.target.files?.[0]);
                       setFile(e.target.files?.[0] ?? null);
                       // handleInputChange("logo", file as any);
+                    }}
+                  /> */}
+                  <UploadDropzone
+                    onFilesAccepted={(files) => {
+                      setFile(files[0]);
+                      // handleInputChange("logo", files[0]);
                     }}
                   />
                 </div>
