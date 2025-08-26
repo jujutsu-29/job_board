@@ -24,13 +24,15 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { jobTypes, locationOptions } from "@/lib/utils";
+import { handleImageUpload, jobTypes, locationOptions } from "@/lib/utils";
 import { createJob, updateJob } from "@/lib/server/jobs";
+import UploadDropzone from "../DropZoneImages";
 
 interface JobFormData {
   title: string;
   companyName: string;
   description: string;
+  image: string;
   applyUrl: string;
   status: "draft" | "published" | "archived" | "closed";
   isFeatured: boolean;
@@ -61,6 +63,7 @@ const defaultFormData: JobFormData = {
   title: "",
   companyName: "",
   description: "",
+  image: "",
   applyUrl: "",
   status: "draft",
   isFeatured: false,
@@ -80,36 +83,42 @@ const defaultFormData: JobFormData = {
   batches: "",
 };
 
-export default function JobForm({ mode, initialData, slug, onSuccess }: JobFormProps) {
+export default function JobForm({
+  mode,
+  initialData,
+  slug,
+  onSuccess,
+}: JobFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<JobFormData>(defaultFormData);
+  const [file, setFile] = useState<File | null>(null);
 
   // Initialize form data
   useEffect(() => {
     if (initialData) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         ...initialData,
         // Convert arrays back to newline-separated strings for textarea display
-        requirements: Array.isArray(initialData.requirements) 
-          ? initialData.requirements.join('\n') 
+        requirements: Array.isArray(initialData.requirements)
+          ? initialData.requirements.join("\n")
           : initialData.requirements || "",
         basicQualifications: Array.isArray(initialData.basicQualifications)
-          ? initialData.basicQualifications.join('\n')
+          ? initialData.basicQualifications.join("\n")
           : initialData.basicQualifications || "",
         keyResponsibilities: Array.isArray(initialData.keyResponsibilities)
-          ? initialData.keyResponsibilities.join('\n')
+          ? initialData.keyResponsibilities.join("\n")
           : initialData.keyResponsibilities || "",
         technicalSkills: Array.isArray(initialData.technicalSkills)
-          ? initialData.technicalSkills.join('\n')
+          ? initialData.technicalSkills.join("\n")
           : initialData.technicalSkills || "",
         tags: Array.isArray(initialData.tags)
-          ? initialData.tags.join('\n')
+          ? initialData.tags.join("\n")
           : initialData.tags || "",
         locationsAvailable: initialData.locationsAvailable || [],
         // Format dates for datetime-local input
-        postedAt: initialData.postedAt 
+        postedAt: initialData.postedAt
           ? new Date(initialData.postedAt).toISOString().slice(0, 16)
           : "",
         expiresAt: initialData.expiresAt
@@ -131,6 +140,13 @@ export default function JobForm({ mode, initialData, slug, onSuccess }: JobFormP
     setLoading(true);
 
     try {
+      if (file) {
+        // console.log("got file here, inside call, ", file);
+        const response = await handleImageUpload(file);
+        // console.log("Image uploaded successfully ", response);
+        formData.image = response; // Update formData with the uploaded image URL
+      }
+
       const submitData = {
         ...formData,
         // Convert newline-separated strings to arrays for backend
@@ -156,46 +172,53 @@ export default function JobForm({ mode, initialData, slug, onSuccess }: JobFormP
           .filter(Boolean),
       };
 
-    let result;
-    if (mode === "create") {
-      result = await createJob(submitData);
-    } else {
-      result = await updateJob(slug ?? "", submitData);
-  }
+      let result;
+      if (mode === "create") {
+        result = await createJob(submitData);
+      } else {
+        result = await updateJob(slug ?? "", submitData);
+      }
 
-  if (result.success) {
-    toast({
-      title: "Success",
-      description: `Job ${mode === "create" ? "created" : "updated"} successfully`,
-    });
+      if (result.success) {
+        toast({
+          title: "Success",
+          description: `Job ${
+            mode === "create" ? "created" : "updated"
+          } successfully`,
+        });
 
-    if (onSuccess) onSuccess();
-    else router.push("/admin/jobs");
-  } else {
-    toast({
-      title: "Error",
-      description: result.error || `Failed to ${mode} job`,
-      variant: "destructive",
-    });
-  }
-} catch (error) {
-  toast({
-    title: "Error",
-    description: "Unexpected error occurred",
-    variant: "destructive",
-  });
-} finally {
-  setLoading(false);
-}
-
+        if (onSuccess) onSuccess();
+        else router.push("/admin/jobs");
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || `Failed to ${mode} job`,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
+  };
   const pageTitle = mode === "create" ? "Create New Job" : "Edit Job";
-  const pageDescription = mode === "create" 
-    ? "Add a new job posting" 
-    : "Update the job posting details";
-  const submitButtonText = mode === "create" 
-    ? (loading ? "Creating..." : "Create Job")
-    : (loading ? "Updating..." : "Update Job");
+  const pageDescription =
+    mode === "create"
+      ? "Add a new job posting"
+      : "Update the job posting details";
+  const submitButtonText =
+    mode === "create"
+      ? loading
+        ? "Creating..."
+        : "Create Job"
+      : loading
+      ? "Updating..."
+      : "Update Job";
 
   return (
     <div className="space-y-6">
@@ -276,7 +299,7 @@ export default function JobForm({ mode, initialData, slug, onSuccess }: JobFormP
                 <Label htmlFor="jobType">Job Type*</Label>
                 <Select
                   value={formData.jobType}
-                  onValueChange={(value) => handleInputChange("jobType", value)} 
+                  onValueChange={(value) => handleInputChange("jobType", value)}
                   required
                 >
                   <SelectTrigger>
@@ -328,7 +351,7 @@ export default function JobForm({ mode, initialData, slug, onSuccess }: JobFormP
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="isFeatured">Featured</Label>
+                {/* <Label htmlFor="isFeatured">Featured</Label>
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="isFeatured"
@@ -338,6 +361,25 @@ export default function JobForm({ mode, initialData, slug, onSuccess }: JobFormP
                     }
                   />
                   <span>Mark as featured</span>
+                </div> */}
+                <Label htmlFor="logo">Upload Logo</Label>
+                <div className="grid w-full max-w-sm items-center gap-3">
+                  <Label htmlFor="logo">Logo</Label>
+                  {/* <Input
+                                    id="logo"
+                                    type="file"
+                                    onChange={(e) => {
+                                      // console.log("File selected:", e.target.files?.[0]);
+                                      setFile(e.target.files?.[0] ?? null);
+                                      // handleInputChange("logo", file as any);
+                                    }}
+                                  /> */}
+                  <UploadDropzone
+                    onFilesAccepted={(files) => {
+                      setFile(files[0]);
+                      // handleInputChange("logo", files[0]);
+                    }}
+                  />
                 </div>
               </div>
             </div>
@@ -372,7 +414,9 @@ export default function JobForm({ mode, initialData, slug, onSuccess }: JobFormP
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="basicQualifications">Basic Qualifications</Label>
+                  <Label htmlFor="basicQualifications">
+                    Basic Qualifications
+                  </Label>
                   <Textarea
                     id="basicQualifications"
                     value={formData.basicQualifications}
@@ -384,7 +428,9 @@ export default function JobForm({ mode, initialData, slug, onSuccess }: JobFormP
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="keyResponsibilities">Key Responsibilities</Label>
+                  <Label htmlFor="keyResponsibilities">
+                    Key Responsibilities
+                  </Label>
                   <Textarea
                     id="keyResponsibilities"
                     value={formData.keyResponsibilities}
@@ -431,7 +477,9 @@ export default function JobForm({ mode, initialData, slug, onSuccess }: JobFormP
                             } else {
                               return {
                                 ...prev,
-                                locationsAvailable: locations.filter((l) => l !== location),
+                                locationsAvailable: locations.filter(
+                                  (l) => l !== location
+                                ),
                               };
                             }
                           });
@@ -460,7 +508,9 @@ export default function JobForm({ mode, initialData, slug, onSuccess }: JobFormP
                   <Input
                     id="source"
                     value={formData.source}
-                    onChange={(e) => handleInputChange("source", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("source", e.target.value)
+                    }
                     placeholder='e.g. "manual", "greenhouse"'
                   />
                 </div>
