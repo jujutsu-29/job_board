@@ -82,3 +82,25 @@ export const copyJobLink = (slug: string) => {
       description: "Job link copied to clipboard",
     });
   };
+
+export async function handleImageUpload(file: File) {
+    // console.log("handleImageUpload called with file:", file);
+    if (!file) return;
+    // 1. ask backend for presigned url
+    const { url } = await fetch("/api/s3/presign", {
+      method: "POST",
+      body: JSON.stringify({ fileName: file.name, fileType: file.type }),
+    }).then((res) => res.json());
+
+    // console.log("Presigned URL received:", url);
+    // 2. upload directly to S3
+    const responseAfterUpload = await fetch(url, {
+      method: "PUT",
+      body: file,
+      headers: { "Content-Type": file.type },
+    });
+    // console.log("response after upload:", responseAfterUpload);
+
+    // 3. image is available at url.split("?")[0]
+    return url.split("?")[0];
+  }

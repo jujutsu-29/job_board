@@ -20,6 +20,7 @@ export async function createJob(submitData: any) {
 
     const {
       title,
+      image,
       companyName,
       description,
       applyUrl,
@@ -60,6 +61,7 @@ export async function createJob(submitData: any) {
       {
         title,
         company: { connect: { id: newCompany.id } },
+        image,
         description,
         applyUrl,
         status,

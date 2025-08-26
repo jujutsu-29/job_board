@@ -30,6 +30,7 @@ import {
   BookOpen,
   ArrowRight,
   IndianRupee,
+  Building2,
 } from "lucide-react";
 import { formatDateTime } from "@/lib/utils";
 import Header from "@/components/Header";
@@ -43,6 +44,7 @@ import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { jobsBySlug } from "@/lib/server/jobs";
+import Image from "next/image";
 
 interface Job {
   id: string;
@@ -98,7 +100,6 @@ export const dynamic = "force-static";
 // ✅ Keep cache forever until manually revalidated
 export const revalidate = false;
 
-
 export default async function JobPostPage({
   params,
 }: {
@@ -107,7 +108,7 @@ export default async function JobPostPage({
   const slug = (await params).id;
   const job = await jobsBySlug(slug);
   if (!job) return notFound();
-// console.log("Job data:", job);
+  // console.log("Job data:", job);
   // Map DB fields to expected structure
   const jobData = {
     ...job,
@@ -118,6 +119,7 @@ export default async function JobPostPage({
       description: job.company.description,
       companyType: job.company.companyType,
     },
+    image: job.image,
     requirements: job.requirements || [],
     basicQualifications: job.basicQualifications || [],
     keyResponsibilities: job.keyResponsibilities || [],
@@ -239,6 +241,15 @@ export default async function JobPostPage({
 
       {/* Main Content */}
       <div className="container mx-auto px-2 md:px-4 pb-12">
+        {jobData.image && (
+          <Image
+            src={jobData.image}
+            alt={jobData.title}
+            className="w-full h-auto rounded-lg"
+            width={1200}
+            height={630}
+          />
+        )}
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content Column */}
           <div className="lg:col-span-2 space-y-6">
@@ -466,7 +477,22 @@ export default async function JobPostPage({
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
-                <Building className="h-6 w-6 text-orange-600" />
+                {/* <Building className="h-6 w-6 text-orange-600" /> */}
+                {jobData.company.logo ? (
+                  <Image
+                    src={jobData.company.logo}
+                    alt={`${jobData.company.name} logo - ${jobData.company.companyType}`}
+                    width={96}
+                    height={96}
+                    className="w-full h-full object-contain p-2"
+                    loading="lazy"
+                  />
+                ) : (
+                  <Building2
+                    className="h-10 w-10 md:h-12 md:w-12 text-primary"
+                    aria-label="Company logo placeholder"
+                  />
+                )}
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-foreground">
@@ -484,7 +510,7 @@ export default async function JobPostPage({
             <div className="pt-2">
               <Button variant="outline" asChild className="bg-transparent">
                 <Link
-                target="_blank"
+                  target="_blank"
                   href={`/companies/${jobData.company.slug}`}
                 >
                   View Company Profile

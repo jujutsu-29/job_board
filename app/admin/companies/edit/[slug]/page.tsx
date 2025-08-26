@@ -27,6 +27,7 @@ import axios from "axios";
 import { JobFormData } from "@/types/types";
 import { editCompany } from "@/lib/server/company";
 import UploadDropzone from "@/components/DropZoneImages";
+import { handleImageUpload } from "@/lib/utils";
 
 export default function NewJobPage() {
   const params = useParams();
@@ -57,27 +58,7 @@ export default function NewJobPage() {
     router.push("/admin/companies");
   };
 
-  async function handleImageUpload(file: File) {
-    // console.log("handleImageUpload called with file:", file);
-    if (!file) return;
-    // 1. ask backend for presigned url
-    const { url } = await fetch("/api/s3/presign", {
-      method: "POST",
-      body: JSON.stringify({ fileName: file.name, fileType: file.type }),
-    }).then((res) => res.json());
 
-    // console.log("Presigned URL received:", url);
-    // 2. upload directly to S3
-    const responseAfterUpload = await fetch(url, {
-      method: "PUT",
-      body: file,
-      headers: { "Content-Type": file.type },
-    });
-    // console.log("response after upload:", responseAfterUpload);
-
-    // 3. image is available at url.split("?")[0]
-    return url.split("?")[0];
-  }
 
   function fetchingExistingData() {
     // if (!slug) return;
@@ -117,9 +98,9 @@ export default function NewJobPage() {
     setLoading(true);
     // console.log("Form data at submit time:", formData);
     if (file) {
-      console.log("got file here, inside call, ", file);
+      // console.log("got file here, inside call, ", file);
       const response = await handleImageUpload(file);
-      console.log("Image uploaded successfully ", response);
+      // console.log("Image uploaded successfully ", response);
       formData.logo = response; // Update formData with the uploaded image URL
     }
     // console.log("Form data being submitted:", formData);

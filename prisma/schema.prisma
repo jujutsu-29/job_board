@@ -101,6 +101,7 @@ model Job {
   id                  String    @id @default(cuid())
   title               String
   companyId           String
+  image               String?
   company             Company   @relation(fields: [companyId], references: [id])
   description         String
   applyUrl            String    @unique    
