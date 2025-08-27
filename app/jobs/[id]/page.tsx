@@ -74,24 +74,63 @@ interface Job {
   batches: string;
 }
 
+// export async function generateMetadata({
+//   params,
+// }: {
+//   params: { id: string };
+// }): Promise<Metadata> {
+//   const job = await jobsBySlug((await params).id);
+//   if (!job) return {};
+//   return {
+//     title: `${job.title} | Rolespot`,
+//     description: job.description,
+//     openGraph: {
+//       title: job.title,
+//       description: job.description + " " + job.company.description,
+//       url: `https://rolespot.space/jobs/${job.slug}`,
+//       images: [{ url: "/rolespot_noBG.png" }],
+//     },
+//   };
+// }
+
 export async function generateMetadata({
   params,
 }: {
   params: { id: string };
 }): Promise<Metadata> {
-  const job = await jobsBySlug((await params).id);
+  const job = await jobsBySlug(params.id);
   if (!job) return {};
+
+  const title = `${job.company.name} is Hiring ${job.title} | ${job.locationsAvailable.join(", ")} | ${job.salary}`;
+  const description = `${job.description.slice(0, 150)}...`;
+
   return {
-    title: `${job.title} | Rolespot`,
-    description: job.description,
+    title,
+    description,
     openGraph: {
-      title: job.title,
-      description: job.description + " " + job.company.description,
-      url: `https://rolespot.com/jobs/${job.slug}`,
-      images: [{ url: "/rolespot_noBG.png" }],
+      title,
+      description,
+      type: "website",
+      url: `https://rolespot.space/jobs/${job.slug}`,
+      images: [
+        {
+          url: `${job.image}`, // ideally per-job banner
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      // images: [`https://rolespot.space/uploads/${job.slug}-banner.png`],
+      images: [`${job.image}`]
     },
   };
 }
+
 
 generateMetadata as any;
 
