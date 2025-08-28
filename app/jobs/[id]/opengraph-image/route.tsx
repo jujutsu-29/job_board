@@ -94,8 +94,8 @@ export async function GET(
   }
 
   // ✅ Load your own font instead of relying on noto-sans (buggy on Windows)
-  const fontPath = path.join(process.cwd(), "public/fonts/Inter-Regular.ttf");
-  const fontData = fs.readFileSync(fontPath);
+  // const fontPath = path.join(process.cwd(), "public/fonts/Inter-Regular.ttf");
+  // const fontData = fs.readFileSync(fontPath);
 
   return new ImageResponse(
     (
@@ -110,7 +110,7 @@ export async function GET(
           background: "linear-gradient(135deg, #1e293b, #0f172a)",
           color: "white",
           padding: "60px",
-          fontFamily: "Inter", // use the embedded font
+          fontFamily: "sans-serif", // use the embedded font
         }}
       >
         {/* Company Logo */}
@@ -151,13 +151,13 @@ export async function GET(
     {
       width: 1200,
       height: 630,
-      fonts: [
-        {
-          name: "Inter",
-          data: fontData,
-          style: "normal",
-        },
-      ],
+      // fonts: [
+      //   {
+      //     name: "Inter",
+      //     data: fontData,
+      //     style: "normal",
+      //   },
+      // ],
     }
   );
 }
