@@ -98,8 +98,11 @@ export async function generateMetadata({
 }: {
   params: { id: string };
 }): Promise<Metadata> {
-  const job = await jobsBySlug((await params).id);
+  const slug = (await params).id;
+  const job = await jobsBySlug(slug);
   if (!job) return {};
+
+  const ogImageUrl = `/jobs/${slug}/opengraph-image`;
 
   const title = `${job.company.name} is Hiring ${
     job.title
@@ -116,7 +119,8 @@ export async function generateMetadata({
       url: `https://rolespot.space/jobs/${job.slug}`,
       images: [
         {
-          url: `${job.image}`, // ideally per-job banner
+          // url: `${job.image}`, // ideally per-job banner
+          url: ogImageUrl,
           width: 1200,
           height: 630,
           alt: title,
@@ -128,7 +132,7 @@ export async function generateMetadata({
       title,
       description,
       // images: [`https://rolespot.space/uploads/${job.slug}-banner.png`],
-      images: [`${job.image}`],
+      images: [`${ogImageUrl}`],
     },
   };
 }
@@ -150,7 +154,7 @@ export default async function JobPostPage({
   if (!job) return notFound();
 
   const ogImageUrl = `/jobs/${slug}/opengraph-image`;
-  console.log("ogimage url ", ogImageUrl);
+  // console.log("ogimage url ", ogImageUrl);
   // console.log("Job data:", job);
   // Map DB fields to expected structure
   const jobData = {
