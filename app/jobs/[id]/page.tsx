@@ -119,8 +119,8 @@ export async function generateMetadata({
       url: `https://rolespot.space/jobs/${job.slug}`,
       images: [
         {
-          // url: `${job.image}`, // ideally per-job banner
-          url: ogImageUrl,
+          url: `${job.image}`, // ideally per-job banner
+          // url: ogImageUrl,
           width: 1200,
           height: 630,
           alt: title,
@@ -132,7 +132,8 @@ export async function generateMetadata({
       title,
       description,
       // images: [`https://rolespot.space/uploads/${job.slug}-banner.png`],
-      images: [`${ogImageUrl}`],
+      // images: [`${ogImageUrl}`],
+      images: [`${job.image}`],
     },
   };
 }
@@ -292,19 +293,19 @@ export default async function JobPostPage({
           <div className="flex justify-center my-8">
             <div className="w-full max-w-3xl aspect-[16/9] bg-neutral-100 dark:bg-neutral-800 rounded-2xl shadow-lg border border-blue-100 dark:border-blue-900 overflow-hidden flex items-center justify-center">
               <Image
-                // src={jobData.image}
-                // alt={`${jobData.title} at ${jobData.company.name} - Job Image`}
-                // className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105"
-                // width={1200}
-                // height={630}
-                // loading="lazy"
-                // priority={false}
+                src={jobData.image}
+                alt={`${jobData.title} at ${jobData.company.name} - Job Image`}
+                className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105"
+                width={1200}
+                height={630}
+                loading="lazy"
+                priority={false}
 
-                src={ogImageUrl}
-                alt={`Banner for ${job.title}`}
-                width={800}
-                height={420}
-                className="rounded-xl shadow-md my-6"
+                // src={ogImageUrl}
+                // alt={`Banner for ${job.title}`}
+                // width={800}
+                // height={420}
+                // className="rounded-xl shadow-md my-6"
               />
             </div>
           </div>
