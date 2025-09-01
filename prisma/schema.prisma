@@ -90,38 +90,38 @@ model Company {
   benefits    String[]  @default([])
 }
 
-enum JobStatus {
-  draft
-  published
-  archived
-  closed
-}
+  enum JobStatus {
+    draft
+    published
+    archived
+    closed
+  }
 
-model Job {
-  id                  String    @id @default(cuid())
-  title               String
-  companyId           String
-  image               String?
-  company             Company   @relation(fields: [companyId], references: [id])
-  description         String
-  applyUrl            String    @unique    
-  slug                String    @unique
-  status              JobStatus @default(draft)
-  isFeatured          Boolean   @default(false)
-  source              String?
-  postedAt            DateTime?
-  expiresAt           DateTime?
-  createdById         String?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-  jobType             String?
-  salary              String?
-  experience          String?
-  requirements        String[]  @default([])
-  basicQualifications String[]  @default([])
-  keyResponsibilities String[]  @default([])
-  technicalSkills     String[]  @default([])
-  locationsAvailable  String[]  @default([])
-  tags                String[]  @default([])
-  batches             String?
-}
+  model Job {
+    id                  String    @id @default(cuid())
+    title               String
+    companyId           String
+    image               String?
+    company             Company   @relation(fields: [companyId], references: [id])
+    description         String
+    applyUrl            String    @unique    
+    slug                String    @unique
+    status              JobStatus @default(draft)
+    isFeatured          Boolean   @default(false)
+    source              String?
+    postedAt            DateTime?
+    expiresAt           DateTime?
+    createdById         String?
+    createdAt           DateTime  @default(now())
+    updatedAt           DateTime  @updatedAt
+    jobType             String?
+    salary              String?
+    experience          String?
+    requirements        String[]  @default([])
+    basicQualifications String[]  @default([])
+    keyResponsibilities String[]  @default([])
+    technicalSkills     String[]  @default([])
+    locationsAvailable  String[]  @default([])
+    tags                String[]  @default([])
+    batches             String?
+  }

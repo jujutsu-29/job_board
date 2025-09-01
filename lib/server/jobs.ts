@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { cache } from "react";
 import { createJobWithUniqueSlug, isAdminFunction } from "../utils";
 import slugify from "slugify";
+import { rephraseItStructured } from "./gemini";
 
 export const jobsBySlug = cache(async (slug: string) =>
   await prisma.job.findUnique({
@@ -57,6 +58,33 @@ export async function createJob(submitData: any) {
       },
     });
 
+    const rephrasedJobData = await rephraseItStructured({
+      description,
+      requirements,
+      keyResponsibilities,
+      basicQualifications,
+    });
+
+    console.log("rephrased job data ", rephrasedJobData);
+
+    // If rephraseIt returns a 'content' property with the rephrased fields, parse it accordingly.
+    // Adjust this logic based on the actual structure returned by rephraseIt.
+    let rephrasedDescription = rephrasedJobData.description;
+    let rephrasedRequirements = rephrasedJobData.requirements;
+    let rephrasedBasicQualifications = rephrasedJobData.basicQualifications;
+    let rephrasedKeyResponsibilities = rephrasedJobData.keyResponsibilities;
+
+    // if (rephrasedJobData && typeof rephrasedJobData === "object" && "content" in rephrasedJobData) {
+    //   try {
+    //     const parsed = JSON.parse((rephrasedJobData as any).content);
+    //     rephrasedRequirements = parsed.requirements || requirements;
+    //     rephrasedBasicQualifications = parsed.basicQualifications || basicQualifications;
+    //     rephrasedKeyResponsibilities = parsed.keyResponsibilities || keyResponsibilities;
+    //   } catch {
+    //     // fallback to original values
+    //   }
+    // }
+
     const job = await createJobWithUniqueSlug(
       {
         title,
@@ -71,9 +99,9 @@ export async function createJob(submitData: any) {
         jobType,
         salary,
         experience,
-        requirements,
-        basicQualifications,
-        keyResponsibilities,
+        requirements: rephrasedRequirements,
+        basicQualifications: rephrasedBasicQualifications,
+        keyResponsibilities: rephrasedKeyResponsibilities,
         technicalSkills,
         locationsAvailable,
         tags,
