@@ -65,14 +65,14 @@ export async function createJob(submitData: any) {
       basicQualifications,
     });
 
-    console.log("rephrased job data ", rephrasedJobData);
+    // console.log("rephrased job data ", rephrasedJobData);
 
     // If rephraseIt returns a 'content' property with the rephrased fields, parse it accordingly.
     // Adjust this logic based on the actual structure returned by rephraseIt.
-    let rephrasedDescription = rephrasedJobData.description;
-    let rephrasedRequirements = rephrasedJobData.requirements;
-    let rephrasedBasicQualifications = rephrasedJobData.basicQualifications;
-    let rephrasedKeyResponsibilities = rephrasedJobData.keyResponsibilities;
+    let rephrasedDescription = rephrasedJobData.description ?? description;
+    let rephrasedRequirements = rephrasedJobData.requirements ?? requirements;
+    let rephrasedBasicQualifications = rephrasedJobData.basicQualifications ?? basicQualifications;
+    let rephrasedKeyResponsibilities = rephrasedJobData.keyResponsibilities ?? keyResponsibilities;
 
     // if (rephrasedJobData && typeof rephrasedJobData === "object" && "content" in rephrasedJobData) {
     //   try {
@@ -90,7 +90,7 @@ export async function createJob(submitData: any) {
         title,
         company: { connect: { id: newCompany.id } },
         image,
-        description,
+        description: rephrasedDescription,
         applyUrl,
         status,
         isFeatured,
