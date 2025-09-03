@@ -181,12 +181,16 @@ export async function rephraseItStructured(jobData: JobInput) {
 //   ];
 
 const prompt = `
-You are a professional editor that rewrites job posting fields. 
-Return ONLY a JSON object that matches the requested schema exactly. 
+You are a professional editor. 
+Rephrase EVERY string value in the provided JSON object. 
+Do not leave any field unchanged, even if it looks good already. 
+Keep the structure, keys, and types EXACTLY the same. 
+Return ONLY valid JSON, no explanations.
 
 Input JSON:
 ${JSON.stringify(filtered, null, 2)}
 `;
+
 
   // 4) Call Gemini (structured output)
   // const response = await ai.models.generateContent({
@@ -203,7 +207,7 @@ ${JSON.stringify(filtered, null, 2)}
   // });
 
   const response = await ai.models.generateContent({
-  model: "gemini-2.5-flash",
+  model: "gemini-2.5-pro",
   contents: prompt,   // ✅ just a string, not an array of objects
   config: {
     responseMimeType: "application/json",
