@@ -1,80 +1,3 @@
-// import { GoogleGenAI } from "@google/genai";
-
-// const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
-
-// export async function rephraseIT() {
-//   const response = await ai.models.generateContent({
-//     model: "gemini-2.5-flash",
-//     contents: "Explain how AI works in a few words",
-//   });
-//   console.log(response.text);
-// }
-
-
-// export async function rephraseIt(jobData: {
-//   description: string;
-//   requirements: string[];
-//   keyResponsibilities: string[];
-//   basicQualifications: string[];
-// }) {
-//     const filteredData: Record<string, any> = {};
-//   if (jobData.description && jobData.description.trim() !== "") {
-//     filteredData.description = jobData.description;
-//   }
-//   if (jobData.requirements && jobData.requirements.length > 0) {
-//     filteredData.requirements = jobData.requirements;
-//   }
-//   if (jobData.keyResponsibilities && jobData.keyResponsibilities.length > 0) {
-//     filteredData.keyResponsibilities = jobData.keyResponsibilities;
-//   }
-//   if (jobData.basicQualifications && jobData.basicQualifications.length > 0) {
-//     filteredData.basicQualifications = jobData.basicQualifications;
-//   }
-
-//   const prompt = `
-// You are a rephrasing assistant.  
-// I will provide a JSON object containing job-related fields such as description, requirements, responsibilities, and qualifications.  
-// Rephrase the text values of each field while keeping the JSON structure and keys exactly the same.  
-// Do not remove or rename any keys.  
-// Do not add extra text.  
-// Return only valid JSON.
-
-// Here is the JSON to rephrase:
-// ${JSON.stringify(filteredData, null, 2)}
-// `;
-
-// try {
-//   const result = await ai.models.generateContent({
-//     model: "gemini-2.5-flash",
-//     contents: prompt,
-//     config: { responseMimeType: "application/json" },
-//   });
-// //   const response = result;
-
-// //   console.log("response coming from gemini:", response);
-// //   console.log("CANDIDATES coming from gemini:", response.candidates?.forEach((candidate: any) => {
-// //     console.log("Candidate:", candidate);
-// //   }));
-// //   console.log("prompt token details coming from gemini:", response.usageMetadata?.promptTokensDetails?.forEach((detail: any) => {
-// //     console.log("Detail:", detail);
-// //   }));
-
-//   const textOut = result.text;
-//   console.log("Gemini replied:", textOut);
-
-//   return textOut;
-//   // Parse Gemini's response back into JSON
-//     // const parsed = JSON.parse(response);
-//     // return parsed;
-//   } catch (e) {
-//     console.error("Invalid JSON from Gemini:", (e as any).message);
-//     throw new Error("Gemini did not return valid JSON");
-//   }
-// }
-
-
-
-
 import { GoogleGenAI } from "@google/genai";
 import Ajv from "ajv";
 
@@ -85,7 +8,6 @@ type JobInput = {
   requirements?: string[];
   keyResponsibilities?: string[];
   basicQualifications?: string[];
-  // add other fields you might send
 };
 
 /**
@@ -125,13 +47,16 @@ function makeSchemaFor(obj: Record<string, any>) {
 function extractGeneratedText(resp: any): string | null {
   if (!resp) return null;
   // some SDK versions expose `.text`
-  if (typeof resp.text === "string" && resp.text.trim().length) return resp.text;
+  if (typeof resp.text === "string" && resp.text.trim().length)
+    return resp.text;
   // older/more verbose shape: candidates[].content.parts[].text
   const cand = resp.candidates?.[0];
   if (cand?.content?.parts?.[0]?.text) return cand.content.parts[0].text;
   // some wrappers: resp.response?.text()
   if (typeof resp.response?.text === "function") {
-    try { return resp.response.text(); } catch {}
+    try {
+      return resp.response.text();
+    } catch {}
   }
   return null;
 }
@@ -156,31 +81,7 @@ export async function rephraseItStructured(jobData: JobInput) {
   // 2) build a responseSchema matching only those keys
   const schema = makeSchemaFor(filtered);
 
-  // 3) Compose a short system + user instruction (be strict)
-//   const prompt = [
-//     {
-//       role: "system",
-//       content: [
-//         {
-//           type: "text",
-//           text: `You are a professional editor that rewrites job posting fields. 
-// Return ONLY a JSON object that matches the requested schema exactly (same keys & types). 
-// Do not add keys, do not invent facts, and do not add explanatory text.`
-//         }
-//       ]
-//     },
-//     {
-//       role: "user",
-//       content: [
-//         {
-//           type: "text",
-//           text: `Input JSON:\n${JSON.stringify(filtered, null, 2)}\n\nReturn the rewritten JSON now.`
-//         }
-//       ]
-//     }
-//   ];
-
-const prompt = `
+  const prompt = `
 You are a professional editor. 
 Rephrase EVERY string value in the provided JSON object. 
 Do not leave any field unchanged, even if it looks good already. 
@@ -191,30 +92,54 @@ Input JSON:
 ${JSON.stringify(filtered, null, 2)}
 `;
 
+  const models = [
+    "gemini-2.5-pro",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-2.0-flash",
+    "gemini-2.0-flash-lite",
+    "gemini-1.5-flash",
+  ]; // fallback list
+  let response;
 
-  // 4) Call Gemini (structured output)
-  // const response = await ai.models.generateContent({
-  //   // model choice: 2.5-flash is fast + supports JSON mode; use prod model when needed
-  //   model: "gemini-2.5-flash",
+  for (const model of models) {
+    try {
+      response = await callGemini(model, prompt, schema);
+      console.log(`✅ Success with model: ${model}`);
+      break; // stop on first success
+    } catch (err: any) {
+      console.warn(`❌ Model ${model} failed: ${err.message}`);
+      if (err.status === 503) {
+        continue; // overloaded → try next model
+      }
+      throw err; // other errors bubble up
+    }
+  }
+
+  if (!response) {
+    throw new Error("All Gemini models overloaded. Try later.");
+  }
+
+  async function callGemini(model: string, prompt: any, schema: any) {
+    return ai.models.generateContent({
+      model,
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: schema,
+        maxOutputTokens: 2000,
+      },
+    });
+  }
+  //   const response = await ai.models.generateContent({
+  //   model: "gemini-2.5-pro",
   //   contents: prompt,
-  //   // Use `config` (or generationConfig depending on SDK version) to force JSON mode.
-  //   // cloud docs and SDK examples show `config` or `generationConfig`. `config` works in examples.
   //   config: {
   //     responseMimeType: "application/json",
   //     responseSchema: schema,
   //     maxOutputTokens: 2000
   //   },
   // });
-
-  const response = await ai.models.generateContent({
-  model: "gemini-2.5-pro",
-  contents: prompt,   // ✅ just a string, not an array of objects
-  config: {
-    responseMimeType: "application/json",
-    responseSchema: schema,
-    maxOutputTokens: 2000
-  },
-});
 
   // 5) extract text
   const raw = extractGeneratedText(response);
@@ -223,7 +148,11 @@ ${JSON.stringify(filtered, null, 2)}
   }
 
   // 6) Some responses may be fenced like ```json ... ``` — strip fences
-  const cleaned = raw.trim().replace(/^```json\s*/i, "").replace(/```$/, "").trim();
+  const cleaned = raw
+    .trim()
+    .replace(/^```json\s*/i, "")
+    .replace(/```$/, "")
+    .trim();
 
   // 7) parse JSON
   let parsed: any;
@@ -251,7 +180,8 @@ ${JSON.stringify(filtered, null, 2)}
 
   // 9) Merge parsed fields into original jobData (only replace keys we sent)
   const result = { ...jobData };
-  for (const k of Object.keys(filtered)) result[k as keyof JobInput] = parsed[k];
+  for (const k of Object.keys(filtered))
+    result[k as keyof JobInput] = parsed[k];
 
   return result; // safe to push directly to DB
 }
