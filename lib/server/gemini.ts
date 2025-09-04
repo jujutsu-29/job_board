@@ -1,5 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import Ajv from "ajv";
+import { geminiResponseGetter, stripQuotes } from "../utils";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
 
@@ -92,55 +93,7 @@ Input JSON:
 ${JSON.stringify(filtered, null, 2)}
 `;
 
-  const models = [
-    "gemini-2.5-pro",
-    "gemini-2.5-flash",
-    "gemini-2.5-flash-lite",
-    "gemini-2.0-flash",
-    "gemini-2.0-flash-lite",
-    "gemini-1.5-flash",
-  ]; // fallback list
-  let response;
-
-  for (const model of models) {
-    try {
-      response = await callGemini(model, prompt, schema);
-      console.log(`✅ Success with model: ${model}`);
-      break; // stop on first success
-    } catch (err: any) {
-      console.warn(`❌ Model ${model} failed: ${err.message}`);
-      if (err.status === 503) {
-        continue; // overloaded → try next model
-      }
-      throw err; // other errors bubble up
-    }
-  }
-
-  if (!response) {
-    throw new Error("All Gemini models overloaded. Try later.");
-  }
-
-  async function callGemini(model: string, prompt: any, schema: any) {
-    return ai.models.generateContent({
-      model,
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: schema,
-        maxOutputTokens: 2000,
-      },
-    });
-  }
-  //   const response = await ai.models.generateContent({
-  //   model: "gemini-2.5-pro",
-  //   contents: prompt,
-  //   config: {
-  //     responseMimeType: "application/json",
-  //     responseSchema: schema,
-  //     maxOutputTokens: 2000
-  //   },
-  // });
-
+  let response = await geminiResponseGetter({prompt, schema, ai});
   // 5) extract text
   const raw = extractGeneratedText(response);
   if (!raw) {
@@ -184,4 +137,27 @@ ${JSON.stringify(filtered, null, 2)}
     result[k as keyof JobInput] = parsed[k];
 
   return result; // safe to push directly to DB
+}
+
+export async function describeCompanyFromUrl(url: string): Promise<string> {
+  const prompt = `Write a unique, professional 150-word description of this company based solely on the content from the provided URL. Avoid copying verbatim; ensure the tone is informative and original. URL: ${url}`;
+
+  // const response = await ai.models.generateContent({
+  //   model: "gemini-2.5-flash",  // model that supports URL Context
+  //   contents: prompt,
+  //   config: {
+  //     tools: [{ urlContext: {} }],
+  //     maxOutputTokens: 300,
+  //   },
+  // });
+
+  let response = await geminiResponseGetter({prompt, schema: { type: "string" }, ai});
+
+  console.log("response after calling description change ", response);
+
+  // Extract the output text (content may be in response.text or wrapped)
+  const text = response.text ?? response.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) throw new Error("No response from Gemini");
+
+  return stripQuotes(text.trim());
 }

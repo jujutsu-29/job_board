@@ -21,7 +21,7 @@ export default function AdminCompaniesPage() {
 
   
   const filtered = companies.filter((c) =>
-    `${c.name} ${c.industry}`.toLowerCase().includes(search.toLowerCase())
+    `${c.name} ${c.companyType}`.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
