@@ -103,19 +103,10 @@ export default function NewJobPage() {
       // console.log("Image uploaded successfully ", response);
       formData.logo = response; // Update formData with the uploaded image URL
     }
-    // console.log("Form data being submitted:", formData);
     try {
-      console.log("formdata ", formData)
+      // console.log("formdata ", formData)
       const response = await editCompany({ slug: slug ?? "", formData });
-      // const response = await axios.put(`/api/admin/company/${slug}`, {
-      //   ...formData,
-      //   // Convert comma-separated strings to arrays for array fields
-      //   tags: formData.tags
-      //     .split("\n")
-      //     .map((s) => s.trim())
-      //     .filter(Boolean),
-      // });
-
+    
       if (response.success) {
         toast({
           title: "Success",
@@ -241,7 +232,7 @@ export default function NewJobPage() {
               </div>
             </div>
 
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="description">Company Description *</Label>
               <Textarea
                 id="description"
@@ -256,7 +247,7 @@ export default function NewJobPage() {
               <p className="text-sm text-muted-foreground">
                 You can use Markdown formatting for rich text
               </p>
-            </div>
+            </div> */}
 
             <div className="flex justify-end space-x-4">
               <Button

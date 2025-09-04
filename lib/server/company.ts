@@ -4,6 +4,7 @@ import { Company, CompanyIndividual, JobFormData } from "@/types/types";
 import { auth } from "../auth";
 import { isAdminFunction } from "../utils";
 import { revalidatePath } from "next/cache";
+import { describeCompanyFromUrl } from "./gemini";
 
 
 
@@ -51,6 +52,7 @@ export async function getCompaniesForWhole(): Promise<Company[]> {
       name: true,
       description: true,
       slug: true,
+      companyType: true,
     },
   });
 
@@ -60,6 +62,7 @@ export async function getCompaniesForWhole(): Promise<Company[]> {
     name: company.name,
     description: company.description ?? "",
     slug: company.slug ?? "",
+    companyType: company.companyType ?? "",
   }));
 }
 
@@ -77,12 +80,14 @@ export async function editCompany({
       throw new Error("Unauthorized");
     }
 
+    const updatedDescription = await describeCompanyFromUrl(formData.website);
+
     const updatedCompany = await prisma.company.update({
       where: { slug },
       data: {
         name: formData.name,
         website: formData.website,
-        description: formData.description,
+        description: updatedDescription,
         companyType: formData.companyType,
         logo: formData.logo,
         tags: formData.tags
