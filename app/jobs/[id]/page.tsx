@@ -279,7 +279,7 @@ export default async function JobPostPage({
                       {formatDateTime(jobData.postedAt)}
                     </Badge>
                   </div>
-                  <ApplyNowButton applyUrl={jobData.applyUrl} />
+                  {/* <ApplyNowButton applyUrl={jobData.applyUrl} /> */}
                 </div>
               </div>
             </div>
@@ -582,9 +582,9 @@ export default async function JobPostPage({
         </CollapsibleSection>
       </section>
       {/* Sticky Apply Button for Mobile */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-neutral-900 border-t shadow-lg z-50 p-4">
+      {/* <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-neutral-900 border-t shadow-lg z-50 p-4">
         <ApplyNowButton applyUrl={jobData.applyUrl} />
-      </div>
+      </div> */}
       <div className="lg:hidden h-20"></div>
     </div>
   );
