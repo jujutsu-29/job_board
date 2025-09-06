@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Briefcase, Users, Eye, TrendingUp } from "lucide-react"
+import Loading from "../loading"
 
 interface DashboardStats {
   totalJobs: number
@@ -50,7 +51,7 @@ export default function AdminDashboard() {
   }
 
   if (status === "loading" || loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>
+    return <div className="flex items-center justify-center min-h-screen"><Loading /></div>
   }
 
 //   if (!session || session.user?.role !== "admin") {

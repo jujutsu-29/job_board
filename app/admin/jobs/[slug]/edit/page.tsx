@@ -20,6 +20,8 @@ export default async function EditJobPage({ params }: { params: { slug: string }
   const slug = (await params).slug
   const job = await getJob(slug);
 
+  console.log("job", job);
+
   if (!job) {
     notFound();
   }
@@ -29,6 +31,8 @@ export default async function EditJobPage({ params }: { params: { slug: string }
     title: job.title,
     companyName: job.company.name,
     description: job.description,
+    batches: job.batches || "",
+    image: job.image || "",
     applyUrl: job.applyUrl,
     status: job.status,
     isFeatured: job.isFeatured,

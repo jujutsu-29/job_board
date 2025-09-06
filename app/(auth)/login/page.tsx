@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import SignIn from "@/components/sign-in";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
+import { Loading } from "@/components/Loading";
 
 export default function LoginPage() {
   const [email, setEmail] = useState<string>("");
@@ -177,7 +178,7 @@ export default function LoginPage() {
               disabled={isLoading}
               onClick={() => SignIn()}
             >
-              {isLoading ? "Loading..." : <SignIn />}
+              {isLoading ? <Loading /> : <SignIn />}
             </Button>
 
             <div className="mt-6 text-center">

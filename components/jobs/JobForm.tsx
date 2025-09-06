@@ -27,6 +27,8 @@ import { toast } from "@/hooks/use-toast";
 import { handleImageUpload, jobTypes, locationOptions } from "@/lib/utils";
 import { createJob, updateJob } from "@/lib/server/jobs";
 import UploadDropzone from "../DropZoneImages";
+import Image from "next/image";
+import { Loading } from "../Loading";
 
 interface JobFormData {
   title: string;
@@ -93,13 +95,15 @@ export default function JobForm({
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<JobFormData>(defaultFormData);
   const [file, setFile] = useState<File | null>(null);
-
+  const [ready, setReady] = useState(false);
   // Initialize form data
   useEffect(() => {
     if (initialData) {
       setFormData((prev) => ({
         ...prev,
         ...initialData,
+        status: initialData.status || "draft",
+        jobType: initialData.jobType || "",
         // Convert arrays back to newline-separated strings for textarea display
         requirements: Array.isArray(initialData.requirements)
           ? initialData.requirements.join("\n")
@@ -124,7 +128,9 @@ export default function JobForm({
         expiresAt: initialData.expiresAt
           ? new Date(initialData.expiresAt).toISOString().slice(0, 16)
           : "",
+          // setFile(job.image as any)
       }));
+      setReady(true);
     }
   }, [initialData]);
 
@@ -220,6 +226,9 @@ export default function JobForm({
       ? "Updating..."
       : "Update Job";
 
+  if (initialData && !ready && mode === "edit") {
+    return <div className="flex items-center justify-center"><Loading/></div>;
+  }
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
@@ -280,7 +289,7 @@ export default function JobForm({
               <div className="space-y-2">
                 <Label htmlFor="status">Status*</Label>
                 <Select
-                  value={formData.status}
+                  value={formData.status ?? ""}
                   onValueChange={(value) => handleInputChange("status", value)}
                   required
                 >
@@ -298,7 +307,7 @@ export default function JobForm({
               <div className="space-y-2">
                 <Label htmlFor="jobType">Job Type*</Label>
                 <Select
-                  value={formData.jobType}
+                  value={formData.jobType ??   ""}
                   onValueChange={(value) => handleInputChange("jobType", value)}
                   required
                 >
@@ -376,10 +385,17 @@ export default function JobForm({
                                   /> */}
                   <UploadDropzone
                     onFilesAccepted={(files) => {
+                      // setFile(initialData?.image as any)
                       setFile(files[0]);
                       // handleInputChange("logo", files[0]);
                     }}
-                  />
+                    />
+                    <Image
+                      src={formData?.image || "/placeholder-image.png"}
+                      alt="Job Image"
+                      width={300}
+                      height={200}
+                    />
                 </div>
               </div>
             </div>
