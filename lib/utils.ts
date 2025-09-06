@@ -84,7 +84,7 @@ export const copyJobLink = (slug: string) => {
     });
   };
 
-export async function handleImageUpload(file: File) {
+  export async function handleImageUpload(file: File) {
     // console.log("handleImageUpload called with file:", file);
     if (!file) return;
     // 1. ask backend for presigned url
@@ -105,6 +105,24 @@ export async function handleImageUpload(file: File) {
     // 3. image is available at url.split("?")[0]
     return url.split("?")[0];
   }
+
+export async function handleImageDelete(imageUrl: string) {
+  const res = await fetch("/api/s3/delete", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ imageUrl }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to delete image: ${res.status}`);
+  }
+
+  return res.json();
+}
+
+
 
 export function stripQuotes(str: string): string {
   if (str.startsWith('"') && str.endsWith('"')) {

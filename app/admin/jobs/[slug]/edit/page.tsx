@@ -20,7 +20,7 @@ export default async function EditJobPage({ params }: { params: { slug: string }
   const slug = (await params).slug
   const job = await getJob(slug);
 
-  console.log("job", job);
+  // console.log("job", job);
 
   if (!job) {
     notFound();
