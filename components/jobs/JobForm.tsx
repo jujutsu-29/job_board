@@ -24,9 +24,11 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { handleImageUpload, jobTypes, locationOptions } from "@/lib/utils";
+import { handleImageDelete, handleImageUpload, jobTypes, locationOptions } from "@/lib/utils";
 import { createJob, updateJob } from "@/lib/server/jobs";
 import UploadDropzone from "../DropZoneImages";
+import Image from "next/image";
+import { Loading } from "../Loading";
 
 interface JobFormData {
   title: string;
@@ -93,7 +95,7 @@ export default function JobForm({
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<JobFormData>(defaultFormData);
   const [file, setFile] = useState<File | null>(null);
-
+  const [ready, setReady] = useState(false);
   // Initialize form data
   useEffect(() => {
     if (initialData) {
@@ -124,7 +126,9 @@ export default function JobForm({
         expiresAt: initialData.expiresAt
           ? new Date(initialData.expiresAt).toISOString().slice(0, 16)
           : "",
+        // setFile(job.image as any)
       }));
+      setReady(true);
     }
   }, [initialData]);
 
@@ -141,7 +145,13 @@ export default function JobForm({
 
     try {
       if (file) {
-        // console.log("got file here, inside call, ", file);
+        //delete previous image from aws
+        // console.log("Deleting previous image...");
+        if (initialData?.image) {
+          await handleImageDelete(initialData.image);
+        }
+        // console.log("Uploading new image...");
+        // Upload new image
         const response = await handleImageUpload(file);
         // console.log("Image uploaded successfully ", response);
         formData.image = response; // Update formData with the uploaded image URL
@@ -197,6 +207,7 @@ export default function JobForm({
         });
       }
     } catch (error) {
+      console.error("Error submitting form:", error);
       toast({
         title: "Error",
         description: "Unexpected error occurred",
@@ -220,6 +231,13 @@ export default function JobForm({
       ? "Updating..."
       : "Update Job";
 
+  if (initialData && !ready && mode === "edit") {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loading />
+      </div>
+    );
+  }
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
@@ -243,101 +261,95 @@ export default function JobForm({
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="title">Job Title *</Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => handleInputChange("title", e.target.value)}
-                  placeholder="e.g. Senior Frontend Developer"
-                  required
-                />
+              <Label htmlFor="title">Job Title *</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => handleInputChange("title", e.target.value)}
+                placeholder="e.g. Senior Frontend Developer"
+                required
+              />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="companyName">Company *</Label>
-                <Input
-                  id="companyName"
-                  value={formData.companyName}
-                  onChange={(e) =>
-                    handleInputChange("companyName", e.target.value)
-                  }
-                  placeholder="e.g. Acme Corp"
-                  required
-                />
+              <Label htmlFor="companyName">Company *</Label>
+              <Input
+                id="companyName"
+                value={formData.companyName}
+                onChange={(e) =>
+                handleInputChange("companyName", e.target.value)
+                }
+                placeholder="e.g. Acme Corp"
+                required
+              />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="applyUrl">Apply URL *</Label>
-                <Input
-                  id="applyUrl"
-                  type="url"
-                  value={formData.applyUrl}
-                  onChange={(e) =>
-                    handleInputChange("applyUrl", e.target.value)
-                  }
-                  placeholder="https://company.com/apply"
-                  required
-                />
+              <Label htmlFor="applyUrl">Apply URL *</Label>
+              <Input
+                id="applyUrl"
+                type="url"
+                value={formData.applyUrl}
+                onChange={(e) =>
+                handleInputChange("applyUrl", e.target.value)
+                }
+                placeholder="https://company.com/apply"
+                required
+              />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="status">Status*</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) => handleInputChange("status", value)}
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="published">Published</SelectItem>
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="archived">Archived</SelectItem>
-                    <SelectItem value="closed">Closed</SelectItem>
-                  </SelectContent>
-                </Select>
+              <Label htmlFor="status">Status*</Label>
+              <Select
+                value={formData.status ?? ""}
+                onValueChange={(value) => handleInputChange("status", value)}
+                required
+              >
+                <SelectTrigger>
+                <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                <SelectItem value="published">Published</SelectItem>
+                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="archived">Archived</SelectItem>
+                <SelectItem value="closed">Closed</SelectItem>
+                </SelectContent>
+              </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="jobType">Job Type*</Label>
-                <Select
-                  value={formData.jobType}
-                  onValueChange={(value) => handleInputChange("jobType", value)}
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select job type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {jobTypes.map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {/* <Input
-                  id="jobType"
-                  value={formData.jobType}
-                  onChange={(e) => handleInputChange("jobType", e.target.value)}
-                  placeholder="e.g. Full-time, Part-time"
-                /> */}
+              <Label htmlFor="jobType">Job Type*</Label>
+              <Select
+                value={formData.jobType ?? ""}
+                onValueChange={(value) => handleInputChange("jobType", value)}
+                required
+              >
+                <SelectTrigger>
+                <SelectValue placeholder="Select job type" />
+                </SelectTrigger>
+                <SelectContent>
+                {jobTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                  {type}
+                  </SelectItem>
+                ))}
+                </SelectContent>
+              </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="salary">Salary*</Label>
-                <Input
-                  id="salary"
-                  value={formData.salary}
-                  onChange={(e) => handleInputChange("salary", e.target.value)}
-                  placeholder="e.g. $100k - $150k"
-                  required
-                />
+              <Label htmlFor="salary">Salary*</Label>
+              <Input
+                id="salary"
+                value={formData.salary}
+                onChange={(e) => handleInputChange("salary", e.target.value)}
+                placeholder="e.g. $100k - $150k"
+                required
+              />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="salary">Batches</Label>
-                <Input
-                  id="batches"
-                  value={formData.batches}
-                  onChange={(e) => handleInputChange("batches", e.target.value)}
-                  placeholder="e.g. 2023-2024"
-                />
+              <Label htmlFor="salary">Batches</Label>
+              <Input
+                id="batches"
+                value={formData.batches}
+                onChange={(e) => handleInputChange("batches", e.target.value)}
+                placeholder="e.g. 2023-2024"
+              />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="experience">Experience</Label>
@@ -363,26 +375,28 @@ export default function JobForm({
                   <span>Mark as featured</span>
                 </div> */}
                 <Label htmlFor="logo">Upload Logo</Label>
-                <div className="grid w-full max-w-sm items-center gap-3">
+                <div className="grid w-full max-w-sm gap-3">
                   <Label htmlFor="logo">Logo</Label>
-                  {/* <Input
-                                    id="logo"
-                                    type="file"
-                                    onChange={(e) => {
-                                      // console.log("File selected:", e.target.files?.[0]);
-                                      setFile(e.target.files?.[0] ?? null);
-                                      // handleInputChange("logo", file as any);
-                                    }}
-                                  /> */}
-                  <UploadDropzone
-                    onFilesAccepted={(files) => {
-                      setFile(files[0]);
-                      // handleInputChange("logo", files[0]);
-                    }}
-                  />
+                  <div className="flex flex-row items-center gap-6">
+                    <UploadDropzone
+                      onFilesAccepted={(files) => {
+                        setFile(files[0]);
+                      }}
+                    />
+                    <div className="flex items-center justify-center w-[120px] h-[80px] bg-muted rounded border">
+                      <Image
+                        src={formData?.image || "/placeholder-image.png"}
+                        alt="Job Image"
+                        width={100}
+                        height={70}
+                        className="object-contain"
+                      />
+                    </div>
+                  </div>
+                </div>
                 </div>
               </div>
-            </div>
+            {/* </div> */}
 
             {/* Description and Rich Text Fields */}
             <div className="space-y-6">

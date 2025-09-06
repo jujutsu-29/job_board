@@ -47,6 +47,7 @@ import {
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { copyJobLink } from "@/lib/utils";
+import { Loading } from "@/components/Loading";
 
 interface Job {
   id: string;
@@ -190,7 +191,7 @@ export default function JobsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        Loading...
+        <Loading />
       </div>
     );
   }
