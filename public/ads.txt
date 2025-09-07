@@ -1,0 +1,2 @@
+# Ezoic ads.txt redirect
+redirect=https://srv.adstxtmanager.com/19390/rolespot.space
