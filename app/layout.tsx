@@ -29,11 +29,27 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3149724962399059"
-     crossorigin="anonymous"></script>
-        {/* Google Analytics Script */}
-        {GA_MEASUREMENT_ID && (
+      {/* <head>
+        <script
+          src="https://cmp.gatekeeperconsent.com/min.js"
+          data-cfasync="false"
+        ></script>
+        <script
+          src="https://the.gatekeeperconsent.com/cmp.min.js"
+          data-cfasync="false"
+        ></script>
+        <script async src="//www.ezojs.com/ezoic/sa.min.js"></script>
+        <script>
+          window.ezstandalone = window.ezstandalone || {}; ezstandalone.cmd =
+          ezstandalone.cmd || [];
+        </script>
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3149724962399059"
+          crossorigin="anonymous"
+        ></script> */}
+      {/* Google Analytics Script */}
+      {/* {GA_MEASUREMENT_ID && (
           <>
             <Script
               strategy="afterInteractive"
@@ -55,7 +71,71 @@ export default function RootLayout({
             />
           </>
         )}
+      </head> */}
+
+      <head>
+        {/* Gatekeeper Consent */}
+        <Script
+          src="https://cmp.gatekeeperconsent.com/min.js"
+          data-cfasync="false"
+          strategy="beforeInteractive"
+        />
+        <Script
+          src="https://the.gatekeeperconsent.com/cmp.min.js"
+          data-cfasync="false"
+          strategy="beforeInteractive"
+        />
+
+        {/* Ezoic */}
+        <Script
+          id="ezoic-standalone"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+        window.ezstandalone = window.ezstandalone || {};
+        ezstandalone.cmd = ezstandalone.cmd || [];
+      `,
+          }}
+        />
+        <Script
+          async
+          src="//www.ezojs.com/ezoic/sa.min.js"
+          strategy="afterInteractive"
+        />
+
+        {/* AdSense */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3149724962399059"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+
+        {/* Google Analytics */}
+        {GA_MEASUREMENT_ID && (
+          <>
+            <Script
+              strategy="afterInteractive"
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+            />
+            <Script
+              id="gtag-init"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}', {
+              page_path: window.location.pathname,
+            });
+          `,
+              }}
+            />
+          </>
+        )}
       </head>
+
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"
