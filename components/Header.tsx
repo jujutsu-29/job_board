@@ -26,17 +26,28 @@ export default function Header() {
         <div className="flex items-center space-x-2">
           {/* <Briefcase className="h-8 w-8 text-primary" />
            */}
-          <Link href="/" className="flex">
+          <Link href="/" className="flex items-center">
+            {/* Logo icon for mobile */}
             <Image
               src="/rolespot_noBG.png"
               alt="Rolespot Logo"
               width={32}
               height={32}
-              className="h-8 w-8 text-primary"
+              className="h-8 w-8 text-primary lg:hidden"
             />
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-red-500 to-blue-400 bg-clip-text text-transparent animate-gradient-move">
-              Rolespot
-            </h1>
+            {/* Logo icon + text for desktop */}
+            <span className="hidden lg:flex items-center">
+              <Image
+                src="/rolespot_noBG.png"
+                alt="Rolespot Logo"
+                width={32}
+                height={32}
+                className="h-8 w-8 text-primary"
+              />
+              <h1 className="ml-2 text-2xl font-bold bg-gradient-to-r from-blue-600 via-red-500 to-blue-400 bg-clip-text text-transparent animate-gradient-move">
+                Rolespot
+              </h1>
+            </span>
           </Link>
         </div>
 
@@ -58,7 +69,7 @@ export default function Header() {
         </nav>
 
         {/* Auth & WhatsApp */}
-        <div className="flex items-center">
+        <div className="lg:space-x-4 flex items-center">
           <a
             href="https://whatsapp.com/channel/0029Vb6750r1noyyzhldq91G"
             target="_blank"
