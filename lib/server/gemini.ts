@@ -1,6 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import Ajv from "ajv";
-import { geminiResponseGetter, stripQuotes } from "../utils";
+import { stripQuotes } from "../utils";
+import { geminiResponseGetter } from "../gemini";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
 

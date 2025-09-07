@@ -58,7 +58,7 @@ export default function Header() {
         </nav>
 
         {/* Auth & WhatsApp */}
-        <div className="hidden lg:flex items-center space-x-4">
+        <div className="flex items-center">
           <a
             href="https://whatsapp.com/channel/0029Vb6750r1noyyzhldq91G"
             target="_blank"
@@ -69,6 +69,7 @@ export default function Header() {
               <span>Join WhatsApp</span>
             </Button>
           </a>
+          <div className="hidden lg:flex items-center space-x-2">
 
           {isLoggedIn ? (
             <div className="flex items-center space-x-2">
@@ -76,14 +77,14 @@ export default function Header() {
                 src={session?.user?.image || ""}
                 alt="User avatar"
                 className="w-8 h-8 rounded-full"
-              />
+                />
               <span className="text-sm text-muted-foreground">
                 {session?.user?.name}
               </span>
               <Button
                 variant="ghost"
                 onClick={() => signOut({ callbackUrl: "/" })}
-              >
+                >
                 Logout
               </Button>
             </div>
@@ -97,14 +98,14 @@ export default function Header() {
               </Link>
             </>
           )}
-
+          </div>
           {/* Theme toggle small */}
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             aria-label="Toggle Theme"
-          >
+            >
             {theme === "dark" ? (
               <Sun className="h-5 w-5" />
             ) : (
@@ -113,6 +114,7 @@ export default function Header() {
           </Button>
         </div>
       </div>
+            
 
       {/* Styles */}
       <style jsx>{`
