@@ -45,6 +45,7 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { jobsBySlug } from "@/lib/server/jobs";
 import Image from "next/image";
+import EzoicAds from "@/components/EzoicAds";
 
 interface Job {
   id: string;
@@ -287,6 +288,8 @@ export default async function JobPostPage({
         </div>
       </section>
 
+      <EzoicAds slot={1} />
+
       {/* Main Content */}
       <div className="container mx-auto px-2 md:px-4 pb-12">
         {jobData.image && (
@@ -332,11 +335,14 @@ export default async function JobPostPage({
               </CollapsibleSection>
             )}
             {/* Basic Qualifications */}
-            {jobData.basicQualifications.length > 0 && (
-              <CollapsibleSection
-                title="Basic Qualifications"
-                icon={<Award className="h-5 w-5 text-blue-600" />}
-              >
+
+            <EzoicAds slot={2} />
+            <div className="my-8"></div>
+              {jobData.basicQualifications.length > 0 && (
+                <CollapsibleSection
+                  title="Basic Qualifications"
+                  icon={<Award className="h-5 w-5 text-blue-600" />}
+                >
                 <ul className="space-y-3">
                   {jobData.basicQualifications.map(
                     (qual: string, index: number) => (
@@ -392,6 +398,9 @@ export default async function JobPostPage({
                 </div>
               </CollapsibleSection>
             )}
+
+            <EzoicAds slot={3} />
+            <div className="my-8"></div>
             {/* Locations Available */}
             {jobData.locationsAvailable.length > 0 && (
               <CollapsibleSection
@@ -474,6 +483,8 @@ export default async function JobPostPage({
                   </div>
                 </CardContent>
               </Card>
+
+              <EzoicAds slot={4} />
 
               {/* Share Job */}
               <Card className="shadow-lg border-0 bg-white dark:bg-neutral-900">
