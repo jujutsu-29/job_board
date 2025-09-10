@@ -24,10 +24,11 @@ import {
 import { ArrowLeft } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import axios from "axios";
-import { JobFormData } from "@/types/types";
+import { CompanyFormData } from "@/types/types";
 import { editCompany } from "@/lib/server/company";
 import UploadDropzone from "@/components/DropZoneImages";
-import { handleImageUpload } from "@/lib/utils";
+import { handleImageDelete, handleImageUpload } from "@/lib/utils";
+import Image from "next/image";
 
 export default function NewJobPage() {
   const params = useParams();
@@ -37,7 +38,7 @@ export default function NewJobPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [formData, setFormData] = useState<JobFormData>({
+  const [formData, setFormData] = useState<CompanyFormData>({
     name: "",
     website: "",
     description: "",
@@ -47,7 +48,7 @@ export default function NewJobPage() {
   });
 
   const handleInputChange = (
-    field: keyof JobFormData,
+    field: keyof CompanyFormData,
     value: string | boolean
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -57,8 +58,6 @@ export default function NewJobPage() {
     // console.log("Back button clicked");
     router.push("/admin/companies");
   };
-
-
 
   function fetchingExistingData() {
     // if (!slug) return;
@@ -98,6 +97,9 @@ export default function NewJobPage() {
     setLoading(true);
     // console.log("Form data at submit time:", formData);
     if (file) {
+      if (formData?.logo) {
+        await handleImageDelete(formData.logo);
+      }
       // console.log("got file here, inside call, ", file);
       const response = await handleImageUpload(file);
       // console.log("Image uploaded successfully ", response);
@@ -106,7 +108,7 @@ export default function NewJobPage() {
     try {
       // console.log("formdata ", formData)
       const response = await editCompany({ slug: slug ?? "", formData });
-    
+
       if (response.success) {
         toast({
           title: "Success",
@@ -210,10 +212,10 @@ export default function NewJobPage() {
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="logo">Upload Logo</Label>
-                <div className="grid w-full max-w-sm items-center gap-3">
-                  <Label htmlFor="logo">Logo</Label>
-                  {/* <Input
+                {/* <Label htmlFor="logo">Upload Logo</Label> */}
+                {/* <div className="grid w-full max-w-sm items-center gap-3"> */}
+                {/* <Label htmlFor="logo">Logo</Label> */}
+                {/* <Input
                     id="logo"
                     type="file"
                     onChange={(e) => {
@@ -222,15 +224,37 @@ export default function NewJobPage() {
                       // handleInputChange("logo", file as any);
                     }}
                   /> */}
-                  <UploadDropzone
+                {/* <UploadDropzone
                     onFilesAccepted={(files) => {
                       setFile(files[0]);
                       // handleInputChange("logo", files[0]);
                     }}
-                  />
+                  /> */}
+                <Label htmlFor="logo">Upload Logo</Label>
+                <div className="grid w-full max-w-sm gap-3">
+                  <Label htmlFor="logo">Logo</Label>
+                  <div className="flex flex-row items-center gap-6">
+                    <UploadDropzone
+                      onFilesAccepted={(files) => {
+                        setFile(files[0]);
+                      }}
+                    />
+                    <div className="flex items-center justify-center w-[120px] h-[80px] bg-muted rounded border">
+                      {formData?.logo && (
+                        <Image
+                          src={formData?.logo}
+                          alt="Company Logo"
+                          width={100}
+                          height={70}
+                          className="object-contain"
+                        />
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
+            {/* </div> */}
 
             {/* <div className="space-y-2">
               <Label htmlFor="description">Company Description *</Label>
