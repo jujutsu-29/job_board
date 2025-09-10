@@ -384,13 +384,15 @@ export default function JobForm({
                       }}
                     />
                     <div className="flex items-center justify-center w-[120px] h-[80px] bg-muted rounded border">
-                      <Image
-                        src={formData?.image || "/placeholder-image.png"}
-                        alt="Job Image"
-                        width={100}
-                        height={70}
-                        className="object-contain"
-                      />
+                      {formData?.image && (
+                        <Image
+                          src={formData?.image}
+                          alt="Job Image"
+                          width={100}
+                          height={70}
+                          className="object-contain"
+                        />
+                      )}
                     </div>
                   </div>
                 </div>

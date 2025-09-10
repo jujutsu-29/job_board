@@ -23,7 +23,7 @@ export interface Job {
     slug: string;
   }
 
-export interface JobFormData {
+export interface CompanyFormData {
   name: string;
   website: string;
   description: string;
