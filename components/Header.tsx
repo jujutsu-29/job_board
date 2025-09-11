@@ -69,7 +69,7 @@ export default function Header() {
         </nav>
 
         {/* Auth & WhatsApp */}
-        <div className="lg:space-x-4 flex items-center">
+        <div className="lg:space-x-4 flex items-center space-x-2">
           <a
             href="https://whatsapp.com/channel/0029Vb6750r1noyyzhldq91G"
             target="_blank"

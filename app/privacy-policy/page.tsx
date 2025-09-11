@@ -145,7 +145,7 @@ export default function PrivacyPolicy() {
               </CardContent>
             </Card>
 
-            <Card>
+            {/* <Card>
               <CardHeader>
                 <CardTitle className="text-2xl">Ezoic Services</CardTitle>
               </CardHeader>
@@ -233,7 +233,7 @@ export default function PrivacyPolicy() {
                     here
                   </a>.
               </CardContent>
-            </Card>
+            </Card> */}
 
             <Card>
               <CardHeader>
