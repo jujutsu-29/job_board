@@ -6,6 +6,7 @@ import Script from "next/script";
 import { GA_MEASUREMENT_ID } from "@/lib/gtag";
 import { Toaster } from "@/components/ui/toaster";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -146,6 +147,7 @@ export default function RootLayout({
           <Providers>
             <Toaster />
             {children}
+            <SpeedInsights />
             <Analytics />
           </Providers>
         </ThemeProvider>
