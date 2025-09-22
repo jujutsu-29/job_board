@@ -59,6 +59,7 @@ export async function createJob(submitData: any) {
     });
 
     const rephrasedJobData = await rephraseItStructured({
+      title,
       description,
       requirements,
       keyResponsibilities,
@@ -69,6 +70,7 @@ export async function createJob(submitData: any) {
 
     // If rephraseIt returns a 'content' property with the rephrased fields, parse it accordingly.
     // Adjust this logic based on the actual structure returned by rephraseIt.
+    let rephrasedTitle = rephrasedJobData.title ?? title;
     let rephrasedDescription = rephrasedJobData.description ?? description;
     let rephrasedRequirements = rephrasedJobData.requirements ?? requirements;
     let rephrasedBasicQualifications = rephrasedJobData.basicQualifications ?? basicQualifications;
@@ -87,7 +89,7 @@ export async function createJob(submitData: any) {
 
     const job = await createJobWithUniqueSlug(
       {
-        title,
+        title: rephrasedTitle,
         company: { connect: { id: newCompany.id } },
         image,
         description: rephrasedDescription,
