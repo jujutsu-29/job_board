@@ -6,6 +6,7 @@ import { geminiResponseGetter } from "../gemini";
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
 
 type JobInput = {
+  title: string;
   description?: string;
   requirements?: string[];
   keyResponsibilities?: string[];
