@@ -105,9 +105,7 @@ export async function generateMetadata({
 
   const ogImageUrl = `/jobs/${slug}/opengraph-image`;
 
-  const title = `${job.company.name} is Hiring ${
-    job.title
-  } | ${job.locationsAvailable.join(", ")} | ${job.salary}`;
+  const title = `${job.title} | ${job.locationsAvailable.join(", ")} | ${job.salary}`;
   const description = `${job.description.slice(0, 150)}...`;
 
   return {
