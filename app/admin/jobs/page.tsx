@@ -57,6 +57,7 @@ interface Job {
   };
   locationsAvailable: string[];
   status: "draft" | "published" | "archived" | "closed";
+  salary: string;
   isFeatured: boolean;
   postedAt: string | null;
   createdAt: string;
@@ -246,7 +247,7 @@ export default function JobsPage() {
                   <TableHead>Job Title</TableHead>
                   <TableHead>Company</TableHead>
                   <TableHead>Location</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>Salary</TableHead>
                   <TableHead>Posted</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -270,7 +271,7 @@ export default function JobsPage() {
                         ? job.locationsAvailable.join(", ").slice(0, 50) + "..."
                         : job.locationsAvailable.join(", ")}
                     </TableCell>
-                    <TableCell>{getStatusBadge(job.status)}</TableCell>
+                    <TableCell>{getStatusBadge(job.salary)}</TableCell>
                     <TableCell>
                       {job.postedAt
                         ? new Date(job.postedAt).toLocaleDateString()
