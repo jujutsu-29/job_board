@@ -45,7 +45,6 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { jobsBySlug } from "@/lib/server/jobs";
 import Image from "next/image";
-import EzoicAds from "@/components/EzoicAds";
 
 interface Job {
   id: string;

@@ -184,7 +184,7 @@ export default function JobForm({
 
       let result;
       if (mode === "create") {
-        result = await createJob(submitData);
+        result = await createJob(submitData, false);
       } else {
         result = await updateJob(slug ?? "", submitData);
       }

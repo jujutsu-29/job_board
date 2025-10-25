@@ -13,10 +13,6 @@ type JobInput = {
   basicQualifications?: string[];
 };
 
-/**
- * Build a minimal JSON schema for only the supplied keys.
- * Arrays -> array of strings; strings -> string.
- */
 function makeSchemaFor(obj: Record<string, any>) {
   const props: Record<string, any> = {};
   const required: string[] = [];
@@ -43,19 +39,13 @@ function makeSchemaFor(obj: Record<string, any>) {
   };
 }
 
-/**
- * Safely extracts the generated text from the SDK's response object.
- * SDK shapes vary; this tries the usual fields.
- */
+
 function extractGeneratedText(resp: any): string | null {
   if (!resp) return null;
-  // some SDK versions expose `.text`
   if (typeof resp.text === "string" && resp.text.trim().length)
     return resp.text;
-  // older/more verbose shape: candidates[].content.parts[].text
   const cand = resp.candidates?.[0];
   if (cand?.content?.parts?.[0]?.text) return cand.content.parts[0].text;
-  // some wrappers: resp.response?.text()
   if (typeof resp.response?.text === "function") {
     try {
       return resp.response.text();
@@ -64,9 +54,6 @@ function extractGeneratedText(resp: any): string | null {
   return null;
 }
 
-/**
- * The main rewriter. Returns parsed JSON with same keys/types you sent.
- */
 export async function rephraseItStructured(jobData: JobInput) {
   // 1) filter empty fields
   const filtered: Record<string, any> = {};
@@ -162,4 +149,76 @@ export async function describeCompanyFromUrl(url: string): Promise<string> {
   if (!text) throw new Error("No response from Gemini");
 
   return stripQuotes(text.trim());
+}
+
+export async function getJobDetailsFromUrl(url: string) {
+  const schema = {
+    type: "object",
+    properties: {
+      title: { type: "string" },
+      description: { type: "string" },
+      requirements: { type: "array", items: { type: "string" } },
+      keyResponsibilities: { type: "array", items: { type: "string" } },
+      basicQualifications: { type: "array", items: { type: "string" } },
+      jobType: { type: "string" },
+      salary: { type: "string" },
+      experience: { type: "string" },
+      technicalSkills: { type: "array", items: { type: "string" } },
+      locationsAvailable: { type: "array", items: { type: "string" } },
+      applyUrl: { type: "string" },
+      company: { type: "string" },
+    },
+    required: [
+      "title",
+      "description",
+      "requirements",
+      "keyResponsibilities",
+      "basicQualifications",
+    ],
+    additionalProperties: false,
+  };
+
+  const prompt = `
+You are an expert job description parser. 
+Extract the following details from the provided URL and return them as a valid JSON object.
+Make sure to follow the provided schema exactly.
+URL: ${url}
+`;
+
+  let response = await geminiResponseGetter({ prompt, schema, ai });
+
+  console.log("response after calling gemini ", response);
+  const raw = extractGeneratedText(response);
+  if (!raw) {
+    throw new Error("No text returned from Gemini");
+  }
+
+  const cleaned = raw
+    .trim()
+    .replace(/^```json\s*/i, "")
+    .replace(/```$/, "")
+    .trim();
+
+  let parsed: any;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch (err) {
+    const match = cleaned.match(/\{[\s\S]*\}/);
+    if (match) {
+      parsed = JSON.parse(match[0]);
+    } else {
+      console.error("Gemini returned unparsable JSON:", cleaned);
+      throw new Error("Gemini output not valid JSON");
+    }
+  }
+
+  const ajv = new Ajv();
+  const validate = ajv.compile(schema);
+  const ok = validate(parsed);
+  if (!ok) {
+    console.error("Schema validation failed:", validate.errors);
+    throw new Error("Generated JSON did not match schema");
+  }
+
+  return parsed;
 }
