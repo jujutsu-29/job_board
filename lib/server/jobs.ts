@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { cache } from "react";
 import { createJobWithUniqueSlug, isAdminFunction } from "../utils";
 import slugify from "slugify";
-import { rephraseItStructured } from "./gemini";
+import { getJobDetailsFromUrl, rephraseItStructured } from "./gemini";
 
 export const jobsBySlug = cache(async (slug: string) =>
   await prisma.job.findUnique({
@@ -12,13 +12,15 @@ export const jobsBySlug = cache(async (slug: string) =>
     include: { company: true },
   }));
 
-export async function createJob(submitData: any) {
+export async function createJob(submitData: any, state: boolean) {
   try {
     const { isAdmin, session } = await isAdminFunction();
     if (!isAdmin) {
       return { success: false, error: "Unauthorized" };
     }
 
+    let job = null;
+    if(!state) {
     const {
       title,
       image,
@@ -58,6 +60,7 @@ export async function createJob(submitData: any) {
       },
     });
 
+    
     const rephrasedJobData = await rephraseItStructured({
       title,
       description,
@@ -66,28 +69,13 @@ export async function createJob(submitData: any) {
       basicQualifications,
     });
 
-    // console.log("rephrased job data ", rephrasedJobData);
-
-    // If rephraseIt returns a 'content' property with the rephrased fields, parse it accordingly.
-    // Adjust this logic based on the actual structure returned by rephraseIt.
     let rephrasedTitle = rephrasedJobData.title ?? title;
     let rephrasedDescription = rephrasedJobData.description ?? description;
     let rephrasedRequirements = rephrasedJobData.requirements ?? requirements;
     let rephrasedBasicQualifications = rephrasedJobData.basicQualifications ?? basicQualifications;
     let rephrasedKeyResponsibilities = rephrasedJobData.keyResponsibilities ?? keyResponsibilities;
 
-    // if (rephrasedJobData && typeof rephrasedJobData === "object" && "content" in rephrasedJobData) {
-    //   try {
-    //     const parsed = JSON.parse((rephrasedJobData as any).content);
-    //     rephrasedRequirements = parsed.requirements || requirements;
-    //     rephrasedBasicQualifications = parsed.basicQualifications || basicQualifications;
-    //     rephrasedKeyResponsibilities = parsed.keyResponsibilities || keyResponsibilities;
-    //   } catch {
-    //     // fallback to original values
-    //   }
-    // }
-
-    const job = await createJobWithUniqueSlug(
+    job = await createJobWithUniqueSlug(
       {
         title: rephrasedTitle,
         company: { connect: { id: newCompany.id } },
@@ -113,11 +101,55 @@ export async function createJob(submitData: any) {
       },
       title
     );
+  } else {
+    const dataFromGemini = await getJobDetailsFromUrl(submitData);
+    const company = dataFromGemini.company;
 
+    const existingCompany = await prisma.company.findFirst({
+      where: { name: company },
+    });
+    const newCompany = existingCompany || await prisma.company.create({
+      data: {
+        name: company,
+        slug: slugify(company, { lower: true, strict: true }),
+        description: "",
+        logo: "",
+        website: dataFromGemini.companyWebsite || "",
+        companyType: "",
+      },
+    });
+
+    job = await createJobWithUniqueSlug(
+      {
+       title: dataFromGemini.title,
+        company: { connect: { id: newCompany.id } },
+        // image,
+        description: dataFromGemini.description,
+        applyUrl: dataFromGemini.applyUrl,
+        // status,
+        // isFeatured,
+        // source,
+        // createdById,
+        jobType: dataFromGemini.jobType,
+        salary: dataFromGemini.salary,
+        experience: dataFromGemini.experience,
+        requirements: dataFromGemini.requirements,
+        basicQualifications: dataFromGemini.basicQualifications,
+        keyResponsibilities: dataFromGemini.keyResponsibilities,
+        technicalSkills: dataFromGemini.technicalSkills,
+        locationsAvailable: dataFromGemini.locationsAvailable,
+        tags: dataFromGemini.tags,
+        // expiresAt: expiresAt ? new Date(expiresAt) : null,
+        // postedAt: status === "published" ? new Date() : null,
+        // batches
+      },
+      dataFromGemini.title
+    );
+  }
     revalidatePath("/jobs");
     revalidatePath("/companies");
 
-    return { success: true, data: job };
+    return { success: true };
   } catch (err: any) {
     console.error("Error in createJob:", err);
     return { success: false, error: err.message || "Internal server error" };

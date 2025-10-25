@@ -80,7 +80,7 @@ model Otp {
 model Company {
   id          String   @id @default(cuid())
   name        String
-  website     String?  @unique
+  website     String?  
   description String?
   companyType String?
   tags        String[] @default([])
