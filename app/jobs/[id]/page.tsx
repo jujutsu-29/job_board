@@ -285,7 +285,6 @@ export default async function JobPostPage({
         </div>
       </section>
 
-      <EzoicAds slot={1} />
 
       {/* Main Content */}
       <div className="container mx-auto px-2 md:px-4 pb-12">
@@ -333,7 +332,6 @@ export default async function JobPostPage({
             )}
             {/* Basic Qualifications */}
 
-            <EzoicAds slot={2} />
             <div className="my-8"></div>
               {jobData.basicQualifications.length > 0 && (
                 <CollapsibleSection
@@ -396,7 +394,6 @@ export default async function JobPostPage({
               </CollapsibleSection>
             )}
 
-            <EzoicAds slot={3} />
             <div className="my-8"></div>
             {/* Locations Available */}
             {jobData.locationsAvailable.length > 0 && (
@@ -480,8 +477,6 @@ export default async function JobPostPage({
                   </div>
                 </CardContent>
               </Card>
-
-              <EzoicAds slot={4} />
 
               {/* Share Job */}
               <Card className="shadow-lg border-0 bg-white dark:bg-neutral-900">
