@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createJob } from "@/lib/server/jobs";
+import { redirect } from "next/navigation";
 
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
@@ -10,6 +11,10 @@ const handleSubmit = async (e: React.FormEvent) => {
   const url = (form.elements.namedItem("url") as HTMLInputElement).value;
 
   const res = await createJob(url, true);
+
+  if(res.success){
+    redirect(`/admin/jobs/`);
+  }
   console.log("Job creation response:", res);
 }
 
