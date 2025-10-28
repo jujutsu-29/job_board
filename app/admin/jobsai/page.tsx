@@ -15,7 +15,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   if(res.success){
     redirect(`/admin/jobs/`);
   }
-  console.log("Job creation response:", res);
+  // console.log("Job creation response:", res);
 }
 
 export default function RandomPage() {
