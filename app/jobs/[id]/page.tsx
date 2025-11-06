@@ -117,8 +117,7 @@ export async function generateMetadata({
       url: `https://rolespot.space/jobs/${job.slug}`,
       images: [
         {
-          url: `${job.image}`, // ideally per-job banner
-          // url: ogImageUrl,
+          url: `${job.image}`, 
           width: 1200,
           height: 630,
           alt: title,
@@ -129,8 +128,6 @@ export async function generateMetadata({
       card: "summary_large_image",
       title,
       description,
-      // images: [`https://rolespot.space/uploads/${job.slug}-banner.png`],
-      // images: [`${ogImageUrl}`],
       images: [`${job.image}`],
     },
   };
@@ -153,9 +150,6 @@ export default async function JobPostPage({
   if (!job) return notFound();
 
   const ogImageUrl = `/jobs/${slug}/opengraph-image`;
-  // console.log("ogimage url ", ogImageUrl);
-  // console.log("Job data:", job);
-  // Map DB fields to expected structure
   const jobData = {
     ...job,
     company: {
@@ -292,7 +286,7 @@ export default async function JobPostPage({
           <div className="flex justify-center my-8">
             <div className="w-full max-w-3xl aspect-[16/9] bg-neutral-100 dark:bg-neutral-800 rounded-2xl shadow-lg border border-blue-100 dark:border-blue-900 overflow-hidden flex items-center justify-center">
               <Image
-                src={jobData.image}
+                src={jobData.image || jobData.company.logo as string}
                 alt={`${jobData.title} at ${jobData.company.name} - Job Image`}
                 className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105"
                 width={1200}
