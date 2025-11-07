@@ -8,7 +8,17 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "s3.ap-south-1.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.amazonaws.com",
+      },
+    ],
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;
