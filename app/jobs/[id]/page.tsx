@@ -177,6 +177,10 @@ export default async function JobPostPage({
     batches: job.batches,
   };
 
+  // console.log("Job Data:", jobData);  
+  // console.log("Job Image URL:", jobData.image);
+  // console.log("Company Logo URL:", jobData.company.logo);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-900 transition-colors">
       <Header />
@@ -282,27 +286,28 @@ export default async function JobPostPage({
 
       {/* Main Content */}
       <div className="container mx-auto px-2 md:px-4 pb-12">
-        {jobData.image && (
-          <div className="flex justify-center my-8">
-            <div className="w-full max-w-3xl aspect-[16/9] bg-neutral-100 dark:bg-neutral-800 rounded-2xl shadow-lg border border-blue-100 dark:border-blue-900 overflow-hidden flex items-center justify-center">
-              <Image
-                src={jobData.image || jobData.company.logo as string}
+  <div className="flex justify-center my-8">
+    <div className="w-full max-w-3xl aspect-[16/9] bg-neutral-100 dark:bg-neutral-800 rounded-2xl shadow-lg border border-blue-100 dark:border-blue-900 overflow-hidden flex items-center justify-center">
+              { jobData.image ? (<Image
+                src={jobData.image as string}
                 alt={`${jobData.title} at ${jobData.company.name} - Job Image`}
                 className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105"
                 width={1200}
                 height={630}
                 loading="lazy"
                 priority={false}
-
-                // src={ogImageUrl}
-                // alt={`Banner for ${job.title}`}
-                // width={800}
-                // height={420}
-                // className="rounded-xl shadow-md my-6"
-              />
+              />) :
+              (<Image
+                src={jobData.company.logo as string}
+                alt={`${jobData.title} at ${jobData.company.name} - Job Image`}
+                className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105"
+                width={1200}
+                height={630}
+                loading="lazy"
+                priority={false}
+              />)}
             </div>
           </div>
-        )}
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content Column */}
           <div className="lg:col-span-2 space-y-6">
