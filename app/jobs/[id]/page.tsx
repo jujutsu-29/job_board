@@ -181,8 +181,64 @@ export default async function JobPostPage({
   // console.log("Job Image URL:", jobData.image);
   // console.log("Company Logo URL:", jobData.company.logo);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    "title": jobData.title,
+    "description": jobData.description,
+    "datePosted": jobData.postedAt,
+    "validThrough": jobData.expiresAt || new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
+    "employmentType": jobData.jobType?.toUpperCase().includes("FULL") ? "FULL_TIME" : 
+                     jobData.jobType?.toUpperCase().includes("PART") ? "PART_TIME" :
+                     jobData.jobType?.toUpperCase().includes("INTERN") ? "INTERN" :
+                     jobData.jobType?.toUpperCase().includes("CONTRACT") ? "CONTRACTOR" : "OTHER",
+    "hiringOrganization": {
+      "@type": "Organization",
+      "name": jobData.company.name,
+      "sameAs": `https://rolespot.space/companies/${jobData.company.slug}`,
+      "logo": jobData.company.logo || "https://rolespot.space/placeholder-logo.png"
+    },
+    "jobLocation": jobData.locationsAvailable.length > 0 ? jobData.locationsAvailable.map(loc => ({
+      "@type": "Place",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": loc,
+        "addressCountry": "IN"
+      }
+    })) : {
+      "@type": "Place",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "IN"
+      },
+      "additionalProperty": {
+        "@type": "PropertyValue",
+        "name": "remote",
+        "value": "true"
+      }
+    },
+    "baseSalary": jobData.salary ? {
+      "@type": "MonetaryAmount",
+      "currency": "INR",
+      "value": {
+        "@type": "QuantitativeValue",
+        "value": jobData.salary.replace(/[^0-9-]/g, ''),
+        "unitText": "YEAR"
+      }
+    } : undefined,
+    "experienceRequirements": {
+      "@type": "OccupationalExperienceRequirements",
+      "monthsOfExperience": jobData.experience && jobData.experience.toLowerCase().includes("year") ? parseInt(jobData.experience) * 12 : 0
+    },
+    "directApply": true
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-neutral-900 dark:via-neutral-950 dark:to-neutral-900 transition-colors">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header />
       {/* Breadcrumb Navigation */}
       <div className="bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm border-b sticky top-0 z-40">
